@@ -9,6 +9,7 @@ function Navbar() {
   const navLinks = [
     { to: '/', label: 'Welcome' },
     { to: '/projects', label: 'Projects' },
+    { to: '/prototypes', label: 'Prototypes' },
     { to: '/about', label: 'About Me' },
   ]
 
