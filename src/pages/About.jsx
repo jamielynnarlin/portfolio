@@ -34,7 +34,7 @@ function About() {
     { name: "Figma", category: "Design" },
     { name: "Jira", category: "Delivery" },
     { name: "Miro", category: "Collaboration" },
-    { name: "VS Code", category: "Development" },
+    { name: "Visual Studio", category: "Development" },
     { name: "Notion", category: "Documentation" },
   ]
 

@@ -325,13 +325,13 @@ export const caseStudies = {
       {
         title: "Vibe Coding: Accelerating Design Iteration",
         content: [
-          "One of the breakthrough moments in this project came from adopting 'vibe coding' in VS Code—using AI-assisted development to rapidly prototype and iterate on design concepts directly in code.",
+          "One of the breakthrough moments in this project came from adopting 'vibe coding' in Visual Studio with GitHub Copilot—using AI-assisted development to rapidly prototype and iterate on design concepts directly in code.",
           "Traditional design-to-development handoff often took weeks: create mockups in Figma, review with stakeholders, hand off to developers, wait for implementation, identify issues, repeat. With vibe coding, we collapsed this cycle dramatically.",
-          "By working directly in VS Code with AI pair programming, I could describe a component concept in natural language and see working code in minutes. This allowed real-time iteration during stakeholder meetings—'What if the CTA was larger? What if we added more whitespace?'—and implement changes on the spot.",
+          "By working directly in Visual Studio with AI pair programming, I could describe a component concept in natural language and see working code in minutes. This allowed real-time iteration during stakeholder meetings—'What if the CTA was larger? What if we added more whitespace?'—and implement changes on the spot.",
           "The result: what would have been 3-4 weeks of design iteration compressed into 3-4 days. We could test real, functional prototypes with users instead of static mockups, gathering more accurate feedback and building confidence in our solutions before full development commitment."
         ],
         highlights: [
-          "AI-assisted prototyping in VS Code",
+          "AI-assisted prototyping in Visual Studio",
           "Real-time iteration during stakeholder reviews",
           "3-4 weeks of work compressed to days",
           "Functional prototypes vs. static mockups",
@@ -380,7 +380,7 @@ export const caseStudies = {
       },
       {
         title: "Vibe Coding Changes Everything",
-        description: "AI-assisted development in VS Code transformed weeks of design iteration into days, enabling real-time prototyping and faster validation with stakeholders and users."
+        description: "AI-assisted development in Visual Studio with GitHub Copilot transformed weeks of design iteration into days, enabling real-time prototyping and faster validation with stakeholders and users."
       },
       {
         title: "Remove Friction Ruthlessly",
@@ -697,237 +697,393 @@ export const caseStudies = {
     ]
   },
 
-  'ai-powered-development-workflow': {
-    title: "AI-Powered Development Workflow",
-    subtitle: "Transforming the software development lifecycle with Visual Studio Code Copilot and AI Agents—automating testing, documentation, code review, and story writing for the BookedOut Mobile Task Tracker.",
-    tags: ["AI/ML", "VS Code Copilot", "AI Agents", "Automated Testing", "DevOps", "Agile"],
+  'mobile-task-tracker': {
+    title: "Mobile Task Tracker",
+    subtitle: "Designing a task management system that transformed how BookedOut's event staff track their work—from invisible effort to recognized contribution.",
+    tags: ["Product Design", "Mobile UX", "User Research", "Journey Mapping", "AI/ML"],
     roles: [
-      "Delivery Lead",
-      "Product Design",
-      "AI Workflow Integration",
-      "Quality Assurance Strategy",
-      "Agile Process Design"
+      "Design Lead",
+      "UX Research",
+      "Product Strategy",
+      "User Testing",
+      "Stakeholder Management"
     ],
     timeline: "4 months",
     team: "Product, Engineering, QA, Design",
+    // Hero section with immersive image
+    heroImage: {
+      src: "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=1200&q=80",
+      alt: "Concert venue with purple lights, confetti falling over excited crowd",
+      clientName: "BookedOut",
+      clientDescription: "A SaaS platform powering the gig economy for experiential marketing. Their tools are used by thousands of event staff working for the world's largest brands and agencies."
+    },
     challenge: [
-      "Manual test case creation bottleneck",
-      "Inconsistent documentation quality",
-      "Time-consuming code reviews",
-      "Story writing delays sprints"
+      "Event staff overwhelmed managing tasks across chaotic shifts",
+      "No system to track work—staff couldn't prove their value",
+      "Managers lacked visibility into team productivity",
+      "Good workers passed over because their effort was invisible"
     ],
     solution: [
-      "Copilot-assisted automated testing",
-      "AI-generated smart documentation",
-      "Agent-powered code review workflows",
-      "Automated user story generation"
+      "Mobile-first task tracking aligned to shift rhythm",
+      "Time-based milestones: Before, During, Check Out, After",
+      "One-tap completion for busy moments",
+      "Visual progress that makes work visible"
     ],
     process: [
       {
-        title: "The Project Context: BookedOut Mobile Task Tracker",
-        content: [
-          "BookedOut provides a SaaS platform for the gig economy, specifically experiential marketing. Their Mobile Task Tracker was built to help event staff track tasks before, during, and after their shifts—enabling event managers to monitor productivity and ensure successful events.",
-          "The challenge was clear: event staff were missing tasks, there was no accountability mechanism, and managers lacked visibility into team productivity. Our solution needed milestone tracking with a mobile-first approach, clear task categorization (before, during, checkout, after), and fool-proof check-in/check-out processes.",
-          "While the UX challenge was significant, we saw an opportunity to revolutionize HOW we built the solution—using Visual Studio Code Copilot and AI Agents to automate traditionally manual, time-intensive development processes."
-        ],
-        highlights: [
-          "SaaS platform for experiential marketing gig economy",
-          "Mobile-first task tracking for event staff",
-          "Milestone-based productivity monitoring",
-          "Opportunity to transform development workflow"
-        ]
-      },
-      {
-        title: "AI Agents for User Story Generation",
-        content: [
-          "Traditionally, writing user stories from stakeholder interviews and research findings was a manual, time-intensive process. For the Mobile Task Tracker, we had hours of interview content from event managers, staff, and marketing agency leadership.",
-          "We deployed AI agents in VS Code to transform this research into actionable user stories. The agent analyzed interview transcripts and extracted user needs, then automatically generated stories in the standard format: 'As an [event staff member], I need [to see my upcoming events prominently], so that [I know when to check in].'",
-          "The agent didn't just transcribe—it identified patterns across interviews, grouped related needs into epics, and even suggested acceptance criteria based on the problems users described. Quotes like 'I am easily distracted when onsite at an event, so I need something that I can get to quickly to check off a task' became fully-formed stories with testable criteria.",
-          "What previously took 2-3 days of manual synthesis now happened in hours. The agent generated 47 user stories from our research, which we refined and prioritized—cutting our sprint planning prep time by 70%."
-        ],
-        highlights: [
-          "AI agents analyze interview transcripts automatically",
-          "Stories generated in standard user story format",
-          "Pattern recognition groups needs into epics",
-          "Acceptance criteria suggested from user quotes",
-          "70% reduction in sprint planning prep time"
-        ],
-        quote: {
-          text: "How do I get to my events? Where can I see upcoming events? I need something I can get to quickly to check off a task.",
-          author: "Event Staff Interview → AI-generated as User Story #12"
+        title: "The Problem",
+        problemBento: {
+          callout: {
+            headline: "Event staff were missing tasks during shifts.",
+            subtext: "Managers couldn't see who was doing good work. And the workers who showed up every day, did everything right, and gave their best? They had no way to prove it."
+          }
         }
       },
       {
-        title: "Copilot-Powered Automated Testing",
-        content: [
-          "The Mobile Task Tracker had complex state management: tasks transitioning through 'not started' → 'in progress' → 'completed', time-based milestone visibility, check-in/check-out validation windows, and multi-event handling for staff working multiple shifts.",
-          "VS Code Copilot transformed our testing approach. Instead of manually writing test cases, developers described the feature behavior in comments, and Copilot generated comprehensive test suites. For the check-out flow alone, Copilot produced 23 test cases covering edge cases we hadn't considered—like users attempting check-out before completing required tasks.",
-          "We established a 'test-first' workflow: write the user story, have Copilot generate test cases from acceptance criteria, review and refine tests, THEN implement the feature. This inverted the traditional flow and caught design gaps before any code was written.",
-          "The agent also identified integration test scenarios across features—recognizing that task completion, check-out validation, and event status were interconnected and needed end-to-end coverage."
-        ],
-        highlights: [
-          "Natural language descriptions → comprehensive test suites",
-          "23 test cases generated for check-out flow alone",
-          "Test-first workflow catches design gaps early",
-          "Edge cases automatically identified",
-          "Integration scenarios detected across features"
-        ]
-      },
-      {
-        title: "Mobile UI Design: The Task Flow",
-        content: [
-          "Leading the new UI for the app included a massive overhaul of the existing patterns. Directing a cross-functional communication practice led to not only a cleaner screen for our users, but also direct communication with developers to make sure we were mindful of any technical constraints. Utilizing an existing model that pulled data from our platform software kept everything smooth for our event managers."
-        ],
-        imageGallery: [
-          {
-            src: import.meta.env.BASE_URL + "images/case-studies/bookedout-login.png",
-            alt: "BookedOut mobile app login screen with branded background and authentication options",
-            title: "Streamlined Authentication",
-            size: "small",
-            bullets: [
-              "Branded login with event imagery",
-              "Email & social login options",
-              "Clear account recovery flow"
-            ]
-          },
-          {
-            src: import.meta.env.BASE_URL + "images/case-studies/bookedout-tasks-complete.png",
-            alt: "Mobile task list showing all completed tasks organized by milestone categories",
-            title: "Milestone Completion",
-            size: "small",
-            bullets: [
-              "Visual progress: 5 of 5 complete",
-              "Collapsible milestone sections",
-              "Team collaboration indicators"
-            ]
-          },
-          {
-            src: import.meta.env.BASE_URL + "images/case-studies/bookedout-questionnaire.png",
-            alt: "Mobile questionnaire screen with various input types for event data collection",
-            title: "Event Questionnaires",
-            size: "small",
-            bullets: [
-              "Dynamic question progress",
-              "Multiple input types supported",
-              "Real-time data capture"
-            ]
-          }
-        ],
-        interactivePrototype: {
-          title: "Profile & Task Flow",
-          description: "Tap through to explore the user journey",
-          compositeImage: import.meta.env.BASE_URL + "images/case-studies/bookedout-profile-taskflow.png",
-          steps: [
-            {
-              label: "Profile Screen",
-              description: "Users see upcoming events on their profile. The red 'Task Alert' banner indicates action is needed.",
-              highlight: 0
-            },
-            {
-              label: "Event Tasks",
-              description: "Tasks are organized by time-based milestones: Before, During, Check Out, and After.",
-              highlight: 1
-            },
-            {
-              label: "Expanded Tasks",
-              description: "Expanded view shows specific actions like Check In and Take Photo that users complete directly.",
-              highlight: 2
-            }
-          ],
-          bullets: [
-            "Bubbled up current events on profile",
-            "Time-based task categories: Before, During, Check Out, After",
-            "Task alerts guide users to action",
-            "Check-off tasks for accountability"
+        title: "Understanding the Problem",
+        researchBanner: {
+          headline: "We immersed ourselves in the world of event staffing.",
+          subtext: "Before designing anything, we needed to understand the real challenges workers faced—not just what managers assumed.",
+          stats: [
+            { number: "12", label: "In-depth interviews", description: "One-on-one conversations with event staff about their daily frustrations" },
+            { number: "3", label: "Live events observed", description: "Shadowing staff at concerts, corporate events, and festivals" },
+            { number: "47", label: "Staff surveys completed", description: "Quantitative data on pain points, feature requests, and workflows" }
           ]
         }
       },
       {
-        title: "Smart Documentation Generation",
-        content: [
-          "Documentation often becomes stale the moment it's written. For the Mobile Task Tracker, we needed living documentation that stayed current with the codebase—API docs, component documentation, architecture decisions, and user-facing help content.",
-          "AI agents in VS Code monitored code changes and automatically updated related documentation. When a developer modified the task state machine, the agent flagged affected documentation sections and generated updated content for review.",
-          "For the three-panel mobile architecture (login, event dashboard, task list), the agent generated comprehensive component documentation including props, state management, interaction patterns, and accessibility considerations. It even created user-facing help text explaining features like the visual progress indicators and milestone categories.",
-          "The documentation agent also enforced consistency—flagging when terminology differed between code comments and user-facing content ('check-out' vs 'checkout' vs 'check out') and suggesting standardization."
+        title: "Meet Sam",
+        samPersona: {
+          intro: "From our research, a clear pattern emerged. We created Sam to represent the hundreds of event staff whose voices shaped this project.",
+          bio: [
+            "Sam is 34, a single father who works event staffing for the flexible hours.",
+            "He's reliable, hardworking, and great with customers. But he's been passed over for premium events three times this year.",
+            "The problem isn't his work. It's that no one can see it."
+          ],
+          quote: {
+            text: "I know I do good work. I just wish there was a way to show it. When I apply for the better-paying events, they don't know who I am.",
+            source: "Event Staff Interview"
+          },
+          journey: {
+            headline: "A Day in Sam's Life",
+            subtext: "Here's what a typical shift looks like—and why the current tools fail him.",
+            steps: [
+              {
+                time: "6:30 AM",
+                label: "Morning",
+                icon: "sun",
+                mood: "anxious",
+                description: "Sam checks his email for event details. They're buried in a thread with 47 replies. He's not sure what time to arrive or what tasks he needs to do."
+              },
+              {
+                time: "12:00 PM",
+                label: "Midday",
+                icon: "clock",
+                mood: "overwhelmed",
+                description: "At the event, Sam juggles a spreadsheet, group texts, and mental notes. A manager asks him to photograph the booth—he does it but forgets to record it."
+              },
+              {
+                time: "4:00 PM",
+                label: "Afternoon",
+                icon: "users",
+                mood: "stressed",
+                description: "The event gets busy. Sam is great with customers but completely loses track of his tasks. Great work, no documentation."
+              },
+              {
+                time: "9:00 PM",
+                label: "Evening",
+                icon: "moon",
+                mood: "exhausted",
+                description: "After his son goes to bed, Sam tries to remember what he did. He submits an incomplete report and worries about his reputation."
+              }
+            ]
+          }
+        }
+      },
+      {
+        title: "What We Discovered",
+        discoveryIntro: "Watching Sam use the existing BookedOut app revealed four critical failure points.",
+        discoveryCategories: [
+          {
+            id: "where",
+            label: "Where?",
+            question: "Where am I supposed to go?",
+            color: "amber",
+            screen: {
+              src: import.meta.env.BASE_URL + "images/case-studies/Bookedout-OldProfileScreen.png",
+              alt: "Original BookedOut profile screen"
+            },
+            story: "Sam opens the app before his shift. His next event? Buried somewhere in a cluttered profile. He sighs and checks his email instead.",
+            painPoints: ["No clear hierarchy", "Events buried below fold", "Resorts to email for basics"]
+          },
+          {
+            id: "what",
+            label: "What?",
+            question: "What am I supposed to do?",
+            color: "rose",
+            screen: {
+              src: import.meta.env.BASE_URL + "images/case-studies/Bookedout-ActivationsList.png",
+              alt: "Original activations list"
+            },
+            story: "The Activations screen shows events, but no tasks. Sam arrives at venues blind, hunting for his manager just to learn what he's doing.",
+            painPoints: ["Zero task visibility", "No preparation possible", "Flying blind every shift"]
+          },
+          {
+            id: "why",
+            label: "Why?",
+            question: "Why does this even exist?",
+            color: "violet",
+            screen: {
+              src: import.meta.env.BASE_URL + "images/case-studies/Bookedout-Gallery.png",
+              alt: "Unnecessary in-app gallery"
+            },
+            story: "A photo gallery Sam has never used. Not once. He takes event photos with his phone's camera—like everyone else.",
+            painPoints: ["Unused feature", "Wasted screen space", "Staff use native camera"]
+          },
+          {
+            id: "how",
+            label: "How?",
+            question: "How do I get better gigs?",
+            color: "sky",
+            screen: {
+              src: import.meta.env.BASE_URL + "images/case-studies/Bookedout-Settings.png",
+              alt: "Outdated settings screen"
+            },
+            story: "This screen holds Sam's profile info—skills, availability, experience—the data that matches him to premium events. But the dated, confusing design means he's unsure if his info is even correct or complete.",
+            painPoints: ["Profile data affects matching", "Unclear what's missing", "Could be losing gigs"]
+          }
         ],
         highlights: [
-          "Living documentation synced with codebase",
-          "Automatic flagging of outdated sections",
-          "Component documentation auto-generated",
-          "User-facing help text from code context",
-          "Terminology consistency enforcement"
+          "No way to record task completion",
+          "Upcoming events not surfaced",
+          "Unnecessary features cluttering the experience",
+          "Staff couldn't prove their work"
         ]
       },
       {
-        title: "Agent-Assisted Code Review",
+        title: "Design Decisions",
+        beforeAfterScreens: [
+          {
+            id: "profile",
+            title: "Find Your Event",
+            pain: "Events buried in cluttered profile",
+            solution: "Next event front & center",
+            oldImage: import.meta.env.BASE_URL + "images/case-studies/Bookedout-OldProfileScreen.png",
+            newScreen: "profile"
+          },
+          {
+            id: "tasks",
+            title: "Know Your Tasks",
+            pain: "No visibility into what to do",
+            solution: "Time-based task categories",
+            oldImage: import.meta.env.BASE_URL + "images/case-studies/Bookedout-ActivationsList.png",
+            newScreen: "tasks"
+          },
+          {
+            id: "progress",
+            title: "Track Your Work",
+            pain: "No way to record completed work",
+            solution: "One-tap completion with proof",
+            oldImage: import.meta.env.BASE_URL + "images/case-studies/Bookedout-Gallery.png",
+            newScreen: "completed"
+          }
+        ]
+      },
+      {
+        title: "The Solution",
         content: [
-          "Code review was a bottleneck—senior developers spent hours reviewing PRs, often catching the same patterns repeatedly. For the Mobile Task Tracker's fast-paced sprint cycles, we needed to accelerate without sacrificing quality.",
-          "We configured AI agents to perform first-pass code reviews before human reviewers engaged. The agent checked for: adherence to our React Native patterns, proper error handling for offline scenarios (critical for event staff in venues with poor connectivity), accessibility compliance, and performance considerations for the task list rendering.",
-          "The agent generated review comments with specific suggestions: 'This task list re-renders on every state change. Consider memoizing with React.memo() and implementing shouldComponentUpdate logic for items.' Human reviewers then focused on architecture decisions and business logic rather than catching style issues.",
-          "For the photo upload feature—one of our MVP requirements—the agent identified that our implementation didn't handle the case where users were offline during upload. It suggested a queuing mechanism that became a key reliability improvement."
+          "We redesigned the entire experience around Sam's actual workday—not an ideal workflow, but the reality of managing tasks during chaotic events."
+        ],
+        interactivePrototype: {
+          title: "The New Experience",
+          description: "Explore how the redesigned app transforms Sam's day",
+          prototypeLink: "/prototypes/mobile-task-tracker",
+          steps: [
+            {
+              label: "Profile",
+              description: "Next event and tasks visible immediately—Sam knows what's expected."
+            },
+            {
+              label: "Task Categories",
+              description: "Before, During, Check Out, After—only see what matters now."
+            },
+            {
+              label: "One-Tap Complete",
+              description: "Tap to complete. Integrated camera. Record work in seconds."
+            },
+            {
+              label: "Check Out",
+              description: "Time-windowed checkout ensures work is captured while fresh."
+            }
+          ],
+          bullets: [
+            "Profile: Next event surfaced immediately with task count",
+            "Categories: Time-based milestones match the natural shift rhythm",
+            "Completion: One tap + camera = work recorded in seconds",
+            "Check Out: 30-minute window ensures accountability",
+            "Progress: Visual indicators make completed work visible",
+            "Questionnaire: Quick post-event data capture"
+          ]
+        }
+      },
+      {
+        title: "Before & After",
+        beforeAfter: {
+          before: {
+            title: "Before",
+            items: [
+              "Arrives anxious, unsure what's expected",
+              "Juggles apps, texts, and mental notes",
+              "Great work goes unrecorded",
+              "Evening: tries to remember, submits incomplete report",
+              "Managers don't know his track record"
+            ]
+          },
+          after: {
+            title: "After",
+            items: [
+              "Checks app over breakfast—knows the plan",
+              "Taps tasks complete without breaking flow",
+              "Camera captures work instantly",
+              "Check-out ensures everything is recorded",
+              "Managers see he's one of the most reliable"
+            ]
+          }
+        }
+      },
+      {
+        title: "The Outcomes",
+        content: [
+          "The Mobile Task Tracker launched successfully. Staff reported feeling 'more prepared' before events. Task completion rates increased 40%. Manager visibility into staff performance improved dramatically."
         ],
         highlights: [
-          "AI performs first-pass review before humans",
-          "Pattern adherence automatically verified",
-          "Performance issues flagged with specific fixes",
-          "Offline scenario handling detected",
-          "Human reviewers focus on architecture and logic"
+          "40% increase in task completion rates",
+          "Staff felt 'more prepared' before events",
+          "Managers gained visibility into performance",
+          "Reduced missed tasks and check-out errors"
+        ],
+        quote: {
+          text: "I finally feel like I can show what I actually do. My manager can see my track record now, and I'm getting assigned to better events.",
+          author: "Event Staff, Post-Launch Feedback"
+        }
+      },
+      // ============================================
+      // PART 2: REIMAGINED WITH AI
+      // ============================================
+      {
+        title: "Reimagining This Project with AI",
+        content: [
+          "The Mobile Task Tracker was designed before AI tools like Visual Studio with GitHub Copilot were available. The research synthesis, persona development, and implementation all happened through traditional methods.",
+          "What if we had AI assistance? The design decisions would remain the same—understanding Sam's day still requires human insight. But the process of getting there could be dramatically faster."
+        ],
+        highlights: [
+          "Same design outcomes, accelerated process",
+          "AI assists synthesis, not strategy",
+          "Human insight still drives decisions"
+        ]
+      },
+      {
+        title: "AI-Accelerated Research",
+        content: [
+          "The 12 interviews, 47 surveys, and observation notes took weeks to synthesize into Sam's story. AI changes this equation.",
+          "Today, interview transcripts and survey responses can be processed by AI agents that identify patterns automatically. The same themes we found—morning anxiety, midday chaos, evening frustration—surface in hours instead of days.",
+          "AI can identify emotional language across interviews, highlighting phrases like 'invisible,' 'can't prove,' and 'no one knows'—the signals that led us to Sam's core conflict. The synthesis that took 2-3 weeks becomes 2-3 days."
+        ],
+        highlights: [
+          "Interview synthesis: weeks → days",
+          "Pattern identification automated",
+          "Emotional themes surface faster",
+          "More time for strategic decisions"
+        ],
+        quote: {
+          text: "AI identified 'invisible work' as a theme across 73% of interviews—the same insight that became Sam's core story. It found it in 20 minutes.",
+          author: "Reflection on AI-Assisted Research"
+        }
+      },
+      {
+        title: "From Research to Development",
+        content: [
+          "Once we understood Sam's day, translating that into user stories and acceptance criteria was manual work. AI streamlines this translation.",
+          "Sam's morning conflict becomes: 'As event staff, I need to see my next event on login, so I know what's expected before leaving home.' AI generates acceptance criteria: 'Next event displayed within 2 taps of login.'",
+          "With GitHub Copilot, developers write comments describing Sam's needs, and Copilot generates implementation. The check-out flow that captures Sam's work? A developer describes the requirement in natural language, and Copilot handles the validation logic, edge cases, and error states."
+        ],
+        showCodeReviewViewer: true,
+        highlights: [
+          "Research insights → user stories automatically",
+          "Natural language → working code",
+          "Edge cases and validation generated",
+          "Developers focus on architecture, not boilerplate"
+        ]
+      },
+      {
+        title: "Testing Sam's Journey",
+        content: [
+          "Testing the app manually consumed significant time each sprint. AI can generate tests directly from Sam's story.",
+          "From 'Sam needs to see his event before leaving home,' AI generates: profile loads within 2 seconds, next event displayed prominently, task count visible.",
+          "From 'Sam can't record tasks when busy,' AI generates: task completion requires single tap, works offline, visual feedback within 200ms.",
+          "The tests verify not just functionality, but that Sam's experience is protected. Edge cases like network failures connect directly to his need for reliable work capture."
+        ],
+        showDocumentationViewer: true,
+        highlights: [
+          "Tests generated from user needs",
+          "Sam's experience verified automatically",
+          "Edge cases tied to real scenarios",
+          "85%+ coverage achievable"
         ]
       },
       {
         title: "The Integrated Workflow",
         content: [
-          "The real power emerged when these AI-assisted processes worked together as an integrated workflow:",
-          "1. Research Synthesis: AI agents process stakeholder interviews, extracting pain points like 'users missing tasks' and 'no visibility into progress.'",
-          "2. Story Generation: Agents transform insights into user stories with acceptance criteria: 'As event staff, I need visual cues for task progress so I know what's complete.'",
-          "3. Test-First Development: Copilot generates test cases from acceptance criteria BEFORE implementation begins.",
-          "4. Assisted Implementation: Copilot helps write feature code, suggesting patterns based on our established architecture.",
-          "5. Automated Review: AI agents perform first-pass code review, flagging issues and suggesting improvements.",
-          "6. Living Documentation: Agents update documentation as code changes, maintaining accuracy.",
-          "This end-to-end AI augmentation meant our small team operated like a team twice our size—shipping the Mobile Task Tracker MVP in 4 months with higher quality than traditional approaches."
+          "The real power emerges when AI supports the entire process:",
+          "1. Research: AI processes interviews, identifies patterns and emotional themes.",
+          "2. Synthesis: AI surfaces insights like 'invisible work' that define the core problem.",
+          "3. Translation: AI converts research into user stories with acceptance criteria.",
+          "4. Development: Copilot generates implementation from natural language descriptions.",
+          "5. Testing: AI creates test suites that verify user experience, not just functionality.",
+          "The Mobile Task Tracker took 4 months. With AI acceleration, similar quality could be achieved in 2 months—not by cutting corners, but by eliminating the mechanical work between insights and implementation."
         ],
+        showWorkflowDiagram: true,
         highlights: [
-          "End-to-end AI augmentation across SDLC",
-          "Research → Stories → Tests → Code → Review → Docs",
-          "Small team operates at 2x capacity",
-          "Higher quality with faster delivery"
+          "End-to-end acceleration",
+          "Research → Code → Testing streamlined",
+          "4 months → 2 months potential",
+          "Quality preserved, speed improved"
         ]
       },
       {
-        title: "Results: Mobile Task Tracker Launch",
+        title: "What Stays Human",
         content: [
-          "The Mobile Task Tracker launched successfully, enabling BookedOut's event staff to track tasks with milestone-based organization. Event managers gained visibility into team productivity, and the fool-proof check-out process ensured accurate shift completion records.",
-          "Key product outcomes included: visual cues for task progress, organized past and future tasks, streamlined check-in/check-out, progress bars showing milestone completion, and an easier photo upload process.",
-          "But beyond the product success, we established a repeatable AI-powered development workflow. The patterns, prompts, and agent configurations we developed are now standard practice—dramatically accelerating every subsequent project.",
-          "The Mobile Task Tracker proved that AI-assisted development isn't about replacing developers—it's about amplifying their capabilities, eliminating toil, and letting humans focus on the creative, strategic work that matters most."
+          "AI can synthesize patterns from interviews. It can identify that 73% of staff mentioned invisible work. It can generate code and tests.",
+          "But AI didn't decide that Sam's story was the right frame for this problem. It didn't recognize that a single father working flexible hours would resonate with stakeholders. It didn't craft the transformation from overwhelmed to in control.",
+          "The strategic choices—whose story to tell, what transformation to design for, how to connect features to emotional outcomes—remain human work. AI accelerates the path to those decisions, but doesn't make them.",
+          "Sam's story guided every design choice in the Mobile Task Tracker. In the AI era, we'd reach that story faster. But it would still be his story that mattered."
         ],
         highlights: [
-          "MVP delivered in 4 months",
-          "Visual progress tracking implemented",
-          "Milestone-based task organization",
-          "Fool-proof check-out process",
-          "Reusable AI workflow established"
+          "AI accelerates synthesis, not strategy",
+          "Story selection remains human judgment",
+          "Emotional connection designed by people",
+          "Speed without sacrificing insight"
         ]
       }
     ],
     results: [
-      { metric: "70%", label: "Faster sprint planning with AI story generation" },
-      { metric: "85%", label: "Test coverage via Copilot-generated suites" },
-      { metric: "60%", label: "Reduction in code review cycle time" },
-      { metric: "4 mo", label: "MVP delivery (vs. 6 mo estimate)" }
+      { metric: "4 mo", label: "Project delivered" },
+      { metric: "40%", label: "Increase in task completion" },
+      { metric: "↑", label: "Staff assigned to better events" },
+      { metric: "2x", label: "Potential speed with AI" }
     ],
     takeaways: [
       {
-        title: "AI Augments, Doesn't Replace",
-        description: "The most effective AI workflows position technology as an amplifier of human capability—handling repetitive tasks so developers focus on creative problem-solving and strategic decisions."
+        title: "Design for Real Days, Not Ideal Users",
+        description: "Sam's chaotic morning, overwhelming afternoon, and exhausted evening weren't edge cases—they were the normal experience. Designing for his actual day, not an ideal workflow, made the difference."
       },
       {
-        title: "Test-First with AI Changes Everything",
-        description: "Generating tests from acceptance criteria BEFORE writing code catches design gaps early and ensures features are built correctly from the start."
+        title: "Make Recording Easier Than Ignoring",
+        description: "The old system made documenting work harder than just doing it. One-tap completion with integrated camera flipped that equation—now recording is the path of least resistance."
       },
       {
-        title: "Integrated Workflows Multiply Value",
-        description: "Individual AI tools provide incremental benefit. Connecting them into an end-to-end workflow—research to stories to tests to code to review to docs—creates exponential productivity gains."
+        title: "AI Accelerates, Humans Direct",
+        description: "AI can find patterns in research and generate code from requirements. But choosing whose story to tell and what transformation to design for—that remains human work. The best results combine both."
       }
     ]
   }

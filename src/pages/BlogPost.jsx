@@ -18,7 +18,7 @@ function BlogPost() {
 
   return (
     <article className="py-16 px-4">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-5xl mx-auto">
         <Link to="/blog" className="text-primary-600 dark:text-primary-400 hover:underline mb-8 inline-block">
           ← Back to Blog
         </Link>

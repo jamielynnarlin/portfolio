@@ -6,7 +6,7 @@ export const projects = [
     tags: ["AI/ML", "SDLC", "Automation"],
     category: "ai",
     liveUrl: null,
-    caseStudyUrl: "/projects/ai-powered-development-workflow",
+    caseStudyUrl: "/projects/mobile-task-tracker",
   },
   {
     id: 2,
