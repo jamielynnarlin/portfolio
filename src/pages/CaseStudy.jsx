@@ -581,7 +581,7 @@ function CaseStudy() {
                       "{section.quote.text}"
                     </p>
                     <footer className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                      — {section.quote.author}
+                      - {section.quote.author}
                     </footer>
                   </blockquote>
                 )}

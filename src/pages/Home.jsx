@@ -73,9 +73,9 @@ function Home() {
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-          <div className="max-w-4xl">
+          <div className="w-full">
             <p className="text-gray-600 dark:text-gray-400 mb-4 tracking-wide">
-              Jamie Arlin is a Delivery Lead, AI Strategist & UX Architect based in Chicago
+              Jamie Arlin is a Delivery Lead & UX Leader driving AI-enabled software delivery - based in Chicago
             </p>
             <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-navy-900 dark:text-white mb-8 uppercase tracking-wide leading-tight">
               Hello! I'm a hybrid leader who transforms teams with AI and shapes human experiences.
@@ -155,7 +155,7 @@ function Home() {
                 I'm passionate about leveraging AI agents and automation to transform how teams build software. From intelligent code review to automated testing pipelines, I help organizations adopt AI tools that amplify human creativity.
               </p>
               <p className="text-gray-600 dark:text-gray-300 mb-6 text-lg leading-relaxed">
-                My approach combines deep UX expertise with modern AI capabilities—ensuring that automation serves both the team and the end user.
+                My approach combines deep UX expertise with modern AI capabilities, ensuring that automation serves both the team and the end user.
               </p>
               <ul className="space-y-3">
                 {["AI-assisted development workflows", "Agentic coding systems", "Intelligent CI/CD pipelines", "LLM integration strategies"].map((item, i) => (
