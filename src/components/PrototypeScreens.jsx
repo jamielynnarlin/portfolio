@@ -198,6 +198,134 @@ export function ProfileScreen({ onEventClick }) {
   )
 }
 
+// Dashboard Screen - New home screen with quick stats
+export function DashboardScreen({ onEventClick }) {
+  return (
+    <div className="h-full flex flex-col bg-white">
+      {/* Header with greeting */}
+      <div 
+        className="pt-14 pb-8 px-5 relative overflow-hidden"
+        style={{ background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryDark} 100%)` }}
+      >
+        {/* Decorative circles */}
+        <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full" />
+        
+        <div className="flex items-center justify-between mb-5 relative z-10">
+          <div>
+            <p className="text-teal-100 text-xs">Good morning</p>
+            <p className="text-white font-bold text-xl">Sam 👋</p>
+          </div>
+          <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </div>
+        </div>
+        
+        {/* Quick stats */}
+        <div className="flex gap-3 relative z-10">
+          <div className="flex-1 bg-white/20 backdrop-blur rounded-xl p-3 text-center">
+            <p className="text-3xl font-bold text-white">3</p>
+            <p className="text-xs text-teal-100">Upcoming</p>
+          </div>
+          <div className="flex-1 bg-white/20 backdrop-blur rounded-xl p-3 text-center">
+            <p className="text-3xl font-bold text-white">12</p>
+            <p className="text-xs text-teal-100">Available</p>
+          </div>
+          <div className="flex-1 bg-white/20 backdrop-blur rounded-xl p-3 text-center">
+            <p className="text-3xl font-bold text-white">$840</p>
+            <p className="text-xs text-teal-100">This Month</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Content */}
+      <div className="flex-1 px-5 py-4 overflow-y-auto -mt-4">
+        {/* Next Event Card - Clickable */}
+        <button 
+          onClick={onEventClick}
+          className="w-full bg-white rounded-2xl shadow-lg overflow-hidden mb-4 border border-gray-100 text-left hover:shadow-xl transition-shadow"
+        >
+          <div className="bg-gradient-to-r from-amber-400 to-orange-400 px-4 py-2 flex items-center justify-between">
+            <span className="text-white text-xs font-bold">⚡ NEXT UP</span>
+            <span className="text-white/80 text-xs">Tomorrow</span>
+          </div>
+          <div className="p-4">
+            <h3 className="font-bold text-gray-900 mb-1">Boat House Cruise</h3>
+            <p className="text-gray-500 text-sm mb-3">Jun 10 • 6pm-11pm • Marina Del Rey</p>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="w-6 h-6 bg-red-100 rounded-full flex items-center justify-center">
+                  <span className="text-xs text-red-600 font-bold">5</span>
+                </div>
+                <span className="text-sm text-gray-500">tasks pending</span>
+              </div>
+              <span className="px-4 py-1.5 bg-teal-500 text-white text-sm font-semibold rounded-full">
+                View Tasks
+              </span>
+            </div>
+          </div>
+        </button>
+
+        {/* Section header */}
+        <div className="flex items-center justify-between mb-3">
+          <h4 className="font-bold text-gray-900">Available Near You</h4>
+          <span className="text-sm text-teal-500 font-medium">See all</span>
+        </div>
+
+        {/* Horizontal scroll events */}
+        <div className="flex gap-3 overflow-x-auto pb-3 -mx-1 px-1">
+          <div className="w-32 flex-shrink-0 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-xl p-3 text-white">
+            <p className="text-xs opacity-80">Jun 15</p>
+            <p className="font-bold mb-1 truncate">Tech Launch</p>
+            <p className="text-sm font-semibold">$25/hr</p>
+          </div>
+          <div className="w-32 flex-shrink-0 bg-gradient-to-br from-pink-500 to-rose-600 rounded-xl p-3 text-white">
+            <p className="text-xs opacity-80">Jun 18</p>
+            <p className="font-bold mb-1 truncate">Music Fest</p>
+            <p className="text-sm font-semibold">$30/hr</p>
+          </div>
+          <div className="w-32 flex-shrink-0 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl p-3 text-white">
+            <p className="text-xs opacity-80">Jun 22</p>
+            <p className="font-bold mb-1 truncate">Corporate</p>
+            <p className="text-sm font-semibold">$28/hr</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom nav */}
+      <div className="bg-white border-t border-gray-100 px-6 py-3">
+        <div className="flex justify-around">
+          <div className="flex flex-col items-center">
+            <svg className="w-6 h-6 text-teal-500" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+            <span className="text-xs text-teal-500 font-medium mt-1">Home</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span className="text-xs text-gray-400 mt-1">Find</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <span className="text-xs text-gray-400 mt-1">Calendar</span>
+          </div>
+          <div className="flex flex-col items-center">
+            <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+            </svg>
+            <span className="text-xs text-gray-400 mt-1">Profile</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Event Tasks Screen
 export function EventTasksScreen({ onTaskClick, onBackClick }) {
   return (

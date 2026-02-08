@@ -3,15 +3,24 @@ import { useState } from 'react'
 // Interactive Code Review Viewer Component
 // Shows a realistic GitHub PR-style code review with AI-generated comments
 
-export function CodeReviewViewer() {
-  const [activeFile, setActiveFile] = useState('TaskListItem.jsx')
-  const [showResolved, setShowResolved] = useState(false)
-
-  const files = [
+export function CodeReviewViewer({ variant = 'default' }) {
+  const isInvestigation = variant === 'investigation'
+  
+  const defaultFiles = [
     { name: 'TaskListItem.jsx', changes: '+45 -12', status: 'reviewed' },
     { name: 'useOfflineSync.js', changes: '+78 -23', status: 'reviewed' },
     { name: 'PhotoUpload.jsx', changes: '+156 -34', status: 'changes' },
   ]
+  
+  const investigationFiles = [
+    { name: 'AISummaryPanel.jsx', changes: '+89 -15', status: 'reviewed' },
+    { name: 'CitationLink.jsx', changes: '+45 -8', status: 'reviewed' },
+    { name: 'SourceInspector.jsx', changes: '+156 -34', status: 'changes' },
+  ]
+  
+  const files = isInvestigation ? investigationFiles : defaultFiles
+  const [activeFile, setActiveFile] = useState(files[0].name)
+  const [showResolved, setShowResolved] = useState(false)
 
   return (
     <div className="w-full max-w-5xl mx-auto">
@@ -24,7 +33,9 @@ export function CodeReviewViewer() {
               <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 16 16">
                 <path d="M1.5 3.25a2.25 2.25 0 1 1 3 2.122v5.256a2.251 2.251 0 1 1-1.5 0V5.372A2.25 2.25 0 0 1 1.5 3.25Zm5.677-.177L9.573.677A.25.25 0 0 1 10 .854V2.5h1A2.5 2.5 0 0 1 13.5 5v5.628a2.251 2.251 0 1 1-1.5 0V5a1 1 0 0 0-1-1h-1v1.646a.25.25 0 0 1-.427.177L7.177 3.427a.25.25 0 0 1 0-.354ZM3.75 2.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm0 9.5a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Zm8.25.75a.75.75 0 1 0 1.5 0 .75.75 0 0 0-1.5 0Z"/>
               </svg>
-              <span className="font-semibold text-gray-900 dark:text-white">feat: Add offline task completion</span>
+              <span className="font-semibold text-gray-900 dark:text-white">
+                {isInvestigation ? 'feat: Add AI summary with inline citations' : 'feat: Add offline task completion'}
+              </span>
             </div>
             <span className="px-2 py-0.5 text-xs bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full font-medium">
               Open
@@ -109,13 +120,21 @@ export function CodeReviewViewer() {
               <div className="flex">
                 <div className="w-12 px-2 py-1 text-right text-gray-400 bg-gray-50 dark:bg-gray-800/30 text-xs select-none">25</div>
                 <div className="flex-1 px-4 py-1 bg-green-50 dark:bg-green-900/10">
-                  <span className="text-green-800 dark:text-green-300">+ const [isCompleting, setIsCompleting] = useState(false)</span>
+                  <span className="text-green-800 dark:text-green-300">
+                    {isInvestigation 
+                      ? '+ const [citations, setCitations] = useState([])' 
+                      : '+ const [isCompleting, setIsCompleting] = useState(false)'}
+                  </span>
                 </div>
               </div>
               <div className="flex">
                 <div className="w-12 px-2 py-1 text-right text-gray-400 bg-gray-50 dark:bg-gray-800/30 text-xs select-none">26</div>
                 <div className="flex-1 px-4 py-1 bg-green-50 dark:bg-green-900/10">
-                  <span className="text-green-800 dark:text-green-300">+ const [syncError, setSyncError] = useState(null)</span>
+                  <span className="text-green-800 dark:text-green-300">
+                    {isInvestigation 
+                      ? '+ const [summary, setSummary] = useState(null)' 
+                      : '+ const [syncError, setSyncError] = useState(null)'}
+                  </span>
                 </div>
               </div>
               <div className="flex">
@@ -127,19 +146,31 @@ export function CodeReviewViewer() {
               <div className="flex">
                 <div className="w-12 px-2 py-1 text-right text-gray-400 bg-gray-50 dark:bg-gray-800/30 text-xs select-none">28</div>
                 <div className="flex-1 px-4 py-1 bg-green-50 dark:bg-green-900/10">
-                  <span className="text-green-800 dark:text-green-300">+ const handleComplete = async () =&gt; {'{'}</span>
+                  <span className="text-green-800 dark:text-green-300">
+                    {isInvestigation 
+                      ? '+ const handleQuerySubmit = async (query) => {' 
+                      : '+ const handleComplete = async () => {'}
+                  </span>
                 </div>
               </div>
               <div className="flex">
                 <div className="w-12 px-2 py-1 text-right text-gray-400 bg-gray-50 dark:bg-gray-800/30 text-xs select-none">29</div>
                 <div className="flex-1 px-4 py-1 bg-green-50 dark:bg-green-900/10">
-                  <span className="text-green-800 dark:text-green-300">+   setIsCompleting(true)</span>
+                  <span className="text-green-800 dark:text-green-300">
+                    {isInvestigation 
+                      ? '+   const response = await llmService.analyze(query, documents)' 
+                      : '+   setIsCompleting(true)'}
+                  </span>
                 </div>
               </div>
               <div className="flex">
                 <div className="w-12 px-2 py-1 text-right text-gray-400 bg-gray-50 dark:bg-gray-800/30 text-xs select-none">30</div>
                 <div className="flex-1 px-4 py-1 bg-green-50 dark:bg-green-900/10">
-                  <span className="text-green-800 dark:text-green-300">+   await onComplete(task.id)</span>
+                  <span className="text-green-800 dark:text-green-300">
+                    {isInvestigation 
+                      ? '+   setCitations(response.citations)' 
+                      : '+   await onComplete(task.id)'}
+                  </span>
                 </div>
               </div>
 
@@ -152,14 +183,20 @@ export function CodeReviewViewer() {
                     </svg>
                   </div>
                   <span className="font-medium text-purple-900 dark:text-purple-200 text-sm">AI Code Review</span>
-                  <span className="px-1.5 py-0.5 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded">Performance</span>
+                  <span className="px-1.5 py-0.5 text-xs bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 rounded">
+                    {isInvestigation ? 'UX' : 'Performance'}
+                  </span>
                 </div>
                 <div className="p-3">
                   <p className="text-sm text-purple-900 dark:text-purple-200 mb-3">
-                    <strong>Issue:</strong> This component will re-render on every parent state change, causing the task list to flicker.
+                    <strong>Issue:</strong> {isInvestigation 
+                      ? 'Citations array updates may cause summary panel to re-render before citations are fully loaded, leading to broken citation links.'
+                      : 'This component will re-render on every parent state change, causing the task list to flicker.'}
                   </p>
                   <p className="text-sm text-purple-800 dark:text-purple-300 mb-3">
-                    <strong>Suggestion:</strong> Consider memoizing with <code className="px-1 py-0.5 bg-purple-200 dark:bg-purple-800 rounded text-xs">React.memo()</code> and implementing <code className="px-1 py-0.5 bg-purple-200 dark:bg-purple-800 rounded text-xs">shouldComponentUpdate</code> logic for items.
+                    <strong>Suggestion:</strong> {isInvestigation 
+                      ? <>Batch the state updates using <code className="px-1 py-0.5 bg-purple-200 dark:bg-purple-800 rounded text-xs">React.startTransition()</code> to ensure citations and summary update atomically.</>
+                      : <>Consider memoizing with <code className="px-1 py-0.5 bg-purple-200 dark:bg-purple-800 rounded text-xs">React.memo()</code> and implementing <code className="px-1 py-0.5 bg-purple-200 dark:bg-purple-800 rounded text-xs">shouldComponentUpdate</code> logic for items.</>}
                   </p>
                   <div className="flex items-center gap-2">
                     <button className="px-3 py-1.5 text-xs bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
@@ -177,7 +214,9 @@ export function CodeReviewViewer() {
             <div className="flex">
               <div className="w-12 px-2 py-1 text-right text-gray-400 bg-gray-50 dark:bg-gray-800/30 text-xs select-none">31</div>
               <div className="flex-1 px-4 py-1 bg-green-50 dark:bg-green-900/10">
-                <span className="text-green-800 dark:text-green-300">+   setIsCompleting(false)</span>
+                <span className="text-green-800 dark:text-green-300">
+                  {isInvestigation ? '+   setSummary(response.summary)' : '+   setIsCompleting(false)'}
+                </span>
               </div>
             </div>
             <div className="flex">
@@ -195,24 +234,36 @@ export function CodeReviewViewer() {
               Lines 33-56 unchanged
             </div>
 
-            {/* Critical AI Comment - Offline handling */}
+            {/* Critical AI Comment */}
             <div>
               <div className="flex">
                 <div className="w-12 px-2 py-1 text-right text-gray-400 bg-gray-50 dark:bg-gray-800/30 text-xs select-none">57</div>
                 <div className="flex-1 px-4 py-1 bg-green-50 dark:bg-green-900/10">
-                  <span className="text-green-800 dark:text-green-300">+ const uploadPhoto = async (uri) =&gt; {'{'}</span>
+                  <span className="text-green-800 dark:text-green-300">
+                    {isInvestigation 
+                      ? '+ const renderCitation = (citation, index) => {' 
+                      : '+ const uploadPhoto = async (uri) => {'}
+                  </span>
                 </div>
               </div>
               <div className="flex">
                 <div className="w-12 px-2 py-1 text-right text-gray-400 bg-gray-50 dark:bg-gray-800/30 text-xs select-none">58</div>
                 <div className="flex-1 px-4 py-1 bg-green-50 dark:bg-green-900/10">
-                  <span className="text-green-800 dark:text-green-300">+   const response = await api.upload(uri)</span>
+                  <span className="text-green-800 dark:text-green-300">
+                    {isInvestigation 
+                      ? '+   return <CitationLink key={index} citation={citation} />' 
+                      : '+   const response = await api.upload(uri)'}
+                  </span>
                 </div>
               </div>
               <div className="flex">
                 <div className="w-12 px-2 py-1 text-right text-gray-400 bg-gray-50 dark:bg-gray-800/30 text-xs select-none">59</div>
                 <div className="flex-1 px-4 py-1 bg-green-50 dark:bg-green-900/10">
-                  <span className="text-green-800 dark:text-green-300">+   return response.url</span>
+                  <span className="text-green-800 dark:text-green-300">
+                    {isInvestigation 
+                      ? '+ }' 
+                      : '+   return response.url'}
+                  </span>
                 </div>
               </div>
               <div className="flex">
@@ -235,22 +286,35 @@ export function CodeReviewViewer() {
                 </div>
                 <div className="p-3">
                   <p className="text-sm text-red-900 dark:text-red-200 mb-3">
-                    <strong>Missing offline handling:</strong> This implementation doesn't handle the case where users are offline during photo upload. Event staff often work in venues with poor connectivity.
+                    <strong>{isInvestigation ? 'Missing source verification:' : 'Missing offline handling:'}</strong> {isInvestigation 
+                      ? "Citations render without verifying source document accessibility. Investigators may click a citation only to find the document has been removed from the matter."
+                      : "This implementation doesn't handle the case where users are offline during photo upload. Event staff often work in venues with poor connectivity."}
                   </p>
                   <p className="text-sm text-red-800 dark:text-red-300 mb-3">
-                    <strong>Recommendation:</strong> Implement a queuing mechanism that stores uploads locally and retries when connection is restored. See <code className="px-1 py-0.5 bg-red-200 dark:bg-red-800 rounded text-xs">useOfflineSync</code> hook.
+                    <strong>Recommendation:</strong> {isInvestigation 
+                      ? <>Validate document access before rendering citations. Use <code className="px-1 py-0.5 bg-red-200 dark:bg-red-800 rounded text-xs">useDocumentAccessCheck</code> hook.</>
+                      : <>Implement a queuing mechanism that stores uploads locally and retries when connection is restored. See <code className="px-1 py-0.5 bg-red-200 dark:bg-red-800 rounded text-xs">useOfflineSync</code> hook.</>}
                   </p>
                   <div className="p-2 bg-gray-900 rounded-lg text-xs font-mono text-gray-300 mb-3">
                     <div className="text-gray-500">// Suggested implementation</div>
-                    <div><span className="text-purple-400">const</span> {'{'} queueUpload {'}'} = <span className="text-blue-400">useOfflineSync</span>()</div>
-                    <div><span className="text-purple-400">await</span> queueUpload(uri, {'{'} retry: <span className="text-amber-400">3</span> {'}'})</div>
+                    {isInvestigation ? (
+                      <>
+                        <div><span className="text-purple-400">const</span> {'{'} verifyAccess {'}'} = <span className="text-blue-400">useDocumentAccessCheck</span>()</div>
+                        <div><span className="text-purple-400">const</span> validCitations = citations.<span className="text-blue-400">filter</span>(c =&gt; verifyAccess(c.docId))</div>
+                      </>
+                    ) : (
+                      <>
+                        <div><span className="text-purple-400">const</span> {'{'} queueUpload {'}'} = <span className="text-blue-400">useOfflineSync</span>()</div>
+                        <div><span className="text-purple-400">await</span> queueUpload(uri, {'{'} retry: <span className="text-amber-400">3</span> {'}'})</div>
+                      </>
+                    )}
                   </div>
                   <div className="flex items-center gap-2">
                     <button className="px-3 py-1.5 text-xs bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
                       Apply suggestion
                     </button>
                     <button className="px-3 py-1.5 text-xs text-red-700 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors">
-                      View useOfflineSync docs
+                      {isInvestigation ? 'View DocumentAccess docs' : 'View useOfflineSync docs'}
                     </button>
                   </div>
                 </div>

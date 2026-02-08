@@ -3,7 +3,8 @@ import { useState } from 'react'
 // Interactive Documentation Viewer Component
 // Shows a realistic auto-generated documentation panel for case study display
 
-export function DocumentationViewer() {
+export function DocumentationViewer({ variant = 'default' }) {
+  const isInvestigation = variant === 'investigation'
   const [activeTab, setActiveTab] = useState('props')
   const [expandedSections, setExpandedSections] = useState(['props', 'state'])
   
@@ -21,6 +22,42 @@ export function DocumentationViewer() {
     { id: 'a11y', label: 'Accessibility' },
     { id: 'patterns', label: 'Patterns' }
   ]
+  
+  // Investigation variant content
+  const investigationComponents = [
+    { name: 'AISummaryPanel', active: true },
+    { name: 'CitationLink', active: false },
+    { name: 'SourceInspector', active: false },
+    { name: 'QueryInput', active: false },
+    { name: 'KeyFindings', active: false },
+  ]
+  
+  const investigationHooks = [
+    { name: 'useLLMQuery', active: false },
+    { name: 'useCitations', active: false },
+  ]
+  
+  // Default variant content  
+  const defaultComponents = [
+    { name: 'TaskListItem', active: true },
+    { name: 'TaskCategory', active: false },
+    { name: 'ProgressIndicator', active: false },
+    { name: 'CheckoutFlow', active: false },
+    { name: 'PhotoUpload', active: false },
+  ]
+  
+  const defaultHooks = [
+    { name: 'useTaskState', active: false },
+    { name: 'useOfflineSync', active: false },
+  ]
+  
+  const components = isInvestigation ? investigationComponents : defaultComponents
+  const hooks = isInvestigation ? investigationHooks : defaultHooks
+  const activeComponent = components.find(c => c.active)?.name || components[0].name
+  const docFileName = isInvestigation ? 'AISummaryPanel.docs.md' : 'TaskListItem.docs.md'
+  const componentDescription = isInvestigation 
+    ? 'Renders AI-generated summaries with inline citations. Handles LLM response streaming, citation extraction, and source verification links.'
+    : 'Renders an individual task within a milestone category. Handles completion state, photo attachments, and offline-first data persistence.'
 
   return (
     <div className="w-full max-w-5xl mx-auto">
@@ -34,7 +71,7 @@ export function DocumentationViewer() {
               <div className="w-3 h-3 rounded-full bg-yellow-500" />
               <div className="w-3 h-3 rounded-full bg-green-500" />
             </div>
-            <span className="ml-3 text-sm text-gray-400 font-mono">TaskListItem.docs.md</span>
+            <span className="ml-3 text-sm text-gray-400 font-mono">{docFileName}</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="px-2 py-0.5 text-xs bg-teal-500/20 text-teal-400 rounded-full font-medium">
@@ -50,31 +87,29 @@ export function DocumentationViewer() {
           <div className="w-48 bg-gray-850 border-r border-gray-700 p-3 hidden md:block" style={{ backgroundColor: '#1a1f2e' }}>
             <div className="text-xs text-gray-500 uppercase tracking-wider mb-3 px-2">Components</div>
             <nav className="space-y-1">
-              <div className="px-2 py-1.5 text-sm text-white bg-teal-500/20 rounded-lg border-l-2 border-teal-500">
-                TaskListItem
-              </div>
-              <div className="px-2 py-1.5 text-sm text-gray-400 hover:text-gray-300 cursor-pointer">
-                TaskCategory
-              </div>
-              <div className="px-2 py-1.5 text-sm text-gray-400 hover:text-gray-300 cursor-pointer">
-                ProgressIndicator
-              </div>
-              <div className="px-2 py-1.5 text-sm text-gray-400 hover:text-gray-300 cursor-pointer">
-                CheckoutFlow
-              </div>
-              <div className="px-2 py-1.5 text-sm text-gray-400 hover:text-gray-300 cursor-pointer">
-                PhotoUpload
-              </div>
+              {components.map(comp => (
+                <div 
+                  key={comp.name}
+                  className={comp.active 
+                    ? "px-2 py-1.5 text-sm text-white bg-teal-500/20 rounded-lg border-l-2 border-teal-500"
+                    : "px-2 py-1.5 text-sm text-gray-400 hover:text-gray-300 cursor-pointer"
+                  }
+                >
+                  {comp.name}
+                </div>
+              ))}
             </nav>
             
             <div className="text-xs text-gray-500 uppercase tracking-wider mt-6 mb-3 px-2">Hooks</div>
             <nav className="space-y-1">
-              <div className="px-2 py-1.5 text-sm text-gray-400 hover:text-gray-300 cursor-pointer">
-                useTaskState
-              </div>
-              <div className="px-2 py-1.5 text-sm text-gray-400 hover:text-gray-300 cursor-pointer">
-                useOfflineSync
-              </div>
+              {hooks.map(hook => (
+                <div 
+                  key={hook.name}
+                  className="px-2 py-1.5 text-sm text-gray-400 hover:text-gray-300 cursor-pointer"
+                >
+                  {hook.name}
+                </div>
+              ))}
             </nav>
           </div>
 
@@ -83,14 +118,13 @@ export function DocumentationViewer() {
             {/* Component Header */}
             <div className="mb-6">
               <div className="flex items-center gap-3 mb-2">
-                <h2 className="text-xl font-bold text-white">TaskListItem</h2>
+                <h2 className="text-xl font-bold text-white">{activeComponent}</h2>
                 <span className="px-2 py-0.5 text-xs bg-blue-500/20 text-blue-400 rounded-full">
                   v2.3.0
                 </span>
               </div>
               <p className="text-gray-400 text-sm">
-                Renders an individual task within a milestone category. Handles completion state, 
-                photo attachments, and offline-first data persistence.
+                {componentDescription}
               </p>
             </div>
 

@@ -70,12 +70,12 @@ export function CaseStudyHero({ study }) {
         </div>
 
         {/* Bento Grid Layout */}
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-8 md:py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+        <div className="max-w-6xl mx-auto px-4 py-8 md:py-12">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 -mx-4 md:-mx-8 lg:-mx-16 xl:-mx-24">
             
-            {/* Project Title - Largest Cell (spans 2 columns) */}
+            {/* Project Title - Full Width */}
             <motion.div 
-              className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-[20px] p-8 md:p-10"
+              className="lg:col-span-3 bg-white dark:bg-gray-900 rounded-[20px] p-8 md:p-10"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
@@ -87,53 +87,49 @@ export function CaseStudyHero({ study }) {
                 {study.subtitle}
               </p>
               
-              {/* Metadata Row */}
-              <div className="flex flex-wrap gap-8 md:gap-12">
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium mb-1">
-                    Role
-                  </p>
-                  <p className="text-gray-900 dark:text-white font-semibold">
-                    {study.roles?.[0] || 'Design Lead'}
-                  </p>
+              {/* Metadata Row - Icon-focused */}
+              <div className="flex flex-wrap gap-6 md:gap-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium">Role</p>
+                    <p className="text-gray-900 dark:text-white font-semibold text-sm">
+                      {study.roles?.[0] || 'Design Lead'}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium mb-1">
-                    Team
-                  </p>
-                  <p className="text-gray-900 dark:text-white font-semibold">
-                    {study.team}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium">Team</p>
+                    <p className="text-gray-900 dark:text-white font-semibold text-sm">
+                      {study.team}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium mb-1">
-                    Timeline
-                  </p>
-                  <p className="text-gray-900 dark:text-white font-semibold">
-                    {study.timeline}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-emerald-100 dark:bg-emerald-900/30 rounded-xl flex items-center justify-center">
+                    <svg className="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium">Timeline</p>
+                    <p className="text-gray-900 dark:text-white font-semibold text-sm">
+                      {study.timeline}
+                    </p>
+                  </div>
                 </div>
               </div>
             </motion.div>
-
-            {/* About Client Cell */}
-            {heroImage?.clientDescription && (
-              <motion.div 
-                className="bg-gradient-to-br from-purple-600 to-indigo-700 rounded-[20px] p-6 md:p-8 text-white flex flex-col justify-between"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.1 }}
-              >
-                <div>
-                  <p className="text-xs uppercase tracking-widest text-white/60 font-medium mb-3">
-                    About {heroImage?.clientName || 'the Client'}
-                  </p>
-                  <p className="text-white/90 text-sm leading-relaxed">
-                    {heroImage.clientDescription}
-                  </p>
-                </div>
-              </motion.div>
-            )}
 
             {/* Skills/Tags Cell */}
             <motion.div 

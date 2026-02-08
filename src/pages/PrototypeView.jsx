@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { prototypes } from '../data/prototypes'
 import { 
   PhoneFrame, 
-  ProfileScreen, 
+  DashboardScreen, 
   EventTasksScreen, 
   ExpandedTasksScreen,
   CameraScreen
@@ -76,7 +76,7 @@ export default function PrototypeView() {
   }
 
   const screenLabels = [
-    { label: 'Profile', description: 'View upcoming events and tap the one with a task alert' },
+    { label: 'Dashboard', description: 'View upcoming events, stats, and tap the next event to see tasks' },
     { label: 'Event Tasks', description: 'See task categories for your event' },
     { label: 'Complete Tasks', description: 'Check off your tasks before the event' },
     { label: 'Camera', description: 'Take a photo to complete the task' }
@@ -129,7 +129,7 @@ export default function PrototypeView() {
                   }`}
                 >
                   {currentScreen === 0 && (
-                    <ProfileScreen onEventClick={nextScreen} />
+                    <DashboardScreen onEventClick={nextScreen} />
                   )}
                   {currentScreen === 1 && (
                     <EventTasksScreen 

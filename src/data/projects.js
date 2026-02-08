@@ -1,7 +1,7 @@
 export const projects = [
   {
     id: 1,
-    title: "AI-Powered Development Workflow",
+    title: "AI Powered Development Workflow",
     description: "Implemented agentic AI systems to accelerate SDLC, reducing development cycle time by 40% through intelligent code review, automated testing, and smart documentation generation.",
     tags: ["AI/ML", "SDLC", "Automation"],
     category: "ai",
@@ -11,7 +11,7 @@ export const projects = [
   {
     id: 2,
     title: "Enterprise DesignOps Transformation",
-    description: "Led DesignOps strategy for an AI-powered document intelligence platform, managing external design consultants while aligning executive stakeholders across a complex, multi-modal user experience.",
+    description: "Led DesignOps strategy for an AI powered document intelligence platform, managing external design consultants while aligning executive stakeholders across a complex, multimodal user experience.",
     tags: ["DesignOps", "Leadership", "AI/ML", "Vendor Management"],
     category: "delivery",
     liveUrl: null,
@@ -29,7 +29,7 @@ export const projects = [
   {
     id: 4,
     title: "Restaurant Portal Redesign",
-    description: "Led UX redesign of Rewards Network's restaurant owner portal, creating an interactive dashboard with dynamic notifications, diner review management, and actionable analytics. Achieved 53% increase in user interaction and 49% increase in cash advance sign-ups.",
+    description: "Led UX redesign of Rewards Network's restaurant owner portal, creating an interactive dashboard with dynamic notifications, diner review management, and actionable analytics. Achieved 53% increase in user interaction and 49% increase in cash advance signups.",
     tags: ["UX Research", "Dashboard Design", "FinTech"],
     category: "ux",
     liveUrl: null,
@@ -38,7 +38,7 @@ export const projects = [
   {
     id: 5,
     title: "Agile Delivery Framework",
-    description: "Built and scaled delivery framework for distributed teams across 3 time zones, implementing AI-assisted sprint planning and automated progress tracking.",
+    description: "Built and scaled delivery framework for distributed teams across 3 time zones, implementing AI assisted sprint planning and automated progress tracking.",
     tags: ["Agile", "Leadership", "Process"],
     category: "delivery",
     liveUrl: null,
@@ -47,7 +47,7 @@ export const projects = [
   {
     id: 6,
     title: "Gen AI Resume Builder",
-    description: "Designed a conversational AI-powered resume builder leveraging LLMs to create personalized, targeted resumes through natural dialogue. Features real-time preview, multi-version management, and intelligent content suggestions.",
+    description: "Designed a conversational AI powered resume builder leveraging LLMs to create personalized, targeted resumes through natural dialogue. Features realtime preview, multiversion management, and intelligent content suggestions.",
     tags: ["AI/ML", "Product Design", "Conversational UI"],
     category: "ux",
     liveUrl: null,
@@ -56,7 +56,7 @@ export const projects = [
   {
     id: 7,
     title: "CI/CD Pipeline Optimization",
-    description: "Integrated AI-powered quality gates and automated testing into deployment pipelines, reducing production incidents by 70% and enabling continuous delivery.",
+    description: "Integrated AI powered quality gates and automated testing into deployment pipelines, reducing production incidents by 70% and enabling continuous delivery.",
     tags: ["AI/ML", "DevOps", "Automation"],
     category: "ai",
     liveUrl: null,
@@ -65,7 +65,7 @@ export const projects = [
   {
     id: 8,
     title: "Rewards Network Marketing Website",
-    description: "Redesigned the Rewards Network earn page to build user trust and streamline sign-ups across multiple dining reward programs. Achieved 30% increase in new member sign-ups and reduced bounce rates by 10%.",
+    description: "Redesigned the Rewards Network earn page to build user trust and streamline signups across multiple dining reward programs. Achieved 30% increase in new member signups and reduced bounce rates by 10%.",
     tags: ["UX Research", "Marketing", "Conversion Optimization"],
     category: "ux",
     liveUrl: null,

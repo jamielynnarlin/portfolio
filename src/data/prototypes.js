@@ -5,7 +5,7 @@ export const prototypes = [
     subtitle: "Event Staff Task Management Flow",
     description: "Click the highlighted areas to see how event staff access and complete their tasks in the BookedOut app.",
     caseStudySlug: "mobile-task-tracker",
-    caseStudyTitle: "AI-Powered Development Workflow",
+    caseStudyTitle: "AI Powered Development Workflow",
     thumbnail: import.meta.env.BASE_URL + "images/case-studies/bookedout-profile-taskflow.png",
     tags: ["Mobile App", "React Native", "Task Management", "UX Flow"],
     prototype: {
@@ -30,7 +30,7 @@ export const prototypes = [
         {
           id: "tasks",
           label: "Your Event Tasks",
-          description: "Tasks are organized by time-based milestones: Before, During, Check Out, and After. This helps event staff prioritize work based on the event timeline.",
+          description: "Tasks are organized by time based milestones: Before, During, Check Out, and After. This helps event staff prioritize work based on the event timeline.",
           image: import.meta.env.BASE_URL + "images/case-studies/Bookedout-eventtasks.png",
           hotspot: {
             top: "30%",
@@ -64,9 +64,9 @@ export const prototypes = [
       ],
       bullets: [
         "Events bubbled up on profile for quick access",
-        "Time-based task categories: Before, During, Check Out, After",
+        "Time based task categories: Before, During, Check Out, After",
         "Visual task alerts guide users to immediate action",
-        "Check-off tasks provide accountability and progress tracking",
+        "Check off tasks provide accountability and progress tracking",
         "Milestone progress bars show overall completion"
       ]
     }

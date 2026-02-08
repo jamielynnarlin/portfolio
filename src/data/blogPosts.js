@@ -7,11 +7,11 @@ export const blogPosts = [
     content: `
 # How Agentic AI is Transforming the Software Development Lifecycle
 
-The rise of AI agents in software development isn't just hype—it's a fundamental shift in how we build products. After implementing agentic AI systems across multiple teams, I've seen firsthand how these tools can amplify human capabilities.
+The rise of AI agents in software development isn't just hype. It's a fundamental shift in how we build products. After implementing agentic AI systems across multiple teams, I've seen firsthand how these tools can amplify human capabilities.
 
 ## What Are Agentic AI Systems?
 
-Unlike simple AI assistants that respond to prompts, agentic systems can autonomously perform complex, multi-step tasks. They can:
+Unlike simple AI assistants that respond to prompts, agentic systems can autonomously perform complex, multistep tasks. They can:
 
 - Break down problems into subtasks
 - Execute code and verify results
@@ -21,7 +21,7 @@ Unlike simple AI assistants that respond to prompts, agentic systems can autonom
 ## Real Impact I've Observed
 
 ### 1. Code Review Acceleration
-AI agents can pre-review pull requests, catching common issues before human reviewers. This has reduced our review cycles by 50%.
+AI agents can pre review pull requests, catching common issues before human reviewers. This has reduced our review cycles by 50%.
 
 ### 2. Automated Documentation
 Documentation that stays in sync with code is finally achievable. AI agents can update docs as part of the development workflow.
@@ -31,7 +31,7 @@ The most impactful use case: generating meaningful test cases based on requireme
 
 ## The Human Element
 
-Here's what AI won't replace: judgment, creativity, and understanding user needs. The best implementations use AI to handle routine work while freeing humans for high-value decisions.
+Here's what AI won't replace: judgment, creativity, and understanding user needs. The best implementations use AI to handle routine work while freeing humans for high value decisions.
 
 ## Getting Started
 
@@ -45,7 +45,7 @@ Start small. Pick one pain point in your workflow and experiment with AI assista
     id: 2,
     slug: "designops-at-scale",
     title: "Building DesignOps That Actually Works",
-    excerpt: "Lessons from scaling design operations across 50+ product teams. It's not about tools—it's about systems thinking.",
+    excerpt: "Lessons from scaling design operations across 50+ product teams. It's not about tools. It's about systems thinking.",
     content: `
 # Building DesignOps That Actually Works
 
@@ -63,7 +63,7 @@ How does design work flow through your organization? Map it, measure it, improve
 ### 2. Team Enablement
 Give designers the resources, templates, and support they need to do their best work without bottlenecks.
 
-### 3. Cross-functional Integration
+### 3. Cross Functional Integration
 Design doesn't exist in isolation. DesignOps must bridge design, engineering, product, and research.
 
 ## Measuring Success
@@ -72,11 +72,11 @@ The metrics that matter:
 - Time from concept to implementation
 - Design system adoption rate
 - Designer satisfaction scores
-- Quality of design-dev handoff
+- Quality of design dev handoff
 
 ## AI in DesignOps
 
-I'm now exploring how AI can enhance DesignOps—automating design QA, generating component documentation, and assisting with design system governance.
+I'm now exploring how AI can enhance DesignOps: automating design QA, generating component documentation, and assisting with design system governance.
 
 ## Start With Pain Points
 
@@ -89,10 +89,10 @@ Don't try to build a complete DesignOps practice overnight. Start by solving the
   {
     id: 3,
     slug: "ux-to-delivery-lead",
-    title: "From UX Architect to Delivery Lead: A Non-Linear Career Path",
+    title: "From UX Architect to Delivery Lead: A Non Linear Career Path",
     excerpt: "Why understanding design makes you a better delivery leader, and how to make the transition successfully.",
     content: `
-# From UX Architect to Delivery Lead: A Non-Linear Career Path
+# From UX Architect to Delivery Lead: A Non Linear Career Path
 
 My path from UX Designer to UX Architect to Delivery Lead wasn't planned. But looking back, the skills compound in powerful ways.
 
@@ -126,7 +126,7 @@ If you're a UX professional considering delivery leadership:
 1. Start shadowing delivery leads now
 2. Take on project coordination responsibilities
 3. Learn the language of business outcomes
-4. Don't abandon your UX identity—it's an asset
+4. Don't abandon your UX identity. It's an asset
     `,
     date: "2026-01-05",
     readTime: 4,
