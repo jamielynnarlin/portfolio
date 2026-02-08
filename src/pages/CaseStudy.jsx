@@ -16,7 +16,8 @@ import {
   ShiftSummaryScreen,
   InvestigateDocumentScreen,
   NLPDocumentSearchScreen,
-  SourceInspectorScreen
+  SourceInspectorScreen,
+  EmptySearchScreen
 } from '../components/StaticScreens'
 import { DocumentationViewer } from '../components/DocumentationViewer'
 import { CodeReviewViewer } from '../components/CodeReviewViewer'
@@ -86,6 +87,71 @@ const UsersIcon = ({ className }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
   </svg>
 )
+
+// Interactive Feature Pills Component for Screen Gallery
+function FeaturePills({ bullets, index }) {
+  const [hoveredIndex, setHoveredIndex] = useState(null)
+  
+  // Color schemes for different screen indices
+  const colorSchemes = [
+    { gradient: 'from-violet-500 to-indigo-500', glow: 'shadow-violet-500/20', text: 'text-violet-300', border: 'border-violet-500/30', bg: 'bg-violet-500/5' },
+    { gradient: 'from-amber-500 to-orange-500', glow: 'shadow-amber-500/20', text: 'text-amber-300', border: 'border-amber-500/30', bg: 'bg-amber-500/5' },
+    { gradient: 'from-emerald-500 to-teal-500', glow: 'shadow-emerald-500/20', text: 'text-emerald-300', border: 'border-emerald-500/30', bg: 'bg-emerald-500/5' },
+  ]
+  const colors = colorSchemes[index % colorSchemes.length]
+  
+  return (
+    <div className="max-w-4xl mx-auto">
+      <div className="grid gap-3">
+        {bullets.map((bullet, j) => (
+          <motion.div
+            key={j}
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.4, delay: j * 0.1 }}
+            onMouseEnter={() => setHoveredIndex(j)}
+            onMouseLeave={() => setHoveredIndex(null)}
+            className={`relative flex items-start gap-4 p-4 rounded-xl border transition-all duration-300 cursor-default ${
+              hoveredIndex === j 
+                ? `${colors.bg} ${colors.border} shadow-lg ${colors.glow}` 
+                : 'border-slate-700/50 hover:border-slate-600/50'
+            }`}
+          >
+            {/* Number indicator */}
+            <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold transition-all duration-300 ${
+              hoveredIndex === j
+                ? `bg-gradient-to-br ${colors.gradient} text-white`
+                : 'bg-slate-800 text-slate-400'
+            }`}>
+              {j + 1}
+            </div>
+            
+            {/* Feature text */}
+            <p className={`text-sm leading-relaxed transition-colors duration-300 ${
+              hoveredIndex === j ? colors.text : 'text-slate-400'
+            }`}>
+              {bullet}
+            </p>
+            
+            {/* Animated arrow on hover */}
+            <motion.div 
+              className={`flex-shrink-0 ml-auto transition-all duration-300 ${
+                hoveredIndex === j ? 'opacity-100' : 'opacity-0'
+              }`}
+              animate={{ x: hoveredIndex === j ? [0, 4, 0] : 0 }}
+              transition={{ duration: 1, repeat: Infinity }}
+            >
+              <svg className={`w-5 h-5 ${colors.text}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </motion.div>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 // Sam's Journey Timeline Component
 function SamJourneyTimeline({ journeySteps }) {
@@ -810,6 +876,38 @@ function CaseStudy() {
             
             // Special handling for combined problem+research section (no title, has bento)
             const isProblemResearchSection = !section.title && (section.problemBento || section.researchBanner)
+            const researchIcons = {
+              users: (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+              ),
+              calendar: (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              ),
+              workflow: (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h6M4 12h10M4 18h14" />
+                </svg>
+              ),
+              document: (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h10M7 11h10M7 15h6m2 6H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              ),
+              pattern: (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h4m4 0h8M4 12h8m4 0h4M4 18h12" />
+                </svg>
+              ),
+              spark: (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h2m10 0h2M12 5v2m0 10v2M8.464 8.464l1.414 1.414m4.244 4.244l1.414 1.414m0-9.072l-1.414 1.414M8.464 15.536l-1.414 1.414" />
+                </svg>
+              )
+            }
             
             // Special AI Section Hero
             if (section.isAISection && section.aiHero) {
@@ -1290,12 +1388,143 @@ function CaseStudy() {
                                     'bg-orange-500/20 border-orange-500/30 text-orange-300'
                                   ]
                                   return (
-                                    <span key={i} className={`px-4 py-2 ${colors[i % colors.length]} border rounded-full text-sm font-medium`}>
+                                    <motion.span
+                                      key={i}
+                                      className={`px-4 py-2 ${colors[i % colors.length]} border rounded-full text-sm font-medium shadow-lg`}
+                                      initial={{ opacity: 0, y: 12, scale: 0.9 }}
+                                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                                      viewport={{ once: true }}
+                                      transition={{ duration: 0.4, delay: 0.08 * i }}
+                                    >
                                       {point}
-                                    </span>
+                                    </motion.span>
                                   )
                                 })}
                               </div>
+                            </div>
+                          )}
+
+                          {/* Right Side - Animated Stacking Papers */}
+                          {!section.researchBanner && section.problemBento && (
+                            <div className="relative h-72 md:h-80 flex items-center justify-center">
+                              {/* Paper stack animation */}
+                              <div className="relative w-48 h-64">
+                                {[...Array(8)].map((_, i) => {
+                                  const rotations = [-4, 2, -1, 3, -2, 1, -3, 0]
+                                  const offsets = [
+                                    { x: -8, y: 0 },
+                                    { x: 6, y: -4 },
+                                    { x: -4, y: -8 },
+                                    { x: 8, y: -12 },
+                                    { x: -6, y: -16 },
+                                    { x: 4, y: -20 },
+                                    { x: -2, y: -24 },
+                                    { x: 0, y: -28 }
+                                  ]
+                                  const colors = [
+                                    'from-amber-100 to-amber-50',
+                                    'from-stone-100 to-stone-50',
+                                    'from-orange-100 to-orange-50',
+                                    'from-yellow-100 to-yellow-50',
+                                    'from-amber-50 to-white',
+                                    'from-stone-50 to-white',
+                                    'from-orange-50 to-white',
+                                    'from-amber-100 to-amber-50'
+                                  ]
+                                  return (
+                                    <motion.div
+                                      key={i}
+                                      className={`absolute inset-0 bg-gradient-to-br ${colors[i]} rounded-sm shadow-lg border border-stone-200/50`}
+                                      style={{
+                                        transformOrigin: 'center bottom'
+                                      }}
+                                      initial={{ 
+                                        opacity: 0, 
+                                        y: -100, 
+                                        rotate: rotations[i] - 10,
+                                        scale: 0.9
+                                      }}
+                                      whileInView={{ 
+                                        opacity: 1, 
+                                        y: offsets[i].y, 
+                                        x: offsets[i].x,
+                                        rotate: rotations[i],
+                                        scale: 1
+                                      }}
+                                      viewport={{ once: true }}
+                                      transition={{ 
+                                        duration: 0.5, 
+                                        delay: 0.1 * i,
+                                        type: "spring",
+                                        stiffness: 120,
+                                        damping: 14
+                                      }}
+                                    >
+                                      {/* Paper lines */}
+                                      <div className="absolute inset-4 space-y-2">
+                                        {[...Array(6)].map((_, j) => (
+                                          <div 
+                                            key={j} 
+                                            className="h-1.5 bg-stone-300/40 rounded-full"
+                                            style={{ width: `${60 + Math.random() * 35}%` }}
+                                          />
+                                        ))}
+                                      </div>
+                                    </motion.div>
+                                  )
+                                })}
+                                
+                                {/* Magnifying glass searching animation */}
+                                <motion.div
+                                  className="absolute -right-4 -top-4 z-20"
+                                  initial={{ opacity: 0, scale: 0.5, rotate: -20 }}
+                                  whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
+                                  viewport={{ once: true }}
+                                  transition={{ delay: 1, duration: 0.5 }}
+                                  animate={{ 
+                                    x: [0, 10, -5, 8, 0],
+                                    y: [0, 5, 12, 3, 0],
+                                    rotate: [0, 5, -3, 2, 0]
+                                  }}
+                                >
+                                  <motion.div
+                                    animate={{ scale: [1, 1.05, 1] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                  >
+                                    <svg className="w-16 h-16 text-slate-600 drop-shadow-xl" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <circle cx="11" cy="11" r="8" strokeWidth={2} className="fill-white/80" />
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M21 21l-4.35-4.35" />
+                                    </svg>
+                                    {/* Glint on glass */}
+                                    <motion.div
+                                      className="absolute top-3 left-4 w-3 h-3 bg-white rounded-full blur-sm"
+                                      animate={{ opacity: [0.5, 1, 0.5] }}
+                                      transition={{ duration: 1.5, repeat: Infinity }}
+                                    />
+                                  </motion.div>
+                                </motion.div>
+                              </div>
+                              
+                              {/* Floating particles */}
+                              {[...Array(6)].map((_, i) => (
+                                <motion.div
+                                  key={i}
+                                  className="absolute w-1 h-1 bg-amber-300/60 rounded-full"
+                                  style={{
+                                    left: `${20 + Math.random() * 60}%`,
+                                    top: `${20 + Math.random() * 60}%`
+                                  }}
+                                  animate={{
+                                    y: [0, -20, 0],
+                                    opacity: [0.3, 0.8, 0.3]
+                                  }}
+                                  transition={{
+                                    duration: 2 + Math.random() * 2,
+                                    repeat: Infinity,
+                                    delay: Math.random() * 2
+                                  }}
+                                />
+                              ))}
                             </div>
                           )}
 
@@ -1857,6 +2086,7 @@ function CaseStudy() {
                     {section.screenGallery.map((item, i) => {
                       // Map component names to actual components
                       const ScreenComponent = {
+                        'EmptySearchScreen': EmptySearchScreen,
                         'NLPDocumentSearchScreen': NLPDocumentSearchScreen,
                         'SourceInspectorScreen': SourceInspectorScreen
                       }[item.component]
@@ -1870,21 +2100,11 @@ function CaseStudy() {
                           viewport={{ once: true, margin: "-100px" }}
                           transition={{ duration: 0.6 }}
                         >
-                          {/* Title and Description */}
+                          {/* Title */}
                           <div className="text-center max-w-3xl mx-auto">
                             <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
                               {item.title}
                             </h3>
-                            <div className="flex flex-wrap justify-center gap-3">
-                              {item.bullets.slice(0, 3).map((bullet, j) => (
-                                <span 
-                                  key={j}
-                                  className="px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full text-sm"
-                                >
-                                  {bullet.split(' ').slice(0, 4).join(' ')}...
-                                </span>
-                              ))}
-                            </div>
                           </div>
 
                           {/* Desktop Browser Mockup */}
@@ -1898,22 +2118,8 @@ function CaseStudy() {
                             </DesktopBrowserFrame>
                           </div>
 
-                          {/* Feature List */}
-                          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 max-w-4xl mx-auto">
-                            {item.bullets.map((bullet, j) => (
-                              <div 
-                                key={j}
-                                className="flex items-start gap-3 p-4 bg-white dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700"
-                              >
-                                <div className="w-6 h-6 bg-violet-500/20 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
-                                  <svg className="w-4 h-4 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                  </svg>
-                                </div>
-                                <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{bullet}</p>
-                              </div>
-                            ))}
-                          </div>
+                          {/* Interactive Feature Pills */}
+                          <FeaturePills bullets={item.bullets} index={i} />
                         </motion.div>
                       )
                     })}
@@ -2326,34 +2532,59 @@ function CaseStudy() {
                           </motion.div>
                         </div>
 
-                        {/* Stat & Quote */}
-                        <div className="flex flex-col md:flex-row items-center gap-8">
-                          {/* Big Stat */}
-                          <motion.div 
-                            className="text-center md:text-left"
-                            initial={{ opacity: 0, scale: 0.9 }}
-                            whileInView={{ opacity: 1, scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.4 }}
-                          >
-                            <div className="text-6xl md:text-7xl font-black bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
-                              {section.stat.value}
-                            </div>
-                            <div className="text-gray-300 font-medium">{section.stat.label}</div>
-                          </motion.div>
-
-                          {/* Quote */}
-                          <motion.blockquote 
-                            className="flex-1 border-l-4 border-indigo-500 pl-6"
-                            initial={{ opacity: 0, x: 20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: 0.5 }}
-                          >
-                            <p className="text-lg italic text-gray-200 mb-2">"{section.quote.text}"</p>
-                            <footer className="text-indigo-300 font-medium">— {section.quote.author}</footer>
-                          </motion.blockquote>
+                        {/* Stats Row */}
+                        <div className="grid grid-cols-3 gap-4">
+                          {section.stats?.map((stat, i) => (
+                            <motion.div 
+                              key={i}
+                              className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-5 border border-slate-700/50 text-center"
+                              initial={{ opacity: 0, y: 20 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: 0.4 + i * 0.1 }}
+                            >
+                              <div className="w-10 h-10 mx-auto mb-3 rounded-xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 flex items-center justify-center">
+                                {stat.icon === 'sync' && (
+                                  <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                  </svg>
+                                )}
+                                {stat.icon === 'clock' && (
+                                  <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                )}
+                                {stat.icon === 'target' && (
+                                  <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                  </svg>
+                                )}
+                              </div>
+                              <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent mb-1">
+                                {stat.value}
+                              </div>
+                              <div className="text-sm text-gray-400">{stat.label}</div>
+                            </motion.div>
+                          ))}
                         </div>
+
+                        {/* Fallback for single stat (legacy) */}
+                        {section.stat && !section.stats && (
+                          <div className="flex flex-col md:flex-row items-center gap-8">
+                            <motion.div 
+                              className="text-center md:text-left"
+                              initial={{ opacity: 0, scale: 0.9 }}
+                              whileInView={{ opacity: 1, scale: 1 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: 0.4 }}
+                            >
+                              <div className="text-6xl md:text-7xl font-black bg-gradient-to-r from-emerald-400 to-teal-300 bg-clip-text text-transparent">
+                                {section.stat.value}
+                              </div>
+                              <div className="text-gray-300 font-medium">{section.stat.label}</div>
+                            </motion.div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </motion.div>
@@ -2411,12 +2642,133 @@ function CaseStudy() {
                               viewport={{ once: true }}
                               transition={{ delay: 0.2 + i * 0.1 }}
                             >
-                              <div className="text-5xl font-black text-amber-400 mb-2">{insight.stat}</div>
+                              {insight.icon && (
+                                <div className="w-12 h-12 mx-auto mb-3 rounded-xl bg-amber-500/20 border border-amber-300/40 flex items-center justify-center text-amber-200">
+                                  {researchIcons[insight.icon]}
+                                </div>
+                              )}
+                              {insight.stat && (
+                                <div className="text-5xl font-black text-amber-400 mb-2">{insight.stat}</div>
+                              )}
                               <h4 className="text-lg font-bold text-white mb-2">{insight.finding}</h4>
                               <p className="text-sm text-gray-300">{insight.detail}</p>
                             </motion.div>
                           ))}
                         </div>
+
+                        {/* AI Captured Pain Points */}
+                        {section.aiPainPoints && (
+                          <div className="mt-8 space-y-8">
+                            {/* Header */}
+                            <div className="text-center">
+                              <h4 className="text-xl font-bold text-white mb-2">{section.aiPainPoints.title}</h4>
+                              <p className="text-sm text-gray-400">{section.aiPainPoints.description}</p>
+                            </div>
+
+                            {/* Source Cards */}
+                            <div className="space-y-4">
+                              {section.aiPainPoints.sources.map((source, i) => {
+                                const typeColors = {
+                                  Interview: 'from-violet-500 to-purple-600',
+                                  Walkthrough: 'from-teal-500 to-cyan-600',
+                                  Email: 'from-blue-500 to-indigo-600'
+                                }
+                                const typeIcons = {
+                                  Interview: (
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                                    </svg>
+                                  ),
+                                  Walkthrough: (
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                                    </svg>
+                                  ),
+                                  Email: (
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                  )
+                                }
+                                return (
+                                  <motion.div
+                                    key={i}
+                                    className="bg-slate-900/60 backdrop-blur-sm rounded-2xl p-5 border border-white/10"
+                                    initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.1 * i }}
+                                  >
+                                    <div className="flex items-start gap-4">
+                                      {/* Type Badge */}
+                                      <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${typeColors[source.type]} flex items-center justify-center text-white flex-shrink-0`}>
+                                        {typeIcons[source.type]}
+                                      </div>
+                                      <div className="flex-1 min-w-0">
+                                        {/* Source Info */}
+                                        <div className="flex items-center gap-2 mb-2">
+                                          <span className="text-sm font-semibold text-white">{source.label}</span>
+                                          <span className="text-xs text-gray-500">•</span>
+                                          <span className="text-xs text-gray-400">{source.timestamp}</span>
+                                        </div>
+                                        {/* Quote */}
+                                        <p className="text-sm text-gray-300 italic mb-3">"{source.quote}"</p>
+                                        {/* Extracted Pain Points */}
+                                        <div className="flex flex-wrap gap-2">
+                                          {source.painPoints.map((point, j) => (
+                                            <motion.span
+                                              key={j}
+                                              className="px-3 py-1 text-xs font-medium bg-rose-500/20 text-rose-300 border border-rose-400/30 rounded-full"
+                                              initial={{ opacity: 0, scale: 0.8 }}
+                                              whileInView={{ opacity: 1, scale: 1 }}
+                                              viewport={{ once: true }}
+                                              transition={{ delay: 0.3 + j * 0.05 }}
+                                            >
+                                              {point}
+                                            </motion.span>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </motion.div>
+                                )
+                              })}
+                            </div>
+
+                            {/* Clustered Themes */}
+                            <motion.div
+                              className="bg-slate-800/50 rounded-2xl p-6 border border-white/10"
+                              initial={{ opacity: 0, y: 20 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: 0.4 }}
+                            >
+                              <h5 className="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">AI Clustered Themes</h5>
+                              <div className="flex flex-wrap gap-3">
+                                {section.aiPainPoints.clusteredThemes.map((theme, i) => {
+                                  const themeColors = {
+                                    rose: 'bg-rose-500/20 text-rose-300 border-rose-400/40',
+                                    amber: 'bg-amber-500/20 text-amber-300 border-amber-400/40',
+                                    emerald: 'bg-emerald-500/20 text-emerald-300 border-emerald-400/40'
+                                  }
+                                  return (
+                                    <motion.div
+                                      key={i}
+                                      className={`px-4 py-2 rounded-xl border ${themeColors[theme.color]} flex items-center gap-2`}
+                                      initial={{ opacity: 0, scale: 0.9 }}
+                                      whileInView={{ opacity: 1, scale: 1 }}
+                                      viewport={{ once: true }}
+                                      transition={{ delay: 0.5 + i * 0.1 }}
+                                    >
+                                      <span className="font-medium">{theme.theme}</span>
+                                      <span className="text-xs opacity-70">({theme.count} mentions)</span>
+                                    </motion.div>
+                                  )
+                                })}
+                              </div>
+                            </motion.div>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </motion.div>
@@ -2504,30 +2856,177 @@ function CaseStudy() {
                           </div>
                         </div>
 
-                        {/* Example Transformation */}
-                        <motion.div 
-                          className="bg-slate-900/60 backdrop-blur-sm rounded-2xl p-6 border border-violet-400/30"
+                        {/* Example Transformations */}
+                        {section.examples && (
+                          <div className="space-y-4">
+                            {section.examples.map((example, i) => (
+                              <motion.div 
+                                key={i}
+                                className="bg-slate-900/60 backdrop-blur-sm rounded-2xl p-5 border border-violet-400/30"
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.5 + i * 0.1 }}
+                              >
+                                <div className="grid md:grid-cols-2 gap-4 items-center">
+                                  <div>
+                                    <span className="text-xs font-bold uppercase tracking-wider text-violet-400 mb-2 block">User Need</span>
+                                    <p className="text-white font-medium text-sm">"{example.input}"</p>
+                                  </div>
+                                  <div className="flex items-center gap-3">
+                                    <svg className="w-6 h-6 text-violet-400 flex-shrink-0 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                    </svg>
+                                    <div>
+                                      <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2 block">Business Impact</span>
+                                      <p className="text-emerald-300 font-medium text-sm">{example.output}</p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            ))}
+                          </div>
+                        )}
+                        {/* Legacy single example support */}
+                        {section.example && !section.examples && (
+                          <motion.div 
+                            className="bg-slate-900/60 backdrop-blur-sm rounded-2xl p-6 border border-violet-400/30"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.6 }}
+                          >
+                            <div className="grid md:grid-cols-2 gap-6 items-center">
+                              <div>
+                                <span className="text-xs font-bold uppercase tracking-wider text-violet-400 mb-2 block">User Need</span>
+                                <p className="text-white font-medium">"{section.example.input}"</p>
+                              </div>
+                              <div className="flex items-center gap-4">
+                                <svg className="w-8 h-8 text-violet-400 flex-shrink-0 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                </svg>
+                                <div>
+                                  <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2 block">Business Impact</span>
+                                  <p className="text-emerald-300 font-medium">{section.example.output}</p>
+                                </div>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Wireframes Section - Early Concepts */}
+                {section.wireframesSection && (
+                  <motion.div 
+                    className="mt-8 -mx-6 md:-mx-10"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                  >
+                    <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-slate-100 via-gray-50 to-slate-100 dark:from-slate-800 dark:via-slate-900 dark:to-slate-800 p-8 md:p-12">
+                      {/* Header */}
+                      <div className="text-center mb-10">
+                        <motion.span 
+                          className="inline-block px-4 py-1.5 bg-violet-500/20 rounded-full text-violet-600 dark:text-violet-300 text-xs font-bold uppercase tracking-wider mb-4"
+                          initial={{ opacity: 0, y: 10 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                        >
+                          {section.tagline}
+                        </motion.span>
+                        <motion.h3 
+                          className="text-3xl md:text-4xl font-black text-gray-900 dark:text-white"
                           initial={{ opacity: 0, y: 20 }}
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true }}
-                          transition={{ delay: 0.6 }}
+                          transition={{ delay: 0.1 }}
                         >
-                          <div className="grid md:grid-cols-2 gap-6 items-center">
-                            <div>
-                              <span className="text-xs font-bold uppercase tracking-wider text-violet-400 mb-2 block">User Need</span>
-                              <p className="text-white font-medium">"{section.example.input}"</p>
-                            </div>
-                            <div className="flex items-center gap-4">
-                              <svg className="w-8 h-8 text-violet-400 flex-shrink-0 hidden md:block" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                          {section.headline}
+                        </motion.h3>
+                        <motion.p
+                          className="text-gray-600 dark:text-gray-400 mt-4 max-w-2xl mx-auto"
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.2 }}
+                        >
+                          {section.intro}
+                        </motion.p>
+                      </div>
+
+                      {/* Wireframe Cards */}
+                      <div className="grid md:grid-cols-3 gap-6">
+                        {section.wireframes.map((wireframe, i) => {
+                          const sketchIcons = {
+                            search: (
+                              <svg className="w-full h-full" viewBox="0 0 120 80" fill="none">
+                                <rect x="10" y="10" width="100" height="20" rx="4" className="stroke-slate-400 dark:stroke-slate-500" strokeWidth="2" strokeDasharray="4 2" />
+                                <circle cx="25" cy="20" r="6" className="stroke-slate-400 dark:stroke-slate-500" strokeWidth="2" />
+                                <rect x="10" y="40" width="30" height="8" rx="4" className="fill-violet-300/50 dark:fill-violet-500/30" />
+                                <rect x="45" y="40" width="25" height="8" rx="4" className="fill-amber-300/50 dark:fill-amber-500/30" />
+                                <rect x="75" y="40" width="35" height="8" rx="4" className="fill-emerald-300/50 dark:fill-emerald-500/30" />
+                                <rect x="10" y="55" width="100" height="20" rx="4" className="stroke-slate-300 dark:stroke-slate-600" strokeWidth="1" />
                               </svg>
-                              <div>
-                                <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 mb-2 block">Business Impact</span>
-                                <p className="text-emerald-300 font-medium">{section.example.output}</p>
+                            ),
+                            results: (
+                              <svg className="w-full h-full" viewBox="0 0 120 80" fill="none">
+                                <rect x="10" y="8" width="100" height="18" rx="4" className="stroke-slate-300 dark:stroke-slate-600" strokeWidth="1" />
+                                <rect x="85" y="12" width="20" height="10" rx="2" className="fill-violet-300/50 dark:fill-violet-500/30" />
+                                <text x="90" y="20" className="fill-violet-600 dark:fill-violet-300 text-[8px] font-bold">98%</text>
+                                <rect x="10" y="30" width="100" height="18" rx="4" className="stroke-slate-300 dark:stroke-slate-600" strokeWidth="1" />
+                                <rect x="85" y="34" width="20" height="10" rx="2" className="fill-amber-300/50 dark:fill-amber-500/30" />
+                                <text x="90" y="42" className="fill-amber-600 dark:fill-amber-300 text-[8px] font-bold">94%</text>
+                                <rect x="10" y="52" width="100" height="18" rx="4" className="stroke-slate-300 dark:stroke-slate-600" strokeWidth="1" />
+                                <rect x="85" y="56" width="20" height="10" rx="2" className="fill-emerald-300/50 dark:fill-emerald-500/30" />
+                                <text x="90" y="64" className="fill-emerald-600 dark:fill-emerald-300 text-[8px] font-bold">89%</text>
+                              </svg>
+                            ),
+                            summary: (
+                              <svg className="w-full h-full" viewBox="0 0 120 80" fill="none">
+                                <rect x="10" y="8" width="100" height="30" rx="4" className="fill-slate-200/50 dark:fill-slate-700/50" />
+                                <rect x="15" y="13" width="60" height="4" rx="2" className="fill-slate-400 dark:fill-slate-500" />
+                                <rect x="15" y="21" width="80" height="3" rx="1" className="fill-slate-300 dark:fill-slate-600" />
+                                <rect x="15" y="27" width="50" height="3" rx="1" className="fill-slate-300 dark:fill-slate-600" />
+                                <circle cx="95" cy="23" r="8" className="fill-violet-300/50 dark:fill-violet-500/30 stroke-violet-400 dark:stroke-violet-500" strokeWidth="1" />
+                                <text x="93" y="26" className="fill-violet-600 dark:fill-violet-300 text-[8px] font-bold">1</text>
+                                <rect x="10" y="45" width="100" height="25" rx="4" className="stroke-slate-300 dark:stroke-slate-600" strokeWidth="1" strokeDasharray="4 2" />
+                                <rect x="15" y="50" width="40" height="3" rx="1" className="fill-amber-300/50 dark:fill-amber-500/30" />
+                                <rect x="15" y="57" width="70" height="3" rx="1" className="fill-slate-300 dark:fill-slate-600" />
+                                <rect x="15" y="63" width="55" height="3" rx="1" className="fill-slate-300 dark:fill-slate-600" />
+                              </svg>
+                            )
+                          }
+                          return (
+                            <motion.div
+                              key={i}
+                              className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-gray-200 dark:border-slate-700 shadow-lg"
+                              initial={{ opacity: 0, y: 30 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: 0.1 * i }}
+                            >
+                              {/* Sketch Preview */}
+                              <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 mb-4 h-32 flex items-center justify-center">
+                                {sketchIcons[wireframe.sketch]}
                               </div>
-                            </div>
-                          </div>
-                        </motion.div>
+                              <h4 className="text-lg font-bold text-gray-900 dark:text-white mb-2">{wireframe.title}</h4>
+                              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{wireframe.description}</p>
+                              <div className="space-y-2">
+                                {wireframe.insights.map((insight, j) => (
+                                  <div key={j} className="flex items-start gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                    <svg className="w-4 h-4 text-violet-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                    </svg>
+                                    <span>{insight}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </motion.div>
+                          )
+                        })}
                       </div>
                     </div>
                   </motion.div>
@@ -2545,7 +3044,7 @@ function CaseStudy() {
                       <p className="text-lg text-gray-600 dark:text-gray-200 mb-8 leading-relaxed">{section.introText}</p>
                     )}
                     
-                    <div className="grid gap-4 md:grid-cols-3">
+                    <div className={`grid gap-4 ${section.bulletPoints.length === 4 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}>
                       {section.bulletPoints.map((item, i) => {
                         const iconColors = [
                           'from-blue-500 to-indigo-600',
@@ -2565,6 +3064,22 @@ function CaseStudy() {
                           user: (
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                          ),
+                          users: (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                            </svg>
+                          ),
+                          eye: (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                          ),
+                          layout: (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
                             </svg>
                           ),
                           check: (
@@ -2731,6 +3246,464 @@ function CaseStudy() {
                   </div>
                 )}
 
+                {/* Outcome Showcase - Combined finale section */}
+                {section.outcomeShowcase && (
+                  <motion.div 
+                    className="mt-8 -mx-6 md:-mx-10"
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                  >
+                    <div className="relative rounded-3xl overflow-hidden">
+                      {/* Background Image */}
+                      {section.backgroundImage && (
+                        <>
+                          <img 
+                            src={section.backgroundImage.src}
+                            alt={section.backgroundImage.alt}
+                            className="absolute inset-0 w-full h-full object-cover"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-b from-slate-900/95 via-slate-900/90 to-slate-900/95" />
+                        </>
+                      )}
+                      {!section.backgroundImage && (
+                        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900" />
+                      )}
+                      
+                      {/* Animated background particles */}
+                      <div className="absolute inset-0 overflow-hidden">
+                        {[...Array(20)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            className="absolute w-1 h-1 bg-indigo-400/30 rounded-full"
+                            style={{
+                              left: `${Math.random() * 100}%`,
+                              top: `${Math.random() * 100}%`,
+                            }}
+                            animate={{
+                              y: [0, -30, 0],
+                              opacity: [0.3, 0.8, 0.3],
+                            }}
+                            transition={{
+                              duration: 3 + Math.random() * 2,
+                              repeat: Infinity,
+                              delay: Math.random() * 2,
+                            }}
+                          />
+                        ))}
+                      </div>
+
+                      <div className="relative z-10 p-8 md:p-12 lg:p-16">
+                        {/* Header */}
+                        <motion.div 
+                          className="text-center mb-12"
+                          initial={{ opacity: 0, y: 30 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                        >
+                          <motion.h2 
+                            className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4"
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            whileInView={{ opacity: 1, scale: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                          >
+                            {section.headline}
+                          </motion.h2>
+                          <motion.p 
+                            className="text-xl text-indigo-200"
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                          >
+                            {section.subheadline}
+                          </motion.p>
+                        </motion.div>
+
+                        {/* Animated Transformation Visual */}
+                        <div className="relative grid md:grid-cols-2 gap-8 mb-16">
+                          {/* BEFORE - Slow, manual */}
+                          <motion.div 
+                            className="relative"
+                            initial={{ opacity: 0, x: -50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.4 }}
+                          >
+                            <div className="bg-slate-500/10 backdrop-blur-sm rounded-2xl p-6 border border-slate-500/30 h-full">
+                              <div className="flex items-center gap-3 mb-4">
+                                <div className="w-12 h-12 rounded-xl bg-slate-500 flex items-center justify-center">
+                                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                  </svg>
+                                </div>
+                                <div>
+                                  <h3 className="text-lg font-bold text-slate-300">{section.transformation.before.title}</h3>
+                                  <p className="text-sm text-slate-400">{section.transformation.before.time}</p>
+                                </div>
+                              </div>
+                              <p className="text-gray-300 mb-6">{section.transformation.before.description}</p>
+                              
+                              {/* Smooth paper stack animation */}
+                              <div className="relative h-44 flex items-center justify-center">
+                                <div className="relative w-28 h-36">
+                                  {[...Array(6)].map((_, i) => {
+                                    const rotations = [-3, 2, -1.5, 2.5, -2, 0]
+                                    const offsets = [
+                                      { x: -4, y: 0 },
+                                      { x: 3, y: -3 },
+                                      { x: -2, y: -6 },
+                                      { x: 4, y: -9 },
+                                      { x: -3, y: -12 },
+                                      { x: 0, y: -15 }
+                                    ]
+                                    const colors = [
+                                      'from-amber-100 to-amber-50',
+                                      'from-stone-100 to-stone-50',
+                                      'from-orange-100 to-orange-50',
+                                      'from-amber-100 to-amber-50',
+                                      'from-stone-50 to-white',
+                                      'from-amber-50 to-white'
+                                    ]
+                                    return (
+                                      <motion.div
+                                        key={i}
+                                        className={`absolute inset-0 bg-gradient-to-br ${colors[i]} rounded-sm shadow-md border border-stone-200/50`}
+                                        style={{ transformOrigin: 'center bottom' }}
+                                        initial={{ 
+                                          opacity: 0, 
+                                          y: -60, 
+                                          rotate: rotations[i] - 8,
+                                          scale: 0.9
+                                        }}
+                                        whileInView={{ 
+                                          opacity: 1, 
+                                          y: offsets[i].y, 
+                                          x: offsets[i].x,
+                                          rotate: rotations[i],
+                                          scale: 1
+                                        }}
+                                        viewport={{ once: true }}
+                                        transition={{ 
+                                          duration: 0.5, 
+                                          delay: 0.5 + 0.08 * i,
+                                          type: "spring",
+                                          stiffness: 120,
+                                          damping: 14
+                                        }}
+                                      >
+                                        <div className="absolute inset-2 space-y-1.5 pt-1">
+                                          {[...Array(5)].map((_, j) => (
+                                            <div 
+                                              key={j} 
+                                              className="h-1 bg-stone-300/50 rounded-full"
+                                              style={{ width: `${55 + (j * 7) % 40}%` }}
+                                            />
+                                          ))}
+                                        </div>
+                                      </motion.div>
+                                    )
+                                  })}
+                                  
+                                  {/* Floating frustration icons */}
+                                  {/* Frustrated face */}
+                                  <motion.div
+                                    className="absolute -right-3 -top-3 z-20"
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 1.1, type: "spring", stiffness: 200 }}
+                                  >
+                                    <motion.div
+                                      className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shadow-lg border border-amber-200"
+                                      animate={{ y: [0, -3, 0] }}
+                                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                    >
+                                      <span className="text-base">😤</span>
+                                    </motion.div>
+                                  </motion.div>
+                                  
+                                  {/* Search icon - looking for info */}
+                                  <motion.div
+                                    className="absolute -left-5 top-4 z-20"
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 1.25, type: "spring", stiffness: 200 }}
+                                  >
+                                    <motion.div
+                                      className="w-7 h-7 rounded-full bg-slate-500 flex items-center justify-center shadow-lg"
+                                      animate={{ y: [0, -4, 0], x: [0, 2, 0] }}
+                                      transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 0.3 }}
+                                    >
+                                      <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                      </svg>
+                                    </motion.div>
+                                  </motion.div>
+                                  
+                                  {/* Hourglass - wasting time */}
+                                  <motion.div
+                                    className="absolute right-0 bottom-2 z-20"
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 1.4, type: "spring", stiffness: 200 }}
+                                  >
+                                    <motion.div
+                                      className="w-7 h-7 rounded-full bg-orange-500 flex items-center justify-center shadow-lg"
+                                      animate={{ y: [0, -2, 0], rotate: [0, 5, 0] }}
+                                      transition={{ duration: 3, repeat: Infinity, ease: "easeInOut", delay: 0.6 }}
+                                    >
+                                      <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                        <path d="M6 2v6l4 4-4 4v6h12v-6l-4-4 4-4V2H6zm10 14.5V20H8v-3.5l4-4 4 4zm-4-5l-4-4V4h8v3.5l-4 4z" />
+                                      </svg>
+                                    </motion.div>
+                                  </motion.div>
+                                  
+                                  {/* Angry face - frustration with manual process */}
+                                  <motion.div
+                                    className="absolute -left-3 bottom-6 z-20"
+                                    initial={{ opacity: 0, scale: 0 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 1.55, type: "spring", stiffness: 200 }}
+                                  >
+                                    <motion.div
+                                      className="w-7 h-7 rounded-full bg-rose-100 flex items-center justify-center shadow-lg border border-rose-200"
+                                      animate={{ y: [0, -3, 0], rotate: [0, -3, 0, 3, 0] }}
+                                      transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut", delay: 0.9 }}
+                                    >
+                                      <span className="text-sm">🤯</span>
+                                    </motion.div>
+                                  </motion.div>
+                                </div>
+                                
+                                {/* Subtle floating particles */}
+                                {[...Array(4)].map((_, i) => (
+                                  <motion.div
+                                    key={i}
+                                    className="absolute w-1 h-1 bg-amber-300/40 rounded-full"
+                                    style={{
+                                      left: `${25 + i * 15}%`,
+                                      top: `${30 + (i % 2) * 40}%`
+                                    }}
+                                    animate={{
+                                      y: [0, -15, 0],
+                                      opacity: [0.2, 0.6, 0.2]
+                                    }}
+                                    transition={{
+                                      duration: 2.5 + i * 0.5,
+                                      repeat: Infinity,
+                                      delay: i * 0.3
+                                    }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </motion.div>
+
+                          {/* AFTER - Fast, intelligent */}
+                          <motion.div 
+                            className="relative"
+                            initial={{ opacity: 0, x: 50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.6 }}
+                          >
+                            <div className="bg-emerald-500/10 backdrop-blur-sm rounded-2xl p-6 border border-emerald-500/30 h-full">
+                              <div className="flex items-center gap-3 mb-4">
+                                <div className="w-12 h-12 rounded-xl bg-emerald-500 flex items-center justify-center">
+                                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                  </svg>
+                                </div>
+                                <div>
+                                  <h3 className="text-lg font-bold text-emerald-300">{section.transformation.after.title}</h3>
+                                  <p className="text-sm text-emerald-400">{section.transformation.after.time}</p>
+                                </div>
+                              </div>
+                              <p className="text-gray-300 mb-6">{section.transformation.after.description}</p>
+                              
+                              {/* Animated organized search flow */}
+                              <div className="relative h-40 overflow-hidden">
+                                {/* Search input */}
+                                <motion.div
+                                  className="absolute top-2 left-4 right-4 h-10 bg-slate-800 rounded-lg border border-emerald-500/50 flex items-center px-3 gap-2"
+                                  initial={{ opacity: 0, y: -20 }}
+                                  whileInView={{ opacity: 1, y: 0 }}
+                                  viewport={{ once: true }}
+                                  transition={{ delay: 0.7 }}
+                                >
+                                  <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                  </svg>
+                                  <motion.div
+                                    className="text-xs text-emerald-300"
+                                    initial={{ opacity: 0 }}
+                                    whileInView={{ opacity: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 1 }}
+                                  >
+                                    "Revenue recognition Q4..."
+                                  </motion.div>
+                                  <motion.div
+                                    className="w-0.5 h-4 bg-emerald-400"
+                                    animate={{ opacity: [1, 0, 1] }}
+                                    transition={{ duration: 0.8, repeat: Infinity }}
+                                  />
+                                </motion.div>
+
+                                {/* Results flying in organized */}
+                                {[...Array(3)].map((_, i) => (
+                                  <motion.div
+                                    key={i}
+                                    className="absolute left-4 right-4 h-8 bg-slate-800/80 rounded-lg border border-slate-700 flex items-center px-3 gap-2"
+                                    style={{ top: `${56 + i * 36}px` }}
+                                    initial={{ opacity: 0, x: 100, scale: 0.8 }}
+                                    whileInView={{ opacity: 1, x: 0, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 1.2 + i * 0.15, type: "spring" }}
+                                  >
+                                    <div className={`w-5 h-5 rounded ${i === 0 ? 'bg-emerald-500' : 'bg-slate-600'} flex items-center justify-center`}>
+                                      <span className="text-[9px] text-white font-bold">{98 - i * 4}%</span>
+                                    </div>
+                                    <div className="flex-1 h-1.5 bg-slate-600 rounded">
+                                      <div className={`h-full rounded ${i === 0 ? 'bg-emerald-500' : 'bg-slate-500'}`} style={{ width: `${80 - i * 15}%` }} />
+                                    </div>
+                                    {i === 0 && (
+                                      <motion.div
+                                        className="w-4 h-4 rounded bg-violet-500 flex items-center justify-center"
+                                        animate={{ scale: [1, 1.2, 1] }}
+                                        transition={{ duration: 1, repeat: Infinity }}
+                                      >
+                                        <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                          <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+                                        </svg>
+                                      </motion.div>
+                                    )}
+                                  </motion.div>
+                                ))}
+                              </div>
+                            </div>
+                          </motion.div>
+                        </div>
+
+                        {/* Human + AI Compact Row */}
+                        <motion.div 
+                          className="bg-gradient-to-r from-violet-500/10 via-indigo-500/10 to-violet-500/10 backdrop-blur-sm rounded-2xl p-5 border border-indigo-500/30"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.8 }}
+                        >
+                          <motion.h3 
+                            className="text-xl md:text-2xl font-bold text-center text-white mb-5"
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.9 }}
+                          >
+                            {section.humanAI.headline}
+                          </motion.h3>
+                          
+                          <div className="grid md:grid-cols-2 gap-4">
+                            {/* AI Column */}
+                            <motion.div 
+                              className="bg-slate-800/50 rounded-xl p-4"
+                              initial={{ opacity: 0, x: -20 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: 1 }}
+                            >
+                              <div className="flex items-center gap-2 mb-3">
+                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
+                                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+                                  </svg>
+                                </div>
+                                <span className="text-sm font-bold text-violet-300">AI Accelerated</span>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2">
+                                {section.humanAI.ai.map((item, i) => (
+                                  <span 
+                                    key={i}
+                                    className="text-xs px-2.5 py-1.5 rounded-full bg-violet-500/20 text-violet-200 border border-violet-500/30 text-center"
+                                  >
+                                    {item}
+                                  </span>
+                                ))}
+                              </div>
+                            </motion.div>
+
+                            {/* Human Column */}
+                            <motion.div 
+                              className="bg-slate-800/50 rounded-xl p-4"
+                              initial={{ opacity: 0, x: 20 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: 1.1 }}
+                            >
+                              <div className="flex items-center gap-2 mb-3">
+                                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                  </svg>
+                                </div>
+                                <span className="text-sm font-bold text-emerald-300">I Directed</span>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2">
+                                {section.humanAI.human.map((item, i) => (
+                                  <span 
+                                    key={i}
+                                    className="text-xs px-2.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-200 border border-emerald-500/30 text-center"
+                                  >
+                                    {item}
+                                  </span>
+                                ))}
+                              </div>
+                            </motion.div>
+                          </div>
+                        </motion.div>
+
+                        {/* Celebration particles on scroll */}
+                        <motion.div 
+                          className="absolute inset-0 pointer-events-none overflow-hidden"
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 1.5 }}
+                        >
+                          {[...Array(15)].map((_, i) => (
+                            <motion.div
+                              key={i}
+                              className={`absolute w-2 h-2 rounded-full ${
+                                ['bg-indigo-400', 'bg-violet-400', 'bg-emerald-400', 'bg-amber-400'][i % 4]
+                              }`}
+                              style={{
+                                left: `${Math.random() * 100}%`,
+                                bottom: 0,
+                              }}
+                              initial={{ y: 0, opacity: 0 }}
+                              whileInView={{ 
+                                y: -400 - Math.random() * 200, 
+                                opacity: [0, 1, 1, 0] 
+                              }}
+                              viewport={{ once: true }}
+                              transition={{ 
+                                delay: 1.6 + Math.random() * 0.5, 
+                                duration: 2 + Math.random(),
+                                ease: "easeOut"
+                              }}
+                            />
+                          ))}
+                        </motion.div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* What Stays Human - Visual Section */}
                 {section.humanSection && (
                   <motion.div 
@@ -2849,66 +3822,7 @@ function CaseStudy() {
         </div>
       </section>
 
-      {/* Results - Magazine-style Bold Section */}
-      <section className="py-20 px-4 bg-gradient-to-br from-gray-900 via-slate-900 to-gray-900 dark:from-primary-900 dark:to-gray-900 relative overflow-hidden">
-        {/* Background decoration */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <motion.div 
-            className="absolute -top-20 -right-20 text-[20rem] font-black text-white/[0.02] leading-none"
-            initial={{ opacity: 0, x: 100 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
-          >
-            RESULTS
-          </motion.div>
-        </div>
-        
-        <div className="max-w-6xl mx-auto relative">
-          <motion.div 
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <motion.span 
-              className="text-xs font-bold uppercase tracking-[0.3em] text-teal-400 mb-4 block"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              The Impact
-            </motion.span>
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-black text-white">
-              Results & Impact
-            </h2>
-          </motion.div>
-          
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-            {study.results.map((result, i) => (
-              <motion.div 
-                key={i} 
-                className="text-center group"
-                initial={{ opacity: 0, y: 40, scale: 0.9 }}
-                whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-              >
-                <motion.div 
-                  className="text-4xl md:text-5xl lg:text-6xl font-black bg-gradient-to-br from-teal-300 to-emerald-400 bg-clip-text text-transparent mb-3 whitespace-nowrap"
-                  whileHover={{ scale: 1.1 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  {result.metric}
-                </motion.div>
-                <p className="text-gray-400 text-sm md:text-base group-hover:text-gray-300 transition-colors">{result.label}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
+
 
       {/* Navigation */}
       <section className="py-10 px-4 border-t border-gray-200 dark:border-gray-700">

@@ -1,6 +1,8 @@
 // Static screenshot components for case study display
 // These render as static images in the same style as the interactive prototype
 
+import { useState } from 'react'
+
 // Questionnaire Screen - Static (Clean, minimal version)
 export function QuestionnaireScreen() {
   return (
@@ -1119,7 +1121,7 @@ export function BrowserFrame({ children, size = "small" }) {
             <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
-            <span className="text-[9px] text-slate-400 font-medium">investigate.sas.com</span>
+            <span className="text-[9px] text-slate-400 font-medium">investigateandreview.com</span>
           </div>
         </div>
         {/* Screen container */}
@@ -1135,7 +1137,7 @@ export function BrowserFrame({ children, size = "small" }) {
 }
 
 // Large Desktop Browser Frame for case study galleries
-export function DesktopBrowserFrame({ children, url = "investigate.sas.com" }) {
+export function DesktopBrowserFrame({ children, url = "investigateandreview.com" }) {
   return (
     <div className="relative w-full">
       {/* Browser outer frame */}
@@ -1173,10 +1175,187 @@ export function DesktopBrowserFrame({ children, url = "investigate.sas.com" }) {
   )
 }
 
-// NLP Document Search Desktop Screen - Full featured search interface
-export function NLPDocumentSearchScreen() {
+// Empty Search State Screen - Starting point for investigators
+export function EmptySearchScreen() {
   return (
-    <div className="flex h-[520px] bg-slate-950 text-white">
+    <div className="flex h-[580px] bg-slate-950 text-white">
+      {/* Left Sidebar - Navigation */}
+      <div className="w-56 bg-slate-900 border-r border-slate-800 flex flex-col">
+        {/* Logo */}
+        <div className="px-4 py-4 border-b border-slate-800">
+          <div className="flex items-center gap-2">
+            <div className="w-8 h-8 bg-gradient-to-br from-amber-400 to-amber-600 rounded-lg flex items-center justify-center">
+              <svg className="w-5 h-5 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+              </svg>
+            </div>
+            <span className="text-sm font-bold text-white">Investigate</span>
+          </div>
+        </div>
+
+        {/* Nav Items */}
+        <div className="flex-1 py-4 px-3 space-y-1">
+          <button className="w-full flex items-center gap-3 px-3 py-2.5 bg-amber-500/20 text-amber-400 rounded-lg text-sm font-medium">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            AI Search
+          </button>
+          <button className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg text-sm">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            </svg>
+            All Documents
+          </button>
+          <button className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg text-sm">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+            Saved Queries
+          </button>
+          <button className="w-full flex items-center gap-3 px-3 py-2.5 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg text-sm">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Reports
+          </button>
+        </div>
+
+        {/* Case Info */}
+        <div className="p-3 border-t border-slate-800">
+          <div className="bg-slate-800/50 rounded-xl p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-xs font-bold rounded">ACTIVE</span>
+            </div>
+            <p className="text-sm font-semibold text-white">SEC Investigation</p>
+            <p className="text-xs text-slate-400 mt-1">42,847 documents</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content - Empty State */}
+      <div className="flex-1 flex flex-col">
+        {/* Search Header - Empty Input */}
+        <div className="px-6 py-4 border-b border-slate-800">
+          <div className="flex items-center gap-4">
+            <div className="flex-1 bg-slate-800 rounded-xl p-4 flex items-center gap-3">
+              <div className="w-8 h-8 bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="text-sm text-slate-500 italic">Ask a question in plain English...</p>
+              </div>
+            </div>
+            <button className="px-4 py-3 bg-slate-700 text-slate-400 rounded-xl font-semibold text-sm flex items-center gap-2 cursor-not-allowed">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Search
+            </button>
+          </div>
+        </div>
+
+        {/* Empty State Content */}
+        <div className="flex-1 flex flex-col items-center justify-center px-8">
+          {/* Document Search Icon */}
+          <div className="w-20 h-20 bg-gradient-to-br from-amber-500/10 to-amber-600/10 border border-amber-500/20 rounded-2xl flex items-center justify-center mb-6 relative">
+            {/* Stacked documents */}
+            <svg className="w-10 h-10 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+            {/* Small magnifying glass overlay */}
+            <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center border border-amber-500/30">
+              <svg className="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            </div>
+          </div>
+          
+          <h2 className="text-xl font-bold text-white mb-2">AI Powered Document Search</h2>
+          <p className="text-sm text-slate-400 text-center max-w-md mb-6">
+            Ask questions in plain English. AI will find relevant documents, score their relevance, and summarize key findings.
+          </p>
+
+          {/* Example Queries */}
+          <div className="w-full max-w-lg space-y-2">
+            <p className="text-xs text-slate-500 uppercase tracking-wide mb-3">Try asking:</p>
+            <button className="w-full text-left px-4 py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 rounded-xl text-sm text-slate-300 transition-colors">
+              "Show all communications about revenue recognition in Q4"
+            </button>
+            <button className="w-full text-left px-4 py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 rounded-xl text-sm text-slate-300 transition-colors">
+              "Find emails between executives regarding contract timing"
+            </button>
+            <button className="w-full text-left px-4 py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 rounded-xl text-sm text-slate-300 transition-colors">
+              "Which documents mention policy changes or audit concerns?"
+            </button>
+          </div>
+        </div>
+
+        {/* Footer with case stats */}
+        <div className="px-6 py-3 border-t border-slate-800 bg-slate-900/30">
+          <div className="flex items-center justify-between text-xs text-slate-500">
+            <span>42,847 documents indexed</span>
+            <span>Last updated: 2 hours ago</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// NLP Document Search Desktop Screen - Interactive search interface
+export function NLPDocumentSearchScreen() {
+  const [filter, setFilter] = useState('90')
+  const [selectedDoc, setSelectedDoc] = useState(0)
+  
+  // All documents with relevancy scores
+  const allDocuments = [
+    { id: 0, title: 'Q4 Revenue Memo', type: 'Email', date: 'Dec 15, 2024', relevancy: 98, source: 'CFO → CEO', color: 'amber' },
+    { id: 1, title: 'Policy Update Draft', type: 'Document', date: 'Nov 28', relevancy: 94, source: 'Finance', color: 'indigo' },
+    { id: 2, title: 'Board Minutes Q4', type: 'Minutes', date: 'Dec 1', relevancy: 91, source: 'Board', color: 'emerald' },
+    { id: 3, title: 'Audit Committee Notes', type: 'Minutes', date: 'Dec 8', relevancy: 90, source: 'Audit', color: 'rose' },
+    { id: 4, title: 'CFO Budget Review', type: 'Presentation', date: 'Nov 15', relevancy: 87, source: 'Finance', color: 'violet' },
+    { id: 5, title: 'Q3 Comparison Analysis', type: 'Spreadsheet', date: 'Oct 30', relevancy: 84, source: 'Accounting', color: 'cyan' },
+    { id: 6, title: 'Controller Memo', type: 'Memo', date: 'Dec 10', relevancy: 82, source: 'Controller', color: 'orange' },
+    { id: 7, title: 'External Audit Request', type: 'Email', date: 'Dec 5', relevancy: 79, source: 'External', color: 'pink' },
+    { id: 8, title: 'Revenue Forecast Model', type: 'Spreadsheet', date: 'Nov 20', relevancy: 76, source: 'FP&A', color: 'lime' },
+    { id: 9, title: 'Investor Call Notes', type: 'Document', date: 'Dec 12', relevancy: 72, source: 'IR Team', color: 'sky' },
+    { id: 10, title: 'Legal Review Comments', type: 'Document', date: 'Dec 3', relevancy: 68, source: 'Legal', color: 'fuchsia' },
+    { id: 11, title: 'Draft Press Release', type: 'Document', date: 'Dec 14', relevancy: 65, source: 'Comms', color: 'teal' },
+  ]
+  
+  // Filter documents based on selected threshold
+  const filteredDocs = allDocuments.filter(doc => {
+    if (filter === '90') return doc.relevancy >= 90
+    if (filter === '75') return doc.relevancy >= 75
+    return true // 'all'
+  })
+  
+  const filterCounts = {
+    '90': allDocuments.filter(d => d.relevancy >= 90).length,
+    '75': allDocuments.filter(d => d.relevancy >= 75).length,
+    'all': allDocuments.length
+  }
+  
+  const colorMap = {
+    amber: { bg: 'bg-amber-500/20', text: 'text-amber-400' },
+    indigo: { bg: 'bg-indigo-500/20', text: 'text-indigo-400' },
+    emerald: { bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
+    rose: { bg: 'bg-rose-500/20', text: 'text-rose-400' },
+    violet: { bg: 'bg-violet-500/20', text: 'text-violet-400' },
+    cyan: { bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
+    orange: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
+    pink: { bg: 'bg-pink-500/20', text: 'text-pink-400' },
+    lime: { bg: 'bg-lime-500/20', text: 'text-lime-400' },
+    sky: { bg: 'bg-sky-500/20', text: 'text-sky-400' },
+    fuchsia: { bg: 'bg-fuchsia-500/20', text: 'text-fuchsia-400' },
+    teal: { bg: 'bg-teal-500/20', text: 'text-teal-400' },
+  }
+
+  return (
+    <div className="flex h-[580px] bg-slate-950 text-white">
       {/* Left Sidebar - Navigation */}
       <div className="w-56 bg-slate-900 border-r border-slate-800 flex flex-col">
         {/* Logo */}
@@ -1264,72 +1443,88 @@ export function NLPDocumentSearchScreen() {
         <div className="flex-1 flex overflow-hidden">
           {/* Document List */}
           <div className="w-80 border-r border-slate-800 flex flex-col">
-            <div className="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
-              <span className="text-sm font-semibold text-white">847 Results</span>
-              <button className="text-xs text-slate-400 flex items-center gap-1">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
-                </svg>
-                Filter
-              </button>
+            {/* Results Header */}
+            <div className="px-4 py-3 border-b border-slate-800">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-white">847 Results</span>
+                <span className="text-xs text-slate-500">Sorted by relevance</span>
+              </div>
+              {/* Interactive Relevancy Filter */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-500">Show:</span>
+                <button 
+                  onClick={() => setFilter('90')}
+                  className={`px-2 py-1 text-xs font-medium rounded-lg transition-all ${
+                    filter === '90' 
+                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
+                      : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                  }`}
+                >
+                  90%+
+                </button>
+                <button 
+                  onClick={() => setFilter('75')}
+                  className={`px-2 py-1 text-xs font-medium rounded-lg transition-all ${
+                    filter === '75' 
+                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
+                      : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                  }`}
+                >
+                  75%+
+                </button>
+                <button 
+                  onClick={() => setFilter('all')}
+                  className={`px-2 py-1 text-xs font-medium rounded-lg transition-all ${
+                    filter === 'all' 
+                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
+                      : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                  }`}
+                >
+                  All
+                </button>
+              </div>
+            </div>
+            {/* Showing indicator */}
+            <div className="px-4 py-2 bg-slate-900/50 border-b border-slate-800">
+              <p className="text-xs text-slate-500">
+                Showing <span className="text-amber-400 font-medium">{filteredDocs.length} documents</span>
+                {filter === '90' && ' with 90%+ relevance'}
+                {filter === '75' && ' with 75%+ relevance'}
+                {filter === 'all' && ' (all relevance levels)'}
+              </p>
             </div>
             <div className="flex-1 overflow-y-auto p-3 space-y-2">
-              {/* Document Item - Selected */}
-              <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-12 bg-amber-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg className="w-6 h-6 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-white">Q4 Revenue Memo</h4>
-                    <p className="text-xs text-slate-400 mt-0.5">Email • Dec 15, 2024</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="px-2 py-0.5 bg-violet-500/20 text-violet-300 text-xs font-medium rounded">98%</span>
-                      <span className="text-xs text-slate-500">CFO → CEO</span>
+              {filteredDocs.map((doc, index) => (
+                <div 
+                  key={doc.id}
+                  onClick={() => setSelectedDoc(doc.id)}
+                  className={`rounded-xl p-3 cursor-pointer transition-all ${
+                    selectedDoc === doc.id 
+                      ? 'bg-amber-500/10 border border-amber-500/30' 
+                      : 'bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={`w-10 h-12 ${colorMap[doc.color].bg} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                      <svg className={`w-6 h-6 ${colorMap[doc.color].text}`} fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-semibold text-white">{doc.title}</h4>
+                      <p className="text-xs text-slate-400 mt-0.5">{doc.type} • {doc.date}</p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <span className={`px-2 py-0.5 text-xs font-medium rounded ${
+                          doc.relevancy >= 90 ? 'bg-emerald-500/20 text-emerald-300' :
+                          doc.relevancy >= 75 ? 'bg-amber-500/20 text-amber-300' :
+                          'bg-slate-600/20 text-slate-400'
+                        }`}>{doc.relevancy}%</span>
+                        <span className="text-xs text-slate-500">{doc.source}</span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              {/* Document Item */}
-              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 hover:bg-slate-800 cursor-pointer">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-12 bg-indigo-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg className="w-6 h-6 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-white">Policy Update Draft</h4>
-                    <p className="text-xs text-slate-400 mt-0.5">Document • Nov 28</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="px-2 py-0.5 bg-violet-500/20 text-violet-300 text-xs font-medium rounded">94%</span>
-                      <span className="text-xs text-slate-500">Finance</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Document Item */}
-              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 hover:bg-slate-800 cursor-pointer">
-                <div className="flex items-start gap-3">
-                  <div className="w-10 h-12 bg-emerald-500/20 rounded-lg flex items-center justify-center flex-shrink-0">
-                    <svg className="w-6 h-6 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-sm font-semibold text-white">Board Minutes Q4</h4>
-                    <p className="text-xs text-slate-400 mt-0.5">Minutes • Dec 1</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className="px-2 py-0.5 bg-violet-500/20 text-violet-300 text-xs font-medium rounded">89%</span>
-                      <span className="text-xs text-slate-500">Board</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
@@ -1408,7 +1603,7 @@ export function NLPDocumentSearchScreen() {
 // Source Inspector Desktop Screen - Document verification interface
 export function SourceInspectorScreen() {
   return (
-    <div className="flex h-[520px] bg-slate-950 text-white">
+    <div className="flex h-[580px] bg-slate-950 text-white">
       {/* Left Panel - Document List */}
       <div className="w-72 bg-slate-900 border-r border-slate-800 flex flex-col">
         {/* Header */}
@@ -1474,23 +1669,15 @@ export function SourceInspectorScreen() {
       <div className="flex-1 flex flex-col">
         {/* Document Header */}
         <div className="px-6 py-4 border-b border-slate-800 bg-slate-900/50">
-          <div className="flex items-start justify-between">
-            <div>
-              <h2 className="text-lg font-bold text-white">Q4 Revenue Memo - CFO Review</h2>
-              <div className="flex items-center gap-4 mt-2">
-                <span className="text-sm text-slate-400">Email Communication</span>
-                <span className="text-sm text-slate-400">•</span>
-                <span className="text-sm text-slate-400">December 15, 2024</span>
-                <span className="text-sm text-slate-400">•</span>
-                <span className="px-2 py-0.5 bg-violet-500/20 text-violet-300 text-xs font-medium rounded">98% Relevant</span>
-              </div>
+          <div>
+            <h2 className="text-lg font-bold text-white">Q4 Revenue Memo - CFO Review</h2>
+            <div className="flex items-center gap-4 mt-2">
+              <span className="text-sm text-slate-400">Email Communication</span>
+              <span className="text-sm text-slate-400">•</span>
+              <span className="text-sm text-slate-400">December 15, 2024</span>
+              <span className="text-sm text-slate-400">•</span>
+              <span className="px-2 py-0.5 bg-violet-500/20 text-violet-300 text-xs font-medium rounded">98% Relevant</span>
             </div>
-            <button className="px-4 py-2 bg-slate-800 text-white rounded-lg text-sm font-medium flex items-center gap-2">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-              Open Full
-            </button>
           </div>
         </div>
 

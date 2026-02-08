@@ -15,6 +15,13 @@ export function CaseStudyHero({ study }) {
   })
 
   const heroImage = study.heroImage
+  const tagStyles = [
+    'bg-gradient-to-r from-indigo-500/15 to-violet-500/15 text-indigo-700 dark:text-indigo-200 border border-indigo-300/40 dark:border-indigo-400/40',
+    'bg-gradient-to-r from-emerald-500/15 to-teal-500/15 text-emerald-700 dark:text-emerald-200 border border-emerald-300/40 dark:border-emerald-400/40',
+    'bg-gradient-to-r from-amber-500/15 to-orange-500/15 text-amber-700 dark:text-amber-200 border border-amber-300/40 dark:border-amber-400/40',
+    'bg-gradient-to-r from-rose-500/15 to-pink-500/15 text-rose-700 dark:text-rose-200 border border-rose-300/40 dark:border-rose-400/40',
+    'bg-gradient-to-r from-sky-500/15 to-blue-500/15 text-sky-700 dark:text-sky-200 border border-sky-300/40 dark:border-sky-400/40'
+  ]
 
   return (
     <>
@@ -143,9 +150,9 @@ export function CaseStudyHero({ study }) {
               </p>
               <div className="flex flex-wrap gap-2">
                 {study.tags?.map((tag, idx) => (
-                  <span 
+                  <span
                     key={idx}
-                    className="px-4 py-2 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm rounded-full font-medium"
+                    className={`px-4 py-2 text-sm rounded-full font-medium ${tagStyles[idx % tagStyles.length]}`}
                   >
                     {tag}
                   </span>

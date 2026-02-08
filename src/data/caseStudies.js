@@ -529,13 +529,13 @@ export const caseStudies = {
 
   'enterprise-designops-transformation': {
     title: "Enterprise DesignOps Transformation",
-    subtitle: "Directing AI powered DesignOps for an LLM integrated document investigation platform, aligning agency, engineering, and product teams.",
-    tags: ["AI SDLC Leadership", "LLM Integration", "DesignOps", "Agency Management", "MCP Servers"],
+    subtitle: "Leading UX and delivery for an AI assisted document investigation platform, aligning agency, engineering, and product teams.",
+    tags: ["UX Direction", "Delivery Leadership", "DesignOps", "Agency Management", "AI Enablement"],
     roles: [
       "Director of UX",
-      "AI SDLC Lead",
       "Delivery Lead",
       "DesignOps Strategy",
+      "Research Orchestration",
       "Agency Management",
       "Cross functional Alignment"
     ],
@@ -569,19 +569,212 @@ export const caseStudies = {
             painPoints: [
               "Manual document review",
               "Can't trace AI conclusions",
-              "Information overload"
+              "Information overload",
+              "Slow verification loops",
+              "Critical details buried"
+            ]
+          },
+          image: {
+            src: "https://images.unsplash.com/photo-1568667256549-094345857637?w=1200&q=80",
+            alt: "Magnifying glass on scattered documents"
+          }
+        }
+      },
+      {
+        researchSection: true,
+        backgroundImage: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=1200&q=80",
+        tagline: "Research and Setup",
+        headline: "Aligning stakeholders and agency around feedback loops",
+        insights: [
+          {
+            icon: "users",
+            finding: "Stakeholder map",
+            detail: "Aligned product, legal, and investigation leaders on goals and constraints."
+          },
+          {
+            icon: "calendar",
+            finding: "Feedback cadence",
+            detail: "Scheduled prototype reviews tied to sprint planning so learning landed in time."
+          },
+          {
+            icon: "workflow",
+            finding: "Delivery choreography",
+            detail: "Sequenced discovery, design, and build to keep teams moving together."
+          }
+        ]
+      },
+      {
+        researchSection: true,
+        backgroundImage: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&q=80",
+        tagline: "Evidence at Scale",
+        headline: "AI captured patterns from interviews and walkthroughs",
+        insights: [
+          {
+            icon: "document",
+            finding: "Feedback compilation",
+            detail: "Compiled interview calls and stakeholder emails into searchable insights."
+          },
+          {
+            icon: "pattern",
+            finding: "Pain point extraction",
+            detail: "When users walked through flows, AI captured their responses and frustrations."
+          },
+          {
+            icon: "spark",
+            finding: "Theme synthesis",
+            detail: "Trust, traceability, and context emerged as top investigator concerns."
+          }
+        ],
+        aiPainPoints: {
+          title: "AI Captured Pain Points",
+          description: "Automated extraction from user interviews and prototype walkthroughs",
+          sources: [
+            {
+              type: "Interview",
+              label: "Senior Investigator",
+              timestamp: "Session 3 - 14:32",
+              quote: "I spend hours clicking through documents just to find one email thread. By the time I find it, I've lost my train of thought.",
+              painPoints: ["Document navigation", "Context switching", "Time pressure"]
+            },
+            {
+              type: "Walkthrough",
+              label: "Compliance Lead",
+              timestamp: "Prototype Review",
+              quote: "When the AI shows me a summary, I need to know exactly where that came from. I can't present findings I can't verify.",
+              painPoints: ["Source verification", "Trust in AI", "Audit trail"]
+            },
+            {
+              type: "Email",
+              label: "Legal Team Feedback",
+              timestamp: "Stakeholder Thread",
+              quote: "The current search returns too many results. We need relevance scoring and the ability to see why a document matched.",
+              painPoints: ["Search relevance", "Result overload", "Match explanation"]
+            }
+          ],
+          clusteredThemes: [
+            { theme: "Trust & Verification", count: 18, color: "rose" },
+            { theme: "Navigation & Context", count: 14, color: "amber" },
+            { theme: "Time Efficiency", count: 11, color: "emerald" }
+          ]
+        }
+      },
+      {
+        title: "Early Concepts",
+        wireframesSection: true,
+        tagline: "Design Evolution",
+        headline: "From research insights to design direction",
+        intro: "User feedback drove our early explorations. Before committing to high fidelity designs, we sketched concepts that addressed the core pain points: finding relevant documents, understanding AI reasoning, and verifying conclusions.",
+        wireframes: [
+          {
+            title: "Search Input Exploration",
+            description: "How might investigators express complex queries in natural language?",
+            sketch: "search",
+            insights: ["Users wanted to type questions, not boolean operators", "Auto extracted chips helped refine without retyping"]
+          },
+          {
+            title: "Results + Relevance",
+            description: "Surfacing documents with confidence scores investigators could trust",
+            sketch: "results",
+            insights: ["Percentage match gave quick scan ability", "Document type icons aided recognition"]
+          },
+          {
+            title: "Summary + Citation Flow",
+            description: "Connecting AI conclusions back to source material",
+            sketch: "summary",
+            insights: ["Inline citations were essential for trust", "One click to verify any claim"]
+          }
+        ]
+      },
+      {
+        title: "Agency Tooling",
+        agencySection: true,
+        backgroundImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80",
+        tagline: "Bridging Design and Development",
+        headline: "MCP servers and Figma Make",
+        transformation: {
+          before: {
+            label: "Before MCP",
+            items: [
+              "Designers work in isolation",
+              "Handoffs create delays",
+              "Context lost between tools"
+            ]
+          },
+          after: {
+            label: "With MCP + Figma Make",
+            items: [
+              "Real components in Figma",
+              "Prototypes in hours, not days",
+              "Design tokens auto sync"
             ]
           }
         },
-        researchBanner: {
-          headline: "We embedded AI into every phase of design.",
-          subtext: "This wasn't just a project using AI. It was a proving ground for AI powered product development at scale.",
-          stats: [
-            { number: "6", label: "Months of delivery", description: "Complex platform delivered with AI accelerated workflows throughout" },
-            { number: "3", label: "Teams orchestrated", description: "External agency, internal engineering, and AI/ML specialists aligned" },
-            { number: "60%", label: "Faster review cycles", description: "AI tools accelerated design reviews and stakeholder communication" }
-          ]
-        }
+        stats: [
+          { value: "70%", label: "Less handoff friction", icon: "sync" },
+          { value: "3x", label: "Faster prototyping", icon: "clock" },
+          { value: "1", label: "Source of truth", icon: "target" }
+        ]
+      },
+      {
+        screenGallery: [
+          {
+            component: "EmptySearchScreen",
+            title: "Starting Point: Natural Language Input",
+            bullets: [
+              "Investigators begin with a blank canvas and a simple prompt",
+              "Plain English queries replace complex boolean syntax",
+              "Example queries guide users toward effective search patterns",
+              "AI processes natural language to understand investigator intent"
+            ]
+          },
+          {
+            component: "NLPDocumentSearchScreen",
+            title: "Results with Relevance Scoring",
+            bullets: [
+              "Auto extracted search chips let users refine without retyping",
+              "Document list shows relevance percentages for quick scanning",
+              "Selecting a document reveals AI generated summary with key findings",
+              "Inline citation markers show exactly where each conclusion originated"
+            ]
+          },
+          {
+            component: "SourceInspectorScreen",
+            title: "Verify Any AI Conclusion",
+            bullets: [
+              "One click on any citation opens the source document",
+              "Highlighted excerpts show exactly where the AI found its answer",
+              "Confidence scoring and document context build investigator trust",
+              "Confirm or Flag actions feed back into AI accuracy over time"
+            ]
+          }
+        ]
+      },
+      {
+        title: "Validating the Experience",
+        designValidation: true,
+        introText: "With high fidelity designs in staging, we ran hands-on QA sessions to validate that the interfaces above worked exactly as intended - from search input to citation verification.",
+        bulletPoints: [
+          {
+            icon: "eye",
+            title: "Interface walkthrough testing",
+            description: "Tested each screen flow: natural language input, relevance filtering, document selection, and citation verification. Caught edge cases where results didn't match the query context."
+          },
+          {
+            icon: "check",
+            title: "AI response validation",
+            description: "Verified that AI summaries accurately reflected source documents. When citations didn't match highlighted excerpts, we logged issues and iterated with engineering."
+          },
+          {
+            icon: "layout",
+            title: "Visual consistency review",
+            description: "Flagged spacing issues, color inconsistencies, and component states that didn't match the Figma specs. Design tokens from MCP kept most styling aligned."
+          },
+          {
+            icon: "users",
+            title: "Stakeholder sign-off sessions",
+            description: "Ran live demos with legal leads to confirm the search-to-verify flow met their investigation workflow. Their feedback shaped final refinements."
+          }
+        ]
       },
       {
         title: "Working with Developers: LLM Integration",
@@ -623,78 +816,15 @@ export const caseStudies = {
         ],
         codeReviewIntro: {
           title: "LLM Response Handling in Practice",
-          description: "Here's an example code review showing how we implemented the AI generated summary component with inline citations that investigators can click to verify source material."
+          description: "I oversaw this implementation with engineering. The review highlights how the AI summary and citation components were built to support trust and verification."
         },
         showCodeReviewViewer: true
       },
       {
-        title: "Agency Collaboration",
-        agencySection: true,
-        backgroundImage: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1200&q=80",
-        tagline: "Bridging Design & Development",
-        headline: "External agency. Internal quality.",
-        transformation: {
-          before: {
-            label: "Before MCP",
-            items: [
-              "Designers work in isolation",
-              "Handoffs create delays",
-              "Context lost between tools"
-            ]
-          },
-          after: {
-            label: "With MCP + Figma Make",
-            items: [
-              "Real components in Figma",
-              "Prototypes in hours, not days",
-              "Design tokens auto sync"
-            ]
-          }
-        },
-        stat: {
-          value: "70%",
-          label: "Less handoff friction"
-        },
-        quote: {
-          text: "Our external designers could see exactly how their components would behave in the real product before we wrote a single line of code.",
-          author: "Engineering Lead"
-        }
-      },
-      {
-        title: "AI Powered User Testing",
-        researchSection: true,
-        backgroundImage: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&q=80",
-        tagline: "Research at Scale",
-        headline: "20+ interviews. One source of truth.",
-        insights: [
-          {
-            stat: "85%",
-            finding: "Trust but verify",
-            detail: "Investigators pause at AI summaries to check citations"
-          },
-          {
-            stat: "#1",
-            finding: "Can't trace conclusions",
-            detail: "Top pain point driving citation system priority"
-          },
-          {
-            stat: "3x",
-            finding: "Faster synthesis",
-            detail: "AI surfaced patterns in hours, not weeks"
-          }
-        ],
-        documentationIntro: {
-          title: "AI Generated Testing Documentation",
-          description: "Test cases connected back to real investigator needs and behaviors."
-        },
-        showDocumentationViewer: true
-      },
-      {
-        title: "Product Alignment",
         alignmentSection: true,
         backgroundImage: "https://images.unsplash.com/photo-1521791055366-0d553872125f?w=1200&q=80",
-        tagline: "Single Source of Truth",
-        headline: "Research → Stories → Specs",
+        tagline: "How We Got Here",
+        headline: "A repeatable AI SDLC approach",
         pipeline: [
           {
             step: "Interview",
@@ -717,10 +847,20 @@ export const caseStudies = {
             icon: "chart"
           }
         ],
-        example: {
-          input: "As an investigator, I need to see why AI flagged this document",
-          output: "Citation system reduces investigation time by 40%"
-        },
+        examples: [
+          {
+            input: "As an investigator, I need to see why AI flagged this document",
+            output: "Citation system reduces investigation time by 40%"
+          },
+          {
+            input: "I need to verify AI conclusions before presenting to counsel",
+            output: "Source Inspector increases confidence in AI assisted findings"
+          },
+          {
+            input: "Searching returns too many irrelevant documents",
+            output: "Relevance scoring prioritizes high value evidence first"
+          }
+        ],
         workflowIntro: {
           title: "AI Powered Alignment Workflow",
           description: "Every feature traced back to real user needs."
@@ -728,81 +868,35 @@ export const caseStudies = {
         showWorkflowDiagram: true
       },
       {
-        title: "Interface Concepts",
-        screenGallery: [
-          {
-            component: "NLPDocumentSearchScreen",
-            title: "NLP Search Mode with AI Generated Insights",
-            bullets: [
-              "Three panel architecture with sidebar navigation, document list, and AI summary",
-              "Natural language query input with extracted search chips",
-              "Relevant Documents list with match percentage scores",
-              "AI Generated Summary synthesizes insights with inline citations",
-              "Citation markers link directly to Source Inspector",
-              "Key Findings prioritized with numbered indicators"
-            ]
+        outcomeShowcase: true,
+        backgroundImage: {
+          src: "https://images.unsplash.com/photo-1479142506502-19b3a3b7ff33?w=1920&q=80",
+          alt: "Wooden gavel on sounding block with dramatic lighting"
+        },
+        headline: "From Drowning to Discovery",
+        subheadline: "AI transformed how investigators work with documents",
+        stats: [
+          { value: "6 mo", label: "Platform delivered", icon: "calendar" },
+          { value: "60%", label: "Faster review cycles", icon: "clock" },
+          { value: "3", label: "Teams aligned", icon: "users" },
+          { value: "Org-wide", label: "AI SDLC adopted", icon: "check" }
+        ],
+        transformation: {
+          before: {
+            title: "Before: Manual Search",
+            time: "Hours per query",
+            description: "Investigators clicking through thousands of documents, losing context, missing connections."
           },
-          {
-            component: "SourceInspectorScreen",
-            title: "Source Inspector for Document Verification",
-            bullets: [
-              "Designed based on 'trust but verify' pattern from user research",
-              "Displays exact excerpt that informed AI analysis with highlights",
-              "Shows document context explaining relevance score",
-              "Direct 'Open Full Document' action maintains workflow",
-              "Confidence scoring visible for transparency",
-              "Investigator feedback loop with Confirm/Flag actions"
-            ]
+          after: {
+            title: "After: AI Discovery",
+            time: "Minutes per query", 
+            description: "Natural language search surfaces relevant documents instantly, with AI summaries and source verification."
           }
-        ]
-      },
-      {
-        title: "The Outcomes",
-        content: [
-          "Over 6 months, we delivered a production ready AI powered document intelligence platform. More importantly, we established an AI SDLC framework that transformed how the organization builds products."
-        ],
-        outcomesMetrics: [
-          { metric: "6 mo", label: "Complex platform delivered" },
-          { metric: "60%", label: "Faster design review cycles" },
-          { metric: "3 teams", label: "Aligned with AI tools" },
-          { metric: "Org wide", label: "AI SDLC adoption" }
-        ],
-        quote: {
-          text: "This project proved that AI doesn't just accelerate individual tasks. It transforms how entire teams collaborate. The framework we built here is now how we approach every product.",
-          author: "VP of Product, Project Retrospective"
-        }
-      },
-      {
-        title: "What Stays Human",
-        humanSection: {
-          headline: "AI accelerates. Humans lead.",
-          subheadline: "I led the strategy that determined where AI added value and where human judgment was irreplaceable. That leadership, not the tools, made the project succeed.",
-          columns: [
-            {
-              title: "What AI Powered",
-              icon: "robot",
-              items: [
-                "Interview synthesis in hours",
-                "User story generation",
-                "Design code synchronization",
-                "Stakeholder communication drafts"
-              ]
-            },
-            {
-              title: "What I Led",
-              icon: "heart",
-              items: [
-                "AI integration strategy across teams",
-                "Agency relationship and trust building",
-                "LLM dialogue flow design decisions",
-                "Executive stakeholder alignment"
-              ]
-            }
-          ],
-          eventImage: {
-            src: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=500&fit=crop",
-            alt: "Team collaborating in modern office"
-          }
+        },
+        humanAI: {
+          headline: "How I Led AI-Augmented Delivery",
+          ai: ["Interview synthesis", "User story generation", "Design-code sync", "Communication drafts"],
+          human: ["Research orchestration", "Agency trust-building", "LLM decision-making", "Executive alignment"]
         }
       }
     ],
