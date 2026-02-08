@@ -27,8 +27,8 @@ function Navbar() {
           <div className="flex items-center">
             <Link to="/" className="flex items-center gap-3">
               <span className="text-3xl font-display text-navy-900 dark:text-white tracking-wider">JA</span>
-              <span className="hidden sm:block text-sm text-gray-600 dark:text-gray-400 max-w-[200px] leading-tight">
-                Jamie Arlin is a Delivery Lead & AI Strategist based in Chicago
+              <span className="hidden sm:block text-sm text-gray-600 dark:text-gray-400 whitespace-nowrap self-center leading-none">
+                Delivery Lead & UX Leader · Chicago
               </span>
             </Link>
           </div>

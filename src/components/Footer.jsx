@@ -10,7 +10,7 @@ function Footer() {
           <div>
             <span className="font-display text-3xl text-navy-900 dark:text-white tracking-wider">JA</span>
             <p className="text-gray-600 dark:text-gray-400 mt-3">
-              Delivery Lead & AI Strategist based in Chicago. Transforming how teams build products through AI and human-centered design.
+              Delivery Lead & UX Leader based in Chicago. Driving AI-enabled software delivery and human-centered design.
             </p>
           </div>
           

@@ -63,7 +63,7 @@ function About() {
               I'm a Delivery Lead and AI Strategist with deep roots in UX Architecture. Based in Chicago, I help organizations leverage AI to transform how they build products.
             </p>
             <p className="text-gray-600 dark:text-gray-300 mb-4">
-              My journey from Visual Designer to UX Architect to Delivery Lead gives me a unique perspective—I understand both the craft of creating great experiences and the systems needed to deliver them at scale.
+              My journey from Visual Designer to UX Architect to Delivery Lead gives me a unique perspective. I understand both the craft of creating great experiences and the systems needed to deliver them at scale.
             </p>
             <p className="text-gray-600 dark:text-gray-300 mb-6">
               Currently, I'm focused on implementing agentic AI systems that amplify team capabilities while maintaining the human-centered approach that makes products truly valuable.
