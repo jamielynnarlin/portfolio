@@ -6,7 +6,7 @@ export const prototypes = [
     description: "Click the highlighted areas to see how event staff access and complete their tasks in the BookedOut app.",
     caseStudySlug: "mobile-task-tracker",
     caseStudyTitle: "AI Powered Development Workflow",
-    thumbnail: import.meta.env.BASE_URL + "images/case-studies/bookedout-profile-taskflow.png",
+    thumbnail: import.meta.env.BASE_URL + "images/case-studies/Bookedout-profile.png",
     tags: ["Mobile App", "React Native", "Task Management", "UX Flow"],
     prototype: {
       title: "Profile & Task Flow",

@@ -1,9 +1,13 @@
 export const blogPosts = [
   {
     id: 1,
-    slug: "agentic-ai-sdlc",
-    title: "How Agentic AI is Transforming the Software Development Lifecycle",
-    excerpt: "From code generation to automated testing, AI agents are reshaping how teams build software. Here's what I've learned implementing these systems.",
+    slug: "building-puppy-tracker-ai",
+    title: "Building a Puppy Tracker with AI",
+    excerpt: "How I used AI agents to build a real-world application - from concept to deployment. A hands-on exploration of modern AI-powered development workflows.",
+    externalUrl: "https://www.linkedin.com/pulse/building-puppy-tracker-ai-jamie-arlin-airkc/",
+    date: "2026-01-15",
+    readTime: 5,
+    tags: ["AI", "Development", "Case Study"],
     content: `
 # How Agentic AI is Transforming the Software Development Lifecycle
 

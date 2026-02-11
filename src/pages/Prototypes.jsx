@@ -1,130 +1,263 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { prototypes } from '../data/prototypes'
+import { 
+  PhoneFrame, 
+  DashboardScreen, 
+  EventTasksScreen, 
+  ExpandedTasksScreen,
+  CameraScreen
+} from '../components/PrototypeScreens'
 
 function Prototypes() {
+  const [currentScreen, setCurrentScreen] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
+  const [direction, setDirection] = useState('forward')
+  const [photoTaken, setPhotoTaken] = useState(false)
+
+  const proto = prototypes[0] // Mobile Task Tracker
+
+  const goToScreen = (index, dir = 'forward') => {
+    if (isAnimating || index === currentScreen) return
+    setDirection(dir)
+    setIsAnimating(true)
+    setTimeout(() => {
+      setCurrentScreen(index)
+      setTimeout(() => setIsAnimating(false), 300)
+    }, 50)
+  }
+
+  const nextScreen = () => {
+    if (currentScreen < 3) {
+      goToScreen(currentScreen + 1, 'forward')
+    }
+  }
+
+  const prevScreen = () => {
+    if (currentScreen > 0) {
+      goToScreen(currentScreen - 1, 'backward')
+    }
+  }
+
+  const openCamera = () => {
+    goToScreen(3, 'forward')
+  }
+
+  const handlePhotoCapture = () => {
+    setPhotoTaken(true)
+    goToScreen(2, 'backward')
+  }
+
+  const handleCameraCancel = () => {
+    goToScreen(2, 'backward')
+  }
+
+  const screenLabels = [
+    { label: 'Dashboard', description: 'View upcoming events, stats, and tap the next event to see tasks' },
+    { label: 'Event Tasks', description: 'See task categories for your event' },
+    { label: 'Complete Tasks', description: 'Check off your tasks before the event' },
+    { label: 'Camera', description: 'Take a photo to complete the task' }
+  ]
+
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-primary-50 via-white to-sky-50 dark:from-gray-900 dark:via-gray-900 dark:to-primary-900/20 py-20 lg:py-28">
-        <div className="absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary-200/30 dark:bg-primary-500/10 rounded-full blur-3xl"></div>
-          <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-sky-200/30 dark:bg-sky-500/10 rounded-full blur-3xl"></div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-full border border-gray-200 dark:border-gray-700 mb-8">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
-              </span>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Interactive Experiences</span>
-            </div>
-            
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
-              Prototypes
-            </h1>
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed">
-              Explore interactive prototypes from my projects. Click through user flows, 
-              experience design decisions firsthand, and see how research translates into interfaces.
-            </p>
-          </div>
-        </div>
-      </section>
+    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
+      {/* Background Pattern */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
+      </div>
 
-      {/* Prototypes Grid */}
-      <section className="py-16 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid gap-8 lg:gap-12">
-            {prototypes.map((proto) => (
-              <Link 
-                key={proto.id}
-                to={`/prototypes/${proto.id}`}
-                className="group block"
-              >
-                <article className="bg-white dark:bg-gray-800 rounded-3xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-gray-100 dark:border-gray-700">
-                  <div className="flex flex-col lg:flex-row">
-                    {/* Thumbnail */}
-                    <div className="lg:w-1/2 relative overflow-hidden bg-gradient-to-br from-primary-50 to-sky-50 dark:from-primary-900/20 dark:to-sky-900/20">
-                      <div className="aspect-[4/3] lg:aspect-auto lg:h-full p-6 lg:p-10 flex items-center justify-center">
-                        <img 
-                          src={proto.thumbnail} 
-                          alt={proto.title}
-                          className="w-full h-auto max-h-80 object-contain rounded-xl shadow-lg group-hover:scale-105 transition-transform duration-500"
-                        />
-                      </div>
-                      {/* Play indicator */}
-                      <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="w-20 h-20 bg-white/90 dark:bg-gray-900/90 rounded-full flex items-center justify-center shadow-xl">
-                          <svg className="w-8 h-8 text-primary-600 dark:text-primary-400 ml-1" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M8 5v14l11-7z"/>
-                          </svg>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="lg:w-1/2 p-8 lg:p-12 flex flex-col justify-center">
-                      {/* Tags */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {proto.tags.map((tag, i) => (
-                          <span 
-                            key={i}
-                            className="px-3 py-1 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full"
-                          >
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-
-                      <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-2 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">
-                        {proto.title}
-                      </h2>
-                      <p className="text-lg text-primary-600 dark:text-primary-400 font-medium mb-4">
-                        {proto.subtitle}
-                      </p>
-                      <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">
-                        {proto.description}
-                      </p>
-
-                      {/* Case study link */}
-                      <div className="flex items-center gap-4 pt-4 border-t border-gray-100 dark:border-gray-700">
-                        <span className="text-sm text-gray-500 dark:text-gray-400">From case study:</span>
-                        <span className="text-sm font-medium text-gray-900 dark:text-white">
-                          {proto.caseStudyTitle}
-                        </span>
-                      </div>
-
-                      {/* CTA */}
-                      <div className="mt-8">
-                        <span className="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 font-semibold group-hover:gap-4 transition-all">
-                          Explore Prototype
-                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                          </svg>
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </article>
-              </Link>
-            ))}
-          </div>
-
-          {/* Coming Soon */}
-          {prototypes.length < 3 && (
-            <div className="mt-16 text-center">
-              <div className="inline-flex flex-col items-center p-8 bg-gray-100/50 dark:bg-gray-800/50 rounded-2xl border-2 border-dashed border-gray-200 dark:border-gray-700">
-                <svg className="w-12 h-12 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                <p className="text-gray-500 dark:text-gray-400 font-medium">More prototypes coming soon</p>
-                <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">Check back for additional interactive experiences</p>
-              </div>
-            </div>
+      <div className="relative max-w-6xl mx-auto px-4 py-20">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mb-4">
+            {proto.title}
+          </h1>
+          <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-4">
+            {proto.description}
+          </p>
+          {proto.caseStudySlug && (
+            <Link
+              to={`/projects/${proto.caseStudySlug}`}
+              className="inline-flex items-center gap-2 text-teal-400 hover:text-teal-300 transition-colors text-sm font-medium group"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              View Full Case Study
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
           )}
         </div>
-      </section>
+
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-12">
+          {/* Phone Display */}
+          <div className="relative">
+            <PhoneFrame>
+              <div 
+                className={`h-full transition-all duration-300 ease-out ${
+                  isAnimating 
+                    ? direction === 'forward' 
+                      ? 'opacity-0 translate-x-4' 
+                      : 'opacity-0 -translate-x-4'
+                    : 'opacity-100 translate-x-0'
+                }`}
+              >
+                {currentScreen === 0 && (
+                  <DashboardScreen onEventClick={nextScreen} />
+                )}
+                {currentScreen === 1 && (
+                  <EventTasksScreen 
+                    onTaskClick={nextScreen} 
+                    onBackClick={prevScreen}
+                  />
+                )}
+                {currentScreen === 2 && (
+                  <ExpandedTasksScreen 
+                    onBackClick={prevScreen}
+                    onTakePhoto={openCamera}
+                    photoTaken={photoTaken}
+                  />
+                )}
+                {currentScreen === 3 && (
+                  <CameraScreen 
+                    onCapture={handlePhotoCapture}
+                    onCancel={handleCameraCancel}
+                  />
+                )}
+              </div>
+            </PhoneFrame>
+            
+            {/* Tap Hint - only show on first screen */}
+            {currentScreen === 0 && (
+              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full mt-4">
+                <div className="flex items-center gap-2 text-gray-400 text-sm animate-pulse">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                  </svg>
+                  Tap the event card to navigate
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Navigation Panel */}
+          <div className="lg:w-80">
+            {/* Screen Progress */}
+            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+              <h3 className="text-white font-semibold mb-4">Screen Flow</h3>
+              
+              <div className="space-y-3">
+                {screenLabels.map((screen, index) => (
+                  <button
+                    key={index}
+                    onClick={() => goToScreen(index, index > currentScreen ? 'forward' : 'backward')}
+                    className={`w-full text-left p-4 rounded-xl transition-all ${
+                      currentScreen === index
+                        ? 'bg-gradient-to-r from-teal-500/20 to-cyan-500/20 border border-teal-500/30'
+                        : 'bg-white/5 hover:bg-white/10 border border-transparent'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
+                        currentScreen === index
+                          ? 'bg-teal-500 text-white'
+                          : currentScreen > index
+                            ? 'bg-teal-500/50 text-white'
+                            : 'bg-gray-700 text-gray-400'
+                      }`}>
+                        {currentScreen > index ? (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        ) : (
+                          index + 1
+                        )}
+                      </div>
+                      <div>
+                        <p className={`font-medium ${
+                          currentScreen === index ? 'text-white' : 'text-gray-400'
+                        }`}>
+                          {screen.label}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          {screen.description}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+
+              {/* Navigation Buttons */}
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={currentScreen === 3 ? handleCameraCancel : prevScreen}
+                  disabled={currentScreen === 0}
+                  className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
+                    currentScreen === 0
+                      ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                      : 'bg-white/10 text-white hover:bg-white/20'
+                  }`}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  {currentScreen === 3 ? 'Cancel' : 'Back'}
+                </button>
+                <button
+                  onClick={nextScreen}
+                  disabled={currentScreen >= 2}
+                  className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
+                    currentScreen >= 2
+                      ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-400 hover:to-cyan-400'
+                  }`}
+                >
+                  Next
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            {/* Feature Highlights */}
+            <div className="mt-6 p-6 bg-gradient-to-br from-teal-500/10 to-cyan-500/10 rounded-2xl border border-teal-500/20">
+              <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
+                <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Interactive Features
+              </h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-400 mt-0.5">•</span>
+                  Tap event cards to navigate
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-400 mt-0.5">•</span>
+                  Check off tasks interactively
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-400 mt-0.5">•</span>
+                  Tap "Take Photo" to open camera
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-400 mt-0.5">•</span>
+                  Capture photos with flash animation
+                </li>
+                <li className="flex items-start gap-2">
+                  <span className="text-teal-400 mt-0.5">•</span>
+                  Photo thumbnail appears after capture
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }

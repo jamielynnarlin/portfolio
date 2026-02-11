@@ -1172,20 +1172,15 @@ export const caseStudies = {
         }
       },
       {
-        title: "The Outcomes",
-        content: [
-          "The Mobile Task Tracker launched successfully. Staff reported feeling 'more prepared' before events. Task completion rates increased 40%. Manager visibility into staff performance improved dramatically."
-        ],
+        title: "What We Delivered",
+        celebrationSection: true,
+        backgroundImage: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=1200&q=80",
         outcomesMetrics: [
           { metric: "40%", label: "Increase in task completion rates" },
           { metric: "3x", label: "More visibility for managers" },
           { metric: "90%", label: "Staff felt 'more prepared'" },
           { metric: "Zero", label: "Missed checkouts reported" }
-        ],
-        quote: {
-          text: "I finally feel like I can show what I actually do. My manager can see my track record now, and I'm getting assigned to better events.",
-          author: "Event Staff, Post Launch Feedback"
-        }
+        ]
       },
       // ============================================
       // PART 2: REIMAGINED WITH AI
@@ -1200,15 +1195,15 @@ export const caseStudies = {
         },
         aiIntroComparison: {
           headline: "What if we could do this 4x faster?",
-          subtext: "The Mobile Task Tracker was designed using traditional methods. Here's what that looked like and how AI transforms every phase.",
+          subtext: "The Mobile Task Tracker was designed using traditional methods. Here's what that looked like and how AI transforms the design process.",
           traditional: {
             label: "Traditional Process",
             timeline: "12 to 16 weeks",
             items: [
               { phase: "Research", pain: "Interview 5 to 10 users if you're lucky. Transcribe manually. Spend weeks compiling notes into insights, hoping you didn't miss critical patterns buried in the data." },
               { phase: "Synthesis", pain: "Create user stories based on gut interpretation. Human error and bias creep in. Stakeholder alignment meetings drag on because everyone reads the data differently." },
-              { phase: "Design", pain: "Sketch wireframes for days. Build high fidelity prototypes for weeks. Then watch users struggle in testing and back to the drawing board." },
-              { phase: "Development", pain: "Hand off specs. Developers interpret requirements. Edge cases surface in QA. The feature you designed isn't quite what got built." }
+              { phase: "Prototyping", pain: "Sketch wireframes for days. Build high fidelity prototypes for weeks. Then watch users struggle in testing and back to the drawing board." },
+              { phase: "Validation", pain: "Run usability tests manually. Iterate slowly. By the time you've validated, the project timeline is already stressed." }
             ]
           },
           accelerated: {
@@ -1217,8 +1212,8 @@ export const caseStudies = {
             items: [
               { phase: "Research", benefit: "AI processes 50+ interviews in hours. Patterns emerge automatically. You talk to more users because synthesis isn't the bottleneck." },
               { phase: "Synthesis", benefit: "AI identifies themes across all data: 'invisible work' appeared in 73% of interviews. User stories generate from actual quotes, not memory." },
-              { phase: "Design", benefit: "AI generates wireframe variations from user stories. Prototype faster, test earlier, iterate before you're emotionally attached." },
-              { phase: "Development", benefit: "Copilot turns user stories into code. Edge cases generate from requirements. What you designed is what gets built." }
+              { phase: "Prototyping", benefit: "AI generates wireframe variations from user stories. Prototype faster, test earlier, iterate before you're emotionally attached." },
+              { phase: "Validation", benefit: "Test more variations with less effort. AI generates test scenarios from user stories. Validated designs reach development faster." }
             ]
           }
         },
@@ -1227,121 +1222,47 @@ export const caseStudies = {
         ]
       },
       {
-        title: "From Research to Development",
-        introText: "Once we understood Sam's day, translating that into user stories and acceptance criteria was manual work. AI streamlines this translation:",
+        title: "AI-Accelerated Product Design",
+        introText: "Here's how AI transformed each phase of the Mobile Task Tracker design process:",
         bulletPoints: [
+          {
+            icon: "search",
+            title: "Gathering User Insights",
+            description: "AI processed transcripts from 50+ user interviews in hours instead of weeks. It automatically identified that 73% of staff mentioned 'invisible work' - a pattern that would have taken manual analysis much longer to surface.",
+            example: "Input: Raw interview transcripts → Output: Categorized themes with supporting quotes"
+          },
+          {
+            icon: "layers",
+            title: "Rapid Prototyping",
+            description: "Generated multiple wireframe variations from user stories instantly. We tested 3x more concepts in the same timeframe, finding the one-tap task completion approach before committing to high-fidelity designs.",
+            example: "Input: 'Staff need to log tasks quickly' → Output: 5 wireframe variations to test"
+          },
           {
             icon: "user",
             title: "User Story Generation",
-            description: "Sam's morning conflict → 'As event staff, I need to see my next event on login'"
-          },
-          {
-            icon: "check",
-            title: "Acceptance Criteria",
-            description: "AI generates: 'Next event displayed within 2 taps of login'"
-          },
-          {
-            icon: "code",
-            title: "Code Generation",
-            description: "Developers describe Sam's needs in natural language, Copilot handles implementation"
-          }
-        ],
-        codeReviewIntro: {
-          title: "AI Assisted Code Review in Action",
-          description: "Here's what an AI code review looks like for Sam's offline task completion feature, the same feature that ensures his work is captured even without cell service at venue basements."
-        },
-        showCodeReviewViewer: true,
-        highlights: [
-          "Research insights → user stories automatically",
-          "Natural language → working code",
-          "Edge cases and validation generated",
-          "Developers focus on architecture, not boilerplate"
-        ]
-      },
-      {
-        title: "Testing Sam's Journey",
-        introText: "Testing the app manually consumed significant time each sprint. AI generates tests directly from Sam's story:",
-        bulletPoints: [
-          {
-            icon: "clock",
-            title: "Morning Check",
-            description: "'Sam needs to see his event before leaving home' → Profile loads in <2s, next event prominent, task count visible"
+            description: "AI extracted user stories directly from research quotes, ensuring nothing was lost in translation. Sam's morning conflict became 'As event staff, I need to see my next event on login' - traced back to his actual words.",
+            example: "Input: Interview quote about morning stress → Output: Formatted user story with acceptance criteria"
           },
           {
             icon: "bolt",
-            title: "Busy Mode",
-            description: "'Sam can't record tasks when busy' → Single tap completion, works offline, feedback in <200ms"
-          },
-          {
-            icon: "shield",
-            title: "Experience Protection",
-            description: "Edge cases like network failures tied directly to Sam's need for reliable work capture"
+            title: "AI Agents for Repetitive Tasks",
+            description: "Automated the tedious work: formatting design specs, generating acceptance criteria from mockups, and cross-checking designs against requirements. Designers spent time designing, not documenting.",
+            example: "Input: Figma mockup → Output: Formatted spec with dimensions, states, and edge cases"
           }
-        ],
-        documentationIntro: {
-          title: "AI Generated Test Documentation",
-          description: "Tests verify Sam's experience, not just functionality. Here's documentation generated from user stories, ensuring every test connects back to a real user need."
-        },
-        showDocumentationViewer: true,
-        highlights: [
-          "Tests generated from user needs",
-          "Sam's experience verified automatically",
-          "Edge cases tied to real scenarios",
-          "85%+ coverage achievable"
         ]
       },
       {
         title: "The Integrated Workflow",
-        introText: "The real power emerges when AI supports the entire process. Here's how each phase connects:",
-        workflowSteps: [
-          { icon: "search", phase: "Research", description: "AI processes interviews, identifies patterns and emotional themes" },
-          { icon: "lightbulb", phase: "Synthesis", description: "Surfaces insights like 'invisible work' that define the core problem" },
-          { icon: "code", phase: "Development", description: "Translates research into user stories, then Copilot generates implementation" },
-          { icon: "check", phase: "Testing", description: "Creates test suites verifying user experience, not just functionality" }
-        ],
         workflowIntro: {
-          title: "End to End AI Workflow",
-          description: "The Mobile Task Tracker took 4 months. With AI acceleration, similar quality could be achieved in 2 months, not by cutting corners, but by eliminating the mechanical work between insights and implementation."
+          title: "See the AI-Integrated Process",
+          description: "Click through each phase below to see how AI accelerates the work - from research to launch. This is the workflow that could cut timeline from 4 months to 2, without sacrificing quality."
         },
-        showWorkflowDiagram: true,
-        highlights: [
-          "End to end acceleration",
-          "Research → Code → Testing streamlined",
-          "4 months → 2 months potential",
-          "Quality preserved, speed improved"
-        ]
+        showWorkflowDiagram: true
       },
       {
-        title: "What Stays Human",
+        title: "The Impact",
         humanSection: {
-          headline: "AI builds the tools. Humans build the connections.",
-          subheadline: "Sam's story guided every design choice. In the AI era, we'd reach that story faster but it would still be his story that mattered.",
-          columns: [
-            {
-              title: "What AI Does",
-              icon: "robot",
-              items: [
-                "Synthesize 73% pattern matches",
-                "Generate code from requirements",
-                "Create test suites automatically",
-                "Process interviews in hours"
-              ]
-            },
-            {
-              title: "What Humans Do",
-              icon: "heart",
-              items: [
-                "Choose whose story to tell",
-                "Design emotional transformation",
-                "Connect features to outcomes",
-                "Build trust with stakeholders"
-              ]
-            }
-          ],
-          eventImage: {
-            src: "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&h=500&fit=crop",
-            alt: "Concert crowd with hands raised at a live music festival"
-          }
+          showMetrics: true
         }
       }
     ],

@@ -686,7 +686,7 @@ function BeforeAfterComparison({ beforeAfter }) {
 }
 
 // Static Screen Gallery Component - Shows screens with link to interactive prototype
-function ScreenGallery({ prototype, prototypeLink }) {
+function ScreenGallery({ prototype, prototypeLink, isDark }) {
   const screens = [
     { 
       component: ShiftSummaryScreen, 
@@ -715,10 +715,10 @@ function ScreenGallery({ prototype, prototypeLink }) {
       {/* Section Header with Prototype Link */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
         <div>
-          <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-2">
+          <h3 className={`text-2xl md:text-3xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
             {prototype.title}
           </h3>
-          <p className="text-gray-600 dark:text-gray-300 max-w-2xl">
+          <p className={`max-w-2xl ${isDark ? 'text-gray-300' : 'text-gray-600 dark:text-gray-300'}`}>
             {prototype.description}
           </p>
         </div>
@@ -760,30 +760,15 @@ function ScreenGallery({ prototype, prototypeLink }) {
               </div>
               
               {/* Title and Description */}
-              <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+              <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
                 {screen.title}
               </h4>
-              <p className="text-gray-600 dark:text-gray-300">
+              <p className={isDark ? 'text-gray-300' : 'text-gray-600 dark:text-gray-300'}>
                 {screen.description}
               </p>
             </div>
           )
         })}
-      </div>
-
-      {/* Feature bullets */}
-      <div className="mt-12 p-6 bg-gray-50 dark:bg-gray-800/50 rounded-2xl">
-        <h4 className="font-semibold text-gray-900 dark:text-white mb-4">Key Features</h4>
-        <ul className="grid sm:grid-cols-2 gap-3">
-          {prototype.bullets.map((bullet, j) => (
-            <li key={j} className="flex items-start gap-3 text-gray-600 dark:text-gray-300">
-              <svg className="w-5 h-5 text-teal-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-              <span>{bullet}</span>
-            </li>
-          ))}
-        </ul>
       </div>
     </div>
   )
@@ -951,7 +936,19 @@ function CaseStudy() {
 
                     <div className="relative z-10 px-4 md:px-8 lg:px-16 py-20 md:py-32">
                       <div className="max-w-7xl mx-auto">
-                        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                        {/* Event image background element */}
+                        <div className="absolute inset-0 overflow-hidden">
+                          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1/2 h-[120%] opacity-20 hidden lg:block">
+                            <img 
+                              src="https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?auto=format&fit=crop&w=1000&q=80"
+                              alt=""
+                              className="w-full h-full object-cover"
+                              style={{ maskImage: 'linear-gradient(to left, black 30%, transparent 100%)' }}
+                            />
+                          </div>
+                        </div>
+
+                        <div className="relative max-w-3xl">
                           {/* Left - Content */}
                           <motion.div 
                             className="text-center lg:text-left"
@@ -1038,107 +1035,6 @@ function CaseStudy() {
                                 <span className="text-teal-300 font-bold text-lg">3 to 4 weeks</span>
                               </div>
                             </motion.div>
-                          </motion.div>
-
-                          {/* Right - Document Investigation Mockup */}
-                          <motion.div 
-                            className="relative flex justify-center lg:justify-end"
-                            initial={{ opacity: 0, scale: 0.8, y: 50 }}
-                            whileInView={{ opacity: 1, scale: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.8, delay: 0.3 }}
-                          >
-                            {/* Glow behind browser */}
-                            <div className="absolute inset-0 flex items-center justify-center lg:justify-end">
-                              <motion.div 
-                                className="w-80 h-80 bg-gradient-to-r from-amber-500 to-indigo-600 rounded-full blur-[80px] opacity-50"
-                                animate={{ 
-                                  scale: [1, 1.1, 1],
-                                  opacity: [0.4, 0.6, 0.4]
-                                }}
-                                transition={{ duration: 4, repeat: Infinity }}
-                              />
-                            </div>
-
-                            {/* Browser with floating elements */}
-                            <div className="relative">
-                              {/* Floating Document/Legal elements */}
-                              <motion.div 
-                                className="absolute -top-6 -left-12 w-14 h-14 bg-gradient-to-br from-amber-400 to-amber-600 rounded-2xl flex items-center justify-center shadow-2xl shadow-amber-500/40"
-                                animate={{ y: [-5, 5, -5], rotate: [0, 5, 0] }}
-                                transition={{ duration: 3, repeat: Infinity }}
-                              >
-                                {/* Scales of Justice */}
-                                <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                  <path d="M12 3C10.9 3 10 3.9 10 5H7C5.9 5 5 5.9 5 7V8L1 12H5C5 14.2 6.8 16 9 16H10V19H8V21H16V19H14V16H15C17.2 16 19 14.2 19 12H23L19 8V7C19 5.9 18.1 5 17 5H14C14 3.9 13.1 3 12 3ZM12 5C12.6 5 13 5.4 13 6S12.6 7 12 7 11 6.6 11 6 11.4 5 12 5ZM7 8H17V9L14.5 12H9.5L7 9V8Z"/>
-                                </svg>
-                              </motion.div>
-
-                              <motion.div 
-                                className="absolute -top-4 -right-8 w-12 h-12 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-xl flex items-center justify-center shadow-2xl shadow-indigo-500/40"
-                                animate={{ y: [5, -5, 5], rotate: [0, -5, 0] }}
-                                transition={{ duration: 2.5, repeat: Infinity }}
-                              >
-                                {/* Search/Magnifying Glass */}
-                                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                                </svg>
-                              </motion.div>
-
-                              <motion.div 
-                                className="absolute bottom-24 -left-14 w-12 h-12 bg-gradient-to-br from-slate-600 to-slate-800 rounded-xl flex items-center justify-center shadow-2xl shadow-slate-500/40"
-                                animate={{ y: [0, -8, 0], x: [-2, 2, -2] }}
-                                transition={{ duration: 4, repeat: Infinity }}
-                              >
-                                {/* Document */}
-                                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
-                                </svg>
-                              </motion.div>
-
-                              <motion.div 
-                                className="absolute bottom-12 -right-10 w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-full flex items-center justify-center shadow-2xl shadow-emerald-500/40"
-                                animate={{ y: [-3, 3, -3], scale: [1, 1.1, 1] }}
-                                transition={{ duration: 3, repeat: Infinity, delay: 0.5 }}
-                              >
-                                {/* Citation/Link */}
-                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                                </svg>
-                              </motion.div>
-
-                              {/* The Browser with Document Investigation UI */}
-                              <motion.div
-                                className="relative"
-                                whileHover={{ scale: 1.02 }}
-                                transition={{ duration: 0.3 }}
-                              >
-                                <BrowserFrame>
-                                  <InvestigateDocumentScreen />
-                                </BrowserFrame>
-                              </motion.div>
-
-                              {/* Particle dots */}
-                              {[...Array(8)].map((_, i) => (
-                                <motion.div
-                                  key={i}
-                                  className="absolute w-2 h-2 bg-white/50 rounded-full"
-                                  style={{
-                                    top: `${10 + Math.random() * 80}%`,
-                                    left: `${-15 + Math.random() * 130}%`,
-                                  }}
-                                  animate={{ 
-                                    y: [0, -20, 0],
-                                    opacity: [0.2, 0.7, 0.2]
-                                  }}
-                                  transition={{ 
-                                    duration: 2 + Math.random() * 2, 
-                                    repeat: Infinity,
-                                    delay: Math.random() * 2
-                                  }}
-                                />
-                              ))}
-                            </div>
                           </motion.div>
                         </div>
                       </div>
@@ -1307,14 +1203,14 @@ function CaseStudy() {
               <section key={index} className="mb-8">
                 {/* Full-width section banner */}
                 <motion.div 
-                  className={`-mx-4 md:-mx-8 lg:-mx-16 xl:-mx-24 ${isProblemResearchSection ? 'bg-transparent' : theme.bg} ${isDark && !isProblemResearchSection ? '' : isProblemResearchSection ? '' : 'border border-gray-200/50 dark:border-gray-700/50'} rounded-[2rem] md:rounded-[3rem] overflow-hidden`}
+                  className={`-mx-4 md:-mx-8 lg:-mx-16 xl:-mx-24 ${isProblemResearchSection || section.celebrationSection ? 'bg-transparent' : theme.bg} ${isDark && !isProblemResearchSection ? '' : isProblemResearchSection || section.celebrationSection ? '' : 'border border-gray-200/50 dark:border-gray-700/50'} rounded-[2rem] md:rounded-[3rem] overflow-hidden`}
                   initial={{ opacity: 0, y: 60 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, margin: "-100px" }}
                   transition={{ duration: 0.7, ease: "easeOut" }}
                 >
                   {/* Section Header Banner */}
-                  {section.title && (
+                  {section.title && !section.celebrationSection && (
                     <motion.div 
                       className={`relative px-6 md:px-12 lg:px-16 pt-10 pb-0`}
                       initial={{ opacity: 0 }}
@@ -1334,7 +1230,7 @@ function CaseStudy() {
                   )}
                   
                   {/* Section Content Container */}
-                  <div className={`${isProblemResearchSection ? 'px-0 py-0' : 'px-6 md:px-12 lg:px-16 pt-4 pb-8 md:pb-10'}`}>
+                  <div className={`${isProblemResearchSection || section.celebrationSection ? 'px-0 py-0' : 'px-6 md:px-12 lg:px-16 pt-4 pb-8 md:pb-10'}`}>
                   
                     {/* Standard content paragraphs */}
                     {section.content && !section.imageGallery && !section.problemStory && !section.problemBento && (
@@ -2131,6 +2027,7 @@ function CaseStudy() {
                   <ScreenGallery 
                     prototype={section.interactivePrototype} 
                     prototypeLink={section.interactivePrototype.prototypeLink || '/prototypes/mobile-task-tracker'}
+                    isDark={isDark}
                   />
                 )}
 
@@ -2248,8 +2145,273 @@ function CaseStudy() {
                   <KeyInsights highlights={section.highlights} sectionIndex={index} />
                 )}
 
-                {/* Outcomes Metrics - Results & Impact Style */}
-                {section.outcomesMetrics && (
+                {/* Celebration Outcomes Section - Full Visual Experience */}
+                {section.outcomesMetrics && section.celebrationSection && (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    whileInView={{ opacity: 1 }}
+                    viewport={{ once: true }}
+                  >
+                    <div className="relative rounded-3xl overflow-hidden min-h-[500px]">
+                      {/* Background Image */}
+                      <div className="absolute inset-0">
+                        <img 
+                          src={section.backgroundImage} 
+                          alt="" 
+                          className="w-full h-full object-cover"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/70 via-slate-900/60 to-indigo-900/70" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-900/50 to-transparent" />
+                      </div>
+
+                      {/* Animated Strobe/Light Effects */}
+                      <motion.div 
+                        className="absolute top-0 left-1/4 w-96 h-96 bg-pink-500/20 rounded-full blur-[100px]"
+                        animate={{ 
+                          opacity: [0.2, 0.5, 0.2],
+                          scale: [1, 1.2, 1],
+                        }}
+                        transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                      />
+                      <motion.div 
+                        className="absolute bottom-0 right-1/4 w-80 h-80 bg-cyan-500/20 rounded-full blur-[80px]"
+                        animate={{ 
+                          opacity: [0.3, 0.6, 0.3],
+                          scale: [1.2, 1, 1.2],
+                        }}
+                        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                      />
+                      <motion.div 
+                        className="absolute top-1/3 right-1/3 w-64 h-64 bg-yellow-500/15 rounded-full blur-[60px]"
+                        animate={{ 
+                          opacity: [0.1, 0.4, 0.1],
+                          x: [-20, 20, -20],
+                        }}
+                        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+                      />
+
+                      {/* Content - Backstage Pass Grid */}
+                      <div className="relative z-10 pt-10 pb-12 md:pb-20 lg:pb-24">
+                        {/* Section Title - Top Left */}
+                        <motion.div 
+                          className="px-6 md:px-12 lg:px-16 mb-12 md:mb-16"
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true }}
+                        >
+                          <motion.h2 
+                            className="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-tight"
+                            initial={{ opacity: 0, x: -50 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, ease: "easeOut" }}
+                          >
+                            {section.title}
+                          </motion.h2>
+                        </motion.div>
+                        
+                        {/* Passes Grid */}
+                        <div className="flex flex-wrap justify-center gap-6 md:gap-8 lg:gap-10 px-4 md:px-8">
+                          {section.outcomesMetrics.map((result, i) => {
+                            // Stat-relevant labels
+                            const passColors = [
+                              { accent: '#34d399', accentDark: '#059669', label: 'PRODUCTIVITY' }, // 40% task completion
+                              { accent: '#a78bfa', accentDark: '#7c3aed', label: 'VISIBILITY' }, // 3x manager visibility
+                              { accent: '#fbbf24', accentDark: '#d97706', label: 'CONFIDENCE' }, // 90% felt prepared
+                              { accent: '#fb7185', accentDark: '#e11d48', label: 'RELIABILITY' }, // Zero missed
+                            ]
+                            const pass = passColors[i % passColors.length]
+                            
+                            return (
+                              <motion.div 
+                                key={i}
+                                className="relative cursor-pointer"
+                                initial={{ opacity: 0, y: 30 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.12, duration: 0.6 }}
+                                style={{ perspective: '1000px' }}
+                              >
+                                {/* Lanyard String */}
+                                <div className="absolute left-1/2 -translate-x-1/2 -top-8 w-0.5 h-10 bg-gradient-to-b from-slate-500 to-slate-600" />
+                                <div className="absolute left-1/2 -translate-x-1/2 -top-10 w-3 h-3 rounded-full bg-slate-500 border-2 border-slate-400" />
+                                
+                                {/* Pass Card with Tilt Effect */}
+                                <motion.div
+                                  className="relative w-36 sm:w-40 md:w-48 group"
+                                  whileHover={{ 
+                                    rotateY: 5,
+                                    rotateX: -5,
+                                    y: -8,
+                                    transition: { type: "spring", stiffness: 300, damping: 20 }
+                                  }}
+                                  style={{ transformStyle: 'preserve-3d' }}
+                                >
+                                  {/* Card Shadow */}
+                                  <div className="absolute inset-0 bg-black/40 rounded-xl blur-xl translate-y-4 group-hover:translate-y-6 group-hover:blur-2xl transition-all duration-300" />
+                                  
+                                  {/* Main Card */}
+                                  <div 
+                                    className="relative rounded-xl overflow-hidden border border-white/10"
+                                    style={{
+                                      background: 'linear-gradient(145deg, #1e293b 0%, #0f172a 100%)',
+                                      boxShadow: `
+                                        inset 0 1px 0 rgba(255,255,255,0.15),
+                                        inset 0 -1px 0 rgba(0,0,0,0.3),
+                                        inset 1px 0 0 rgba(255,255,255,0.05),
+                                        inset -1px 0 0 rgba(0,0,0,0.2),
+                                        0 4px 20px rgba(0,0,0,0.4),
+                                        0 8px 32px rgba(0,0,0,0.3)
+                                      `,
+                                    }}
+                                  >
+                                    {/* Holographic Shimmer Effect */}
+                                    <div 
+                                      className="absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500 pointer-events-none"
+                                      style={{
+                                        background: `linear-gradient(105deg, transparent 20%, ${pass.accent}40 45%, ${pass.accentDark}40 55%, transparent 80%)`,
+                                        backgroundSize: '200% 100%',
+                                        animation: 'shimmer 1.5s ease-in-out infinite',
+                                      }}
+                                    />
+                                    
+                                    {/* Top Accent Bar */}
+                                    <div 
+                                      className="h-2"
+                                      style={{ background: `linear-gradient(90deg, ${pass.accent}, ${pass.accentDark})` }}
+                                    />
+                                    
+                                    {/* Pass Content */}
+                                    <div className="p-4 md:p-5">
+                                      {/* Category Label */}
+                                      <div className="flex items-center justify-center mb-3">
+                                        <span 
+                                          className="text-[9px] font-bold tracking-widest px-2 py-0.5 rounded"
+                                          style={{ 
+                                            background: `${pass.accent}20`,
+                                            color: pass.accent,
+                                          }}
+                                        >
+                                          {pass.label}
+                                        </span>
+                                      </div>
+                                      
+                                      {/* The Big Metric - Lead Singer */}
+                                      <div 
+                                        className="text-4xl sm:text-5xl md:text-6xl font-black text-center py-4 md:py-6 transition-all duration-300"
+                                        style={{ 
+                                          color: pass.accent,
+                                          textShadow: `0 0 30px ${pass.accent}60`,
+                                        }}
+                                      >
+                                        {result.metric}
+                                      </div>
+                                      
+                                      {/* Metric Description */}
+                                      <p className="text-xs md:text-sm text-center text-slate-300 font-medium leading-tight mb-4">
+                                        {result.label}
+                                      </p>
+                                      
+                                      {/* Barcode Effect */}
+                                      <div className="flex justify-center gap-px">
+                                        {[...Array(20)].map((_, j) => (
+                                          <div 
+                                            key={j}
+                                            className="bg-slate-600"
+                                            style={{
+                                              width: Math.random() > 0.5 ? '2px' : '1px',
+                                              height: '20px',
+                                              opacity: 0.3 + Math.random() * 0.4,
+                                            }}
+                                          />
+                                        ))}
+                                      </div>
+                                      
+                                      {/* Pass ID */}
+                                      <p className="text-[9px] text-center text-slate-600 mt-2 font-mono tracking-wider">
+                                        PASS #{String(i + 1).padStart(4, '0')}
+                                      </p>
+                                    </div>
+                                    
+                                    {/* Lanyard Hole */}
+                                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-4 h-2 bg-slate-900 rounded-full border border-slate-700" />
+                                  </div>
+                                  
+                                  {/* Plastic Coating Overlay - Glossy Laminate Effect */}
+                                  <div 
+                                    className="absolute inset-0 rounded-xl pointer-events-none overflow-hidden"
+                                    style={{
+                                      background: `
+                                        linear-gradient(
+                                          135deg, 
+                                          rgba(255,255,255,0.15) 0%, 
+                                          rgba(255,255,255,0.05) 20%,
+                                          transparent 40%,
+                                          transparent 60%,
+                                          rgba(0,0,0,0.05) 80%,
+                                          rgba(0,0,0,0.15) 100%
+                                        )
+                                      `,
+                                    }}
+                                  />
+                                  
+                                  {/* Top Glossy Shine */}
+                                  <div 
+                                    className="absolute top-0 left-0 right-0 h-1/3 rounded-t-xl pointer-events-none"
+                                    style={{
+                                      background: 'linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.04) 50%, transparent 100%)',
+                                    }}
+                                  />
+                                  
+                                  {/* Edge Highlight - Left */}
+                                  <div 
+                                    className="absolute top-0 left-0 bottom-0 w-px pointer-events-none"
+                                    style={{
+                                      background: 'linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(255,255,255,0.05) 50%, transparent 100%)',
+                                    }}
+                                  />
+                                  
+                                  {/* Edge Highlight - Top */}
+                                  <div 
+                                    className="absolute top-0 left-0 right-0 h-px pointer-events-none rounded-t-xl"
+                                    style={{
+                                      background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 20%, rgba(255,255,255,0.3) 80%, transparent 100%)',
+                                    }}
+                                  />
+                                  
+                                  {/* Subtle Plastic Sheen on Hover */}
+                                  <div 
+                                    className="absolute inset-0 rounded-xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                                    style={{
+                                      background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.08) 50%, transparent 60%)',
+                                      backgroundSize: '200% 100%',
+                                      animation: 'plastic-sheen 2s ease-in-out infinite',
+                                    }}
+                                  />
+                                </motion.div>
+                              </motion.div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                      
+                      {/* CSS for animations */}
+                      <style>{`
+                        @keyframes shimmer {
+                          0% { background-position: 200% 0; }
+                          100% { background-position: -200% 0; }
+                        }
+                        @keyframes plastic-sheen {
+                          0%, 100% { background-position: 200% 0; }
+                          50% { background-position: -200% 0; }
+                        }
+                      `}</style>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Outcomes Metrics - Results & Impact Style (Default) */}
+                {section.outcomesMetrics && !section.celebrationSection && (
                   <motion.div 
                     className="mt-10"
                     initial={{ opacity: 0 }}
@@ -3044,6 +3206,447 @@ function CaseStudy() {
                       <p className="text-lg text-gray-600 dark:text-gray-200 mb-8 leading-relaxed">{section.introText}</p>
                     )}
                     
+                    {/* AI-Accelerated Product Design Visual Cards */}
+                    {section.title === "AI-Accelerated Product Design" ? (
+                      <div className="space-y-8">
+                        {/* 1. Gathering User Insights */}
+                        <motion.div
+                          className="bg-slate-800 rounded-2xl p-6 border border-blue-400/50 shadow-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                        >
+                          <div className="flex items-start gap-4 mb-6">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white shadow-lg flex-shrink-0">
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                              </svg>
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-white mb-2">Gathering User Insights</h4>
+                              <p className="text-sm text-gray-200 leading-relaxed">AI processed transcripts from 50+ user interviews in hours instead of weeks. It automatically identified that 73% of staff mentioned 'invisible work' - a pattern that would have taken manual analysis much longer to surface.</p>
+                            </div>
+                          </div>
+                          
+                          {/* Visual: Interview quotes → Categorized themes */}
+                          <div className="bg-slate-900/60 rounded-xl p-4 border border-slate-700">
+                            <div className="grid md:grid-cols-2 gap-4">
+                              {/* Input: Raw quotes */}
+                              <div>
+                                <div className="text-xs text-slate-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                  <span className="w-2 h-2 rounded-full bg-slate-500"></span>
+                                  Input: Interview Transcripts
+                                </div>
+                                <div className="space-y-2">
+                                  {[
+                                    '"I do so much that nobody sees..."',
+                                    '"My manager has no idea what I actually do"',
+                                    '"The work I do behind the scenes..."'
+                                  ].map((quote, i) => (
+                                    <motion.div 
+                                      key={i}
+                                      className="text-xs text-slate-300 bg-slate-800 p-2 rounded border-l-2 border-slate-600 italic"
+                                      initial={{ opacity: 0, x: -10 }}
+                                      whileInView={{ opacity: 1, x: 0 }}
+                                      viewport={{ once: true }}
+                                      transition={{ delay: 0.2 + i * 0.1 }}
+                                    >
+                                      {quote}
+                                    </motion.div>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              {/* Arrow */}
+                              <div className="hidden md:flex items-center justify-center absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                                <motion.div
+                                  animate={{ x: [0, 5, 0] }}
+                                  transition={{ duration: 1.5, repeat: Infinity }}
+                                >
+                                  <svg className="w-6 h-6 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                  </svg>
+                                </motion.div>
+                              </div>
+                              
+                              {/* Output: Categorized themes */}
+                              <div>
+                                <div className="text-xs text-teal-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+                                  <span className="w-2 h-2 rounded-full bg-teal-500"></span>
+                                  Output: Categorized Themes
+                                </div>
+                                <div className="space-y-2">
+                                  <motion.div 
+                                    className="bg-teal-500/20 border border-teal-500/40 rounded-lg p-3"
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.5 }}
+                                  >
+                                    <div className="flex items-center justify-between mb-1">
+                                      <span className="text-sm font-semibold text-teal-300">Invisible Work</span>
+                                      <span className="text-xs bg-teal-500 text-white px-2 py-0.5 rounded-full">73%</span>
+                                    </div>
+                                    <p className="text-xs text-slate-300">Staff feel their behind-the-scenes contributions go unrecognized</p>
+                                  </motion.div>
+                                  <motion.div 
+                                    className="bg-blue-500/20 border border-blue-500/40 rounded-lg p-3"
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    whileInView={{ opacity: 1, scale: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.6 }}
+                                  >
+                                    <div className="flex items-center justify-between mb-1">
+                                      <span className="text-sm font-semibold text-blue-300">Time Pressure</span>
+                                      <span className="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full">61%</span>
+                                    </div>
+                                    <p className="text-xs text-slate-300">No time to document tasks during busy periods</p>
+                                  </motion.div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+
+                        {/* 2. Rapid Prototyping */}
+                        <motion.div
+                          className="bg-slate-800 rounded-2xl p-6 border border-emerald-400/50 shadow-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.1 }}
+                        >
+                          <div className="flex items-start gap-4 mb-6">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg flex-shrink-0">
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                              </svg>
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-white mb-2">Rapid Prototyping</h4>
+                              <p className="text-sm text-gray-200 leading-relaxed">Generated multiple wireframe variations from user stories instantly. We tested 3x more concepts in the same timeframe, finding the one-tap task completion approach before committing to high-fidelity designs.</p>
+                            </div>
+                          </div>
+                          
+                          {/* Visual: Wireframe variations for task completion */}
+                          <div className="bg-slate-900/60 rounded-xl p-4 border border-slate-700">
+                            <div className="text-xs text-emerald-400 uppercase tracking-wider mb-4 flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                              AI-Generated Wireframe Variations: "One-Tap Task Completion"
+                            </div>
+                            <div className="grid grid-cols-3 gap-3">
+                              {/* Variation A - List with checkboxes */}
+                              <motion.div 
+                                className="bg-slate-800 rounded-lg p-3 border border-slate-600"
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.3 }}
+                              >
+                                <div className="text-[10px] text-slate-400 mb-2">Variation A</div>
+                                <div className="bg-slate-700 rounded p-2 space-y-1.5">
+                                  <div className="flex items-center gap-1.5">
+                                    <div className="w-3 h-3 rounded border border-slate-500"></div>
+                                    <div className="h-1.5 bg-slate-500 rounded flex-1"></div>
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <div className="w-3 h-3 rounded border border-slate-500"></div>
+                                    <div className="h-1.5 bg-slate-500 rounded w-3/4"></div>
+                                  </div>
+                                  <div className="flex items-center gap-1.5">
+                                    <div className="w-3 h-3 rounded border border-slate-500"></div>
+                                    <div className="h-1.5 bg-slate-500 rounded w-2/3"></div>
+                                  </div>
+                                </div>
+                                <div className="text-[9px] text-slate-500 mt-2">List + checkbox</div>
+                              </motion.div>
+                              
+                              {/* Variation B - Swipe cards (WINNER) */}
+                              <motion.div 
+                                className="bg-emerald-900/30 rounded-lg p-3 border-2 border-emerald-500 relative"
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.4 }}
+                              >
+                                <div className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold">WINNER</div>
+                                <div className="text-[10px] text-emerald-400 mb-2">Variation B</div>
+                                <div className="bg-slate-700 rounded p-2">
+                                  <div className="bg-slate-600 rounded p-1.5 mb-1">
+                                    <div className="h-1.5 bg-slate-400 rounded w-2/3 mb-1"></div>
+                                    <div className="h-1 bg-slate-500 rounded w-1/2"></div>
+                                  </div>
+                                  <div className="flex justify-center">
+                                    <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
+                                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                      </svg>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div className="text-[9px] text-emerald-400 mt-2 font-medium">One-tap complete</div>
+                              </motion.div>
+                              
+                              {/* Variation C - Grid with icons */}
+                              <motion.div 
+                                className="bg-slate-800 rounded-lg p-3 border border-slate-600"
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.5 }}
+                              >
+                                <div className="text-[10px] text-slate-400 mb-2">Variation C</div>
+                                <div className="bg-slate-700 rounded p-2">
+                                  <div className="grid grid-cols-2 gap-1">
+                                    <div className="bg-slate-600 rounded p-1 h-6"></div>
+                                    <div className="bg-slate-600 rounded p-1 h-6"></div>
+                                    <div className="bg-slate-600 rounded p-1 h-6"></div>
+                                    <div className="bg-slate-600 rounded p-1 h-6"></div>
+                                  </div>
+                                </div>
+                                <div className="text-[9px] text-slate-500 mt-2">Grid layout</div>
+                              </motion.div>
+                            </div>
+                          </div>
+                        </motion.div>
+
+                        {/* 3. User Story Generation */}
+                        <motion.div
+                          className="bg-slate-800 rounded-2xl p-6 border border-violet-400/50 shadow-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.2 }}
+                        >
+                          <div className="flex items-start gap-4 mb-6">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white shadow-lg flex-shrink-0">
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                              </svg>
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-white mb-2">User Story Generation</h4>
+                              <p className="text-sm text-gray-200 leading-relaxed">AI extracted user stories directly from research quotes, ensuring nothing was lost in translation. Sam's morning conflict became a formatted user story - traced back to his actual words.</p>
+                            </div>
+                          </div>
+                          
+                          {/* Visual: Quote → User Story transformation */}
+                          <div className="bg-slate-900/60 rounded-xl p-4 border border-slate-700">
+                            <div className="grid md:grid-cols-2 gap-4 items-center">
+                              {/* Input: Interview quote */}
+                              <motion.div 
+                                className="bg-slate-800 rounded-lg p-4 border-l-4 border-violet-500"
+                                initial={{ opacity: 0, x: -20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.3 }}
+                              >
+                                <div className="text-xs text-slate-400 uppercase tracking-wider mb-2">Interview Quote</div>
+                                <p className="text-sm text-slate-200 italic">"Every morning I'm scrambling to figure out which event I'm working. I check my email, then the app, then text my manager... I just want to know where I need to be."</p>
+                                <div className="text-xs text-slate-500 mt-2">- Sam, Event Coordinator</div>
+                              </motion.div>
+                              
+                              {/* Arrow */}
+                              <div className="hidden md:flex items-center justify-center absolute left-1/2 -translate-x-1/2">
+                                <motion.div
+                                  animate={{ x: [0, 5, 0] }}
+                                  transition={{ duration: 1.5, repeat: Infinity }}
+                                  className="bg-slate-800 rounded-full p-2"
+                                >
+                                  <svg className="w-5 h-5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                  </svg>
+                                </motion.div>
+                              </div>
+                              
+                              {/* Output: Formatted user story */}
+                              <motion.div 
+                                className="bg-violet-500/20 border border-violet-500/40 rounded-lg p-4"
+                                initial={{ opacity: 0, x: 20 }}
+                                whileInView={{ opacity: 1, x: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.5 }}
+                              >
+                                <div className="text-xs text-violet-400 uppercase tracking-wider mb-2">Generated User Story</div>
+                                <div className="text-sm text-white font-medium mb-3">
+                                  <span className="text-violet-300">As</span> event staff, <span className="text-violet-300">I need to</span> see my next event immediately on login <span className="text-violet-300">so that</span> I can start my day without confusion.
+                                </div>
+                                <div className="border-t border-violet-500/30 pt-3 mt-3">
+                                  <div className="text-xs text-violet-300 font-semibold mb-1">Acceptance Criteria:</div>
+                                  <ul className="text-xs text-slate-300 space-y-1">
+                                    <li className="flex items-center gap-1.5"><span className="text-violet-400">✓</span> Next event visible within 2 taps</li>
+                                    <li className="flex items-center gap-1.5"><span className="text-violet-400">✓</span> Event date, time, and venue displayed</li>
+                                    <li className="flex items-center gap-1.5"><span className="text-violet-400">✓</span> Task count for event shown</li>
+                                  </ul>
+                                </div>
+                              </motion.div>
+                            </div>
+                          </div>
+                        </motion.div>
+
+                        {/* 4. AI Agents */}
+                        <motion.div
+                          className="bg-slate-800 rounded-2xl p-6 border border-amber-400/50 shadow-xl"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.3 }}
+                        >
+                          <div className="flex items-start gap-4 mb-6">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-white shadow-lg flex-shrink-0">
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                              </svg>
+                            </div>
+                            <div>
+                              <h4 className="font-bold text-white mb-2">AI Agents for Repetitive Tasks</h4>
+                              <p className="text-sm text-gray-200 leading-relaxed">Automated the tedious work: formatting design specs, generating acceptance criteria from mockups, and cross-checking designs against requirements. Designers spent time designing, not documenting.</p>
+                            </div>
+                          </div>
+                          
+                          {/* Visual: Mockup → Spec document */}
+                          <div className="bg-slate-900/60 rounded-xl p-4 border border-slate-700">
+                            <div className="grid md:grid-cols-2 gap-6 items-start">
+                              {/* Input: Detailed Figma mockup */}
+                              <motion.div 
+                                className="bg-slate-800 rounded-lg p-4 border border-slate-600"
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.3 }}
+                              >
+                                <div className="text-xs text-slate-400 mb-3 flex items-center gap-1.5">
+                                  <svg className="w-3 h-3" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M5.5 8.5a3 3 0 013-3h2v6h-2a3 3 0 01-3-3zM10.5 5.5h2a3 3 0 010 6h-2v-6zM5.5 14.5a3 3 0 013-3h2v6a3 3 0 01-3 3 3 3 0 01-3-3v0zM10.5 11.5h2a3 3 0 110 6h-2v-6z"/>
+                                  </svg>
+                                  Figma Mockup: Task Card Component
+                                </div>
+                                {/* Task Card Mockup */}
+                                <div className="bg-slate-700 rounded-xl p-3 border border-slate-500">
+                                  <div className="flex items-start gap-3">
+                                    {/* Task Icon */}
+                                    <div className="w-10 h-10 rounded-lg bg-amber-500/30 flex items-center justify-center flex-shrink-0">
+                                      <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                      </svg>
+                                    </div>
+                                    {/* Task Content */}
+                                    <div className="flex-1 min-w-0">
+                                      <div className="h-3 w-24 bg-slate-300 rounded mb-2"></div>
+                                      <div className="h-2 w-32 bg-slate-500 rounded mb-1"></div>
+                                      <div className="h-2 w-20 bg-slate-500/60 rounded"></div>
+                                    </div>
+                                    {/* Complete Button */}
+                                    <div className="w-11 h-11 rounded-full bg-emerald-500 flex items-center justify-center flex-shrink-0 border-2 border-emerald-400">
+                                      <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                                      </svg>
+                                    </div>
+                                  </div>
+                                  {/* Meta info */}
+                                  <div className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-600">
+                                    <div className="flex items-center gap-1">
+                                      <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+                                      <div className="h-2 w-12 bg-slate-500 rounded"></div>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                      <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                      <div className="h-2 w-8 bg-slate-500 rounded"></div>
+                                    </div>
+                                  </div>
+                                </div>
+                                {/* Dimension annotations */}
+                                <div className="mt-2 flex justify-between text-[9px] text-slate-500">
+                                  <span>← 343px →</span>
+                                  <span>120px ↕</span>
+                                </div>
+                              </motion.div>
+                              
+                              {/* Output: Detailed Spec document */}
+                              <motion.div 
+                                className="relative"
+                                initial={{ opacity: 0, y: 10 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.5 }}
+                              >
+                                {/* AI Agent badge */}
+                                <motion.div 
+                                  className="absolute -left-4 top-1/2 -translate-y-1/2 -translate-x-full hidden md:flex flex-col items-center gap-1"
+                                  animate={{ x: [0, 3, 0] }}
+                                  transition={{ duration: 1.5, repeat: Infinity }}
+                                >
+                                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                    </svg>
+                                  </div>
+                                  <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                                  </svg>
+                                </motion.div>
+                                
+                                <div className="bg-amber-500/20 border border-amber-500/40 rounded-lg p-4">
+                                  <div className="text-xs text-amber-400 mb-3 flex items-center gap-1.5">
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                    Generated Design Spec
+                                  </div>
+                                  <div className="space-y-3 text-xs">
+                                    <div className="pb-2 border-b border-amber-500/20">
+                                      <span className="text-slate-400">Component:</span>
+                                      <span className="text-white ml-2 font-medium">TaskCard</span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-2">
+                                      <div>
+                                        <span className="text-slate-400 block text-[10px]">Width</span>
+                                        <span className="text-white">343px</span>
+                                      </div>
+                                      <div>
+                                        <span className="text-slate-400 block text-[10px]">Height</span>
+                                        <span className="text-white">120px</span>
+                                      </div>
+                                      <div>
+                                        <span className="text-slate-400 block text-[10px]">Padding</span>
+                                        <span className="text-white">12px</span>
+                                      </div>
+                                      <div>
+                                        <span className="text-slate-400 block text-[10px]">Border Radius</span>
+                                        <span className="text-white">12px</span>
+                                      </div>
+                                    </div>
+                                    <div className="pt-2 border-t border-amber-500/20">
+                                      <span className="text-slate-400 block text-[10px] mb-1">States</span>
+                                      <div className="flex gap-1 flex-wrap">
+                                        <span className="px-1.5 py-0.5 bg-slate-700 rounded text-white text-[10px]">Default</span>
+                                        <span className="px-1.5 py-0.5 bg-slate-700 rounded text-white text-[10px]">Pressed</span>
+                                        <span className="px-1.5 py-0.5 bg-emerald-600 rounded text-white text-[10px]">Complete</span>
+                                      </div>
+                                    </div>
+                                    <div className="pt-2 border-t border-amber-500/20">
+                                      <span className="text-slate-400 block text-[10px] mb-1">Accessibility</span>
+                                      <div className="space-y-1">
+                                        <div className="flex items-center gap-1">
+                                          <span className="text-emerald-400">✓</span>
+                                          <span className="text-slate-300 text-[10px]">Tap target: 44×44px min</span>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                          <span className="text-emerald-400">✓</span>
+                                          <span className="text-slate-300 text-[10px]">Contrast ratio: 4.5:1</span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                              </motion.div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      </div>
+                    ) : (
                     <div className={`grid gap-4 ${section.bulletPoints.length === 4 ? 'md:grid-cols-2' : 'md:grid-cols-3'}`}>
                       {section.bulletPoints.map((item, i) => {
                         const iconColors = [
@@ -3117,6 +3720,11 @@ function CaseStudy() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                             </svg>
                           ),
+                          layers: (
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                            </svg>
+                          ),
                           chart: (
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -3138,10 +3746,16 @@ function CaseStudy() {
                             </div>
                             <h4 className="font-bold text-white mb-2">{item.title}</h4>
                             <p className="text-sm text-gray-200 leading-relaxed">{item.description}</p>
+                            {item.example && (
+                              <div className="mt-4 p-3 bg-slate-900/60 rounded-lg border border-slate-700">
+                                <p className="text-xs text-teal-400 font-mono">{item.example}</p>
+                              </div>
+                            )}
                           </motion.div>
                         )
                       })}
                     </div>
+                    )}
                   </motion.div>
                 )}
 
@@ -3172,56 +3786,9 @@ function CaseStudy() {
                   </div>
                 )}
 
-                {/* Workflow Steps Visual + Diagram */}
-                {section.workflowSteps && (
-                  <motion.div 
-                    className="mt-8"
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                  >
-                    {section.introText && (
-                      <p className="text-lg text-gray-600 dark:text-gray-200 mb-8 leading-relaxed">{section.introText}</p>
-                    )}
-                    
-                    {/* Workflow Steps as Numbered List */}
-                    <div className="grid md:grid-cols-2 gap-x-8 gap-y-4">
-                      {section.workflowSteps.map((step, i) => {
-                        const stepColors = [
-                          'text-blue-500',
-                          'text-amber-500',
-                          'text-teal-500',
-                          'text-violet-500',
-                          'text-rose-500'
-                        ]
-                        
-                        return (
-                          <motion.div
-                            key={i}
-                            className="flex items-start gap-4 p-4 rounded-xl bg-slate-800 border border-slate-700"
-                            initial={{ opacity: 0, x: -20 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: i * 0.08 }}
-                          >
-                            {/* Step Number */}
-                            <div className={`text-3xl font-black ${stepColors[i % stepColors.length]}`}>
-                              {i + 1}
-                            </div>
-                            <div className="flex-1">
-                              <h4 className="font-bold text-white mb-1">{step.phase}</h4>
-                              <p className="text-sm text-gray-200 leading-relaxed">{step.description}</p>
-                            </div>
-                          </motion.div>
-                        )
-                      })}
-                    </div>
-                  </motion.div>
-                )}
-
                 {/* Workflow Diagram with Intro */}
                 {section.showWorkflowDiagram && (
-                  <div className="mt-12">
+                  <div className="mt-8">
                     {section.workflowIntro && (
                       <motion.div 
                         className="mb-8 p-6 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl border border-slate-700"
@@ -3704,7 +4271,7 @@ function CaseStudy() {
                   </motion.div>
                 )}
 
-                {/* What Stays Human - Visual Section */}
+                {/* Impact Summary - Closing Section */}
                 {section.humanSection && (
                   <motion.div 
                     className="mt-8"
@@ -3712,95 +4279,73 @@ function CaseStudy() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                   >
-                    {/* Headline */}
-                    <div className="text-center mb-10">
-                      <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-                        {section.humanSection.headline}
-                      </h3>
-                      <p className="text-lg text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
-                        {section.humanSection.subheadline}
-                      </p>
-                    </div>
-
-                    {/* AI vs Human Comparison */}
-                    <div className="grid md:grid-cols-2 gap-6 mb-10">
-                      {section.humanSection.columns.map((col, i) => (
-                        <motion.div
-                          key={i}
-                          className={`rounded-2xl p-6 ${
-                            col.icon === 'robot' 
-                              ? 'bg-gradient-to-br from-slate-100 to-slate-50 dark:from-slate-800 dark:to-slate-900 border border-slate-200 dark:border-slate-700' 
-                              : 'bg-gradient-to-br from-rose-50 to-orange-50 dark:from-rose-900/30 dark:to-orange-900/20 border border-rose-200 dark:border-rose-800/50'
-                          }`}
-                          initial={{ opacity: 0, x: i === 0 ? -20 : 20 }}
-                          whileInView={{ opacity: 1, x: 0 }}
+                    {/* Full-width closing statement */}
+                    <div className="relative bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-3xl overflow-hidden p-8 md:p-12">
+                      {/* Subtle background pattern */}
+                      <div className="absolute inset-0 opacity-5">
+                        <div className="absolute inset-0" style={{ 
+                          backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)',
+                          backgroundSize: '32px 32px'
+                        }} />
+                      </div>
+                      
+                      {/* Gradient accent */}
+                      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-violet-500 via-teal-500 to-emerald-500" />
+                      
+                      <div className="relative">
+                        {/* Results Grid */}
+                        <div className="grid md:grid-cols-3 gap-8 text-center">
+                          {/* Research Speed */}
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.1 }}
+                          >
+                            <div className="text-4xl md:text-5xl font-bold text-white mb-2">10x</div>
+                            <div className="text-teal-400 font-medium mb-1">Faster Insight Synthesis</div>
+                            <p className="text-sm text-slate-400">50+ interviews processed in hours, not weeks</p>
+                          </motion.div>
+                          
+                          {/* Prototyping */}
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.2 }}
+                          >
+                            <div className="text-4xl md:text-5xl font-bold text-white mb-2">3x</div>
+                            <div className="text-teal-400 font-medium mb-1">More Concepts Tested</div>
+                            <p className="text-sm text-slate-400">Rapid prototyping before committing to designs</p>
+                          </motion.div>
+                          
+                          {/* Timeline */}
+                          <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 }}
+                          >
+                            <div className="text-4xl md:text-5xl font-bold text-white mb-2">50%</div>
+                            <div className="text-teal-400 font-medium mb-1">Potential Time Reduction</div>
+                            <p className="text-sm text-slate-400">4 months to 2 months with AI-integrated SDLC</p>
+                          </motion.div>
+                        </div>
+                        
+                        {/* Bottom line */}
+                        <motion.div 
+                          className="mt-10 pt-8 border-t border-slate-700/50 text-center"
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
                           viewport={{ once: true }}
-                          transition={{ delay: i * 0.1 }}
+                          transition={{ delay: 0.4 }}
                         >
-                          <div className="flex items-center gap-3 mb-4">
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                              col.icon === 'robot'
-                                ? 'bg-gradient-to-br from-slate-600 to-slate-700 text-white'
-                                : 'bg-gradient-to-br from-rose-500 to-orange-500 text-white'
-                            }`}>
-                              {col.icon === 'robot' ? (
-                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                                </svg>
-                              ) : (
-                                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                </svg>
-                              )}
-                            </div>
-                            <h4 className={`text-xl font-bold ${
-                              col.icon === 'robot' 
-                                ? 'text-slate-700 dark:text-slate-300' 
-                                : 'text-rose-700 dark:text-rose-300'
-                            }`}>
-                              {col.title}
-                            </h4>
-                          </div>
-                          <ul className="space-y-3">
-                            {col.items.map((item, j) => (
-                              <motion.li 
-                                key={j}
-                                className={`flex items-center gap-3 ${
-                                  col.icon === 'robot' 
-                                    ? 'text-slate-600 dark:text-slate-400' 
-                                    : 'text-rose-700 dark:text-rose-300'
-                                }`}
-                                initial={{ opacity: 0, x: -10 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: 0.2 + j * 0.05 }}
-                              >
-                                <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-                                  col.icon === 'robot' ? 'bg-slate-400' : 'bg-rose-400'
-                                }`} />
-                                {item}
-                              </motion.li>
-                            ))}
-                          </ul>
+                          <p className="text-slate-300 max-w-2xl mx-auto">
+                            AI handled the mechanical work - processing interviews, generating variations, formatting specs. The team focused on understanding Sam's real problems and designing solutions that mattered.
+                          </p>
                         </motion.div>
-                      ))}
+                      </div>
                     </div>
-
-                    {/* Event Image */}
-                    {section.humanSection.eventImage && (
-                      <motion.figure
-                        className="relative rounded-2xl overflow-hidden"
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                      >
-                        <img 
-                          src={section.humanSection.eventImage.src}
-                          alt={section.humanSection.eventImage.alt}
-                          className="w-full h-64 md:h-80 object-cover"
-                        />
-                      </motion.figure>
-                    )}
                   </motion.div>
                 )}
 

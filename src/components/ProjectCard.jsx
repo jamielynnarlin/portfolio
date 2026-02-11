@@ -1,13 +1,79 @@
 import { Link } from 'react-router-dom'
+import { DashboardScreen } from './PrototypeScreens'
+import { NLPDocumentSearchScreen } from './StaticScreens'
+
+// Full phone mockup - iPhone style with complete device visible
+function PhoneMockup({ children }) {
+  return (
+    <div className="relative">
+      {/* Phone body */}
+      <div className="bg-gray-900 rounded-[2.5rem] p-[4px] shadow-2xl">
+        <div className="bg-black rounded-[2.3rem] p-[4px]">
+          <div className="bg-white rounded-[2.1rem] overflow-hidden relative" style={{ width: '160px', height: '340px' }}>
+            {/* Dynamic Island */}
+            <div className="absolute top-2.5 left-1/2 -translate-x-1/2 w-16 h-5 bg-black rounded-full z-20" />
+            {/* Screen content - scaled down */}
+            <div className="h-full transform scale-[0.571] origin-top-left" style={{ width: '280px', height: '595px' }}>
+              {children}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Monitor frame for desktop screens
+function MonitorMockup({ children }) {
+  return (
+    <div className="relative">
+      {/* Monitor body */}
+      <div className="bg-gray-800 rounded-xl p-[3px] shadow-2xl">
+        {/* Screen bezel */}
+        <div className="bg-black rounded-lg overflow-hidden">
+          {/* Screen */}
+          <div className="bg-slate-900 overflow-hidden" style={{ width: '280px', height: '175px' }}>
+            <div className="transform scale-[0.35] origin-top-left" style={{ width: '800px', height: '500px' }}>
+              {children}
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* Monitor stand */}
+      <div className="flex flex-col items-center">
+        <div className="w-8 h-6 bg-gray-700 rounded-b-sm" />
+        <div className="w-20 h-2 bg-gray-600 rounded-full" />
+      </div>
+    </div>
+  )
+}
 
 function ProjectCard({ project }) {
+  const isAIPowered = project.title === "AI Powered Development Workflow"
+  const isDesignOps = project.title === "DesignOps Transformation"
+  const hasCustomScreen = isAIPowered || isDesignOps
+
   return (
-    <div className="card">
-      <div className="aspect-video bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+    <div className="card group">
+      <div className="aspect-video flex items-center justify-center overflow-hidden relative">
         {project.image ? (
           <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+        ) : hasCustomScreen ? (
+          <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+            {isAIPowered ? (
+              <PhoneMockup>
+                <DashboardScreen />
+              </PhoneMockup>
+            ) : (
+              <MonitorMockup>
+                <NLPDocumentSearchScreen />
+              </MonitorMockup>
+            )}
+          </div>
         ) : (
-          <span className="text-white text-4xl font-bold">{project.title.charAt(0)}</span>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+            <span className="text-white text-4xl font-bold">{project.title.charAt(0)}</span>
+          </div>
         )}
       </div>
       <div className="p-6">
