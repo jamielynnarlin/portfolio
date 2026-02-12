@@ -1470,13 +1470,7 @@ export function NLPDocumentSearchScreen() {
     </div>
   )
 }
-                  className={`rounded-xl p-3 cursor-pointer transition-all ${
-                    selectedDoc === doc.id 
-                      ? 'bg-amber-500/10 border border-amber-500/30' 
-                      : 'bg-slate-800/50 border border-slate-700/50 hover:bg-slate-800'
-                  }`}
-                >
-                  <div className="flex items-start gap-3">
+
 // Source Inspector Desktop Screen - Document verification interface
 export function SourceInspectorScreen() {
   return (
