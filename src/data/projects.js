@@ -27,6 +27,7 @@ export const projects = [
     category: "ai",
     liveUrl: null,
     caseStudyUrl: "/projects/llm-integration-strategy",
+    mvp: false,
   },
   {
     id: 4,
