@@ -2046,7 +2046,7 @@ export function EDiscoveryProduction({ onNavigate, onOpenAI }) {
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
               </svg>
-              Regenerate All
+              Ask AI
             </button>
           </div>
         </div>
@@ -2183,7 +2183,7 @@ export function EDiscoveryProduction({ onNavigate, onOpenAI }) {
 }
 
 // Main eDiscovery App Container
-export function EDiscoveryApp({ currentScreen = 0, onScreenChange }) {
+export function EDiscoveryApp({ currentScreen = 0, onScreenChange, showHotspots = false }) {
   const screenIds = ['eca', 'protocol', 'review', 'privilege']
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false)
   const [selectedDocument, setSelectedDocument] = useState(null)
@@ -2202,6 +2202,15 @@ export function EDiscoveryApp({ currentScreen = 0, onScreenChange }) {
   const handleSelectDocument = (doc) => {
     setSelectedDocument(doc)
   }
+
+  // Hotspot positions for each screen (positioned over the "next" action)
+  const hotspots = {
+    eca: { bottom: '10px', right: '20px', width: '180px', height: '36px', label: 'Build Review Protocol' },
+    protocol: { left: '10px', top: '230px', width: '48px', height: '40px', label: 'Document Review' },
+    review: { left: '10px', top: '290px', width: '48px', height: '40px', label: 'Privilege Log' },
+  }
+
+  const currentHotspot = showHotspots && currentScreen < 3 ? hotspots[currentView] : null
 
   return (
     <div className="h-full relative">
@@ -2231,6 +2240,24 @@ export function EDiscoveryApp({ currentScreen = 0, onScreenChange }) {
           onNavigate={handleNavigate} 
           onOpenAI={() => setAiDrawerOpen(true)} 
         />
+      )}
+      
+      {/* Pulsing Hotspot */}
+      {currentHotspot && (
+        <button
+          onClick={() => onScreenChange && onScreenChange(currentScreen + 1)}
+          className="absolute z-50 rounded-lg cursor-pointer"
+          style={{
+            ...currentHotspot,
+            background: 'transparent',
+          }}
+        >
+          <div className="absolute inset-0 rounded-lg border-2 border-teal-400 animate-pulse" />
+          <div className="absolute inset-0 rounded-lg bg-teal-400/10" />
+          <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-teal-500 text-white text-[10px] px-2 py-1 rounded font-medium">
+            Click here →
+          </div>
+        </button>
       )}
       
       <AIChatDrawer isOpen={aiDrawerOpen} onClose={() => setAiDrawerOpen(false)} />

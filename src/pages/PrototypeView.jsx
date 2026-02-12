@@ -142,26 +142,13 @@ export default function PrototypeView() {
           {/* Display Frame - Phone or Desktop */}
           <div className="relative">
             {isEDiscoveryPrototype ? (
-              <div 
-                className="cursor-pointer group"
-                onClick={nextScreen}
-              >
-                <DesktopFrame>
-                  <EDiscoveryApp 
-                    currentScreen={currentScreen} 
-                    onScreenChange={(index) => goToScreen(index, index > currentScreen ? 'forward' : 'backward')}
-                  />
-                </DesktopFrame>
-                {/* Click to advance overlay hint */}
-                {currentScreen < 3 && (
-                  <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex items-center gap-2">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-                    </svg>
-                    Click anywhere to advance
-                  </div>
-                )}
-              </div>
+              <DesktopFrame>
+                <EDiscoveryApp 
+                  currentScreen={currentScreen} 
+                  onScreenChange={(index) => goToScreen(index, index > currentScreen ? 'forward' : 'backward')}
+                  showHotspots={true}
+                />
+              </DesktopFrame>
             ) : isDocReviewPrototype ? (
               <DesktopFrame>
                 <div 
@@ -251,51 +238,46 @@ export default function PrototypeView() {
           </div>
 
           {/* Navigation Panel */}
-          <div className="lg:w-72">
+          <div className="lg:w-80">
             {/* Screen Progress */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
-              <h3 className="text-white font-semibold mb-3 text-sm">Screen Flow</h3>
+            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
+              <h3 className="text-white font-semibold mb-4">Screen Flow</h3>
               
-              <div className="space-y-2">
+              {/* Horizontal step indicators */}
+              <div className="flex items-center justify-between mb-4">
                 {screenLabels.map((screen, index) => (
                   <button
                     key={index}
                     onClick={() => goToScreen(index, index > currentScreen ? 'forward' : 'backward')}
-                    className={`w-full text-left p-3 rounded-lg transition-all ${
-                      currentScreen === index
-                        ? 'bg-gradient-to-r from-teal-500/20 to-cyan-500/20 border border-teal-500/30'
-                        : 'bg-white/5 hover:bg-white/10 border border-transparent'
-                    }`}
+                    className="flex flex-col items-center group"
                   >
-                    <div className="flex items-start gap-2">
-                      <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5 transition-all ${
-                        currentScreen === index
-                          ? 'bg-teal-500 text-white'
-                          : currentScreen > index
-                            ? 'bg-teal-500/50 text-white'
-                            : 'bg-gray-700 text-gray-400'
-                      }`}>
-                        {currentScreen > index ? (
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        ) : (
-                          index + 1
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <p className={`font-medium text-sm leading-tight ${
-                          currentScreen === index ? 'text-white' : 'text-gray-400'
-                        }`}>
-                          {screen.label}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-0.5 leading-snug">
-                          {screen.description}
-                        </p>
-                      </div>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
+                      currentScreen === index
+                        ? 'bg-teal-500 text-white ring-2 ring-teal-400/50'
+                        : currentScreen > index
+                          ? 'bg-teal-500/60 text-white'
+                          : 'bg-gray-700 text-gray-400 group-hover:bg-gray-600'
+                    }`}>
+                      {currentScreen > index ? (
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                        </svg>
+                      ) : (
+                        index + 1
+                      )}
                     </div>
                   </button>
                 ))}
+              </div>
+
+              {/* Current screen details */}
+              <div className="bg-gradient-to-r from-teal-500/10 to-cyan-500/10 rounded-xl p-4 border border-teal-500/20">
+                <p className="text-white font-semibold mb-1">
+                  {screenLabels[currentScreen]?.label}
+                </p>
+                <p className="text-sm text-gray-400 leading-relaxed">
+                  {screenLabels[currentScreen]?.description}
+                </p>
               </div>
 
               {/* Navigation Buttons */}
