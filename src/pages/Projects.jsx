@@ -1,14 +1,7 @@
-import { useState } from 'react'
 import ProjectCard from '../components/ProjectCard'
-import { mvpProjects, projectCategories } from '../data/projects'
+import { mvpProjects } from '../data/projects'
 
 function Projects() {
-  const [activeCategory, setActiveCategory] = useState('all')
-
-  const filteredProjects = activeCategory === 'all'
-    ? mvpProjects
-    : mvpProjects.filter(project => project.category === activeCategory)
-
   return (
     <div className="py-16 px-4">
       <div className="max-w-7xl mx-auto">
@@ -19,35 +12,27 @@ function Projects() {
           </p>
         </div>
 
-        {/* Filter Categories */}
-        <div className="flex flex-wrap justify-center gap-2 mb-12">
-          {projectCategories.map(category => (
-            <button
-              key={category.id}
-              onClick={() => setActiveCategory(category.id)}
-              className={`px-5 py-2 rounded-full font-medium transition-all ${
-                activeCategory === category.id
-                  ? 'bg-primary-600 text-white shadow-lg'
-                  : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
-              }`}
-            >
-              {category.label}
-            </button>
-          ))}
-        </div>
-
         {/* Projects Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map(project => (
+          {mvpProjects.map(project => (
             <ProjectCard key={project.id} project={project} />
           ))}
+          
+          {/* Coming Soon Card */}
+          <div className="bg-gray-50 dark:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-600 p-8 flex flex-col items-center justify-center text-center min-h-[280px]">
+            <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+            </div>
+            <h3 className="font-display text-lg text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2">
+              More Coming Soon
+            </h3>
+            <p className="text-sm text-gray-400 dark:text-gray-500">
+              Additional case studies in progress
+            </p>
+          </div>
         </div>
-
-        {filteredProjects.length === 0 && (
-          <p className="text-center text-gray-600 dark:text-gray-400 py-12">
-            No projects found in this category.
-          </p>
-        )}
       </div>
     </div>
   )
