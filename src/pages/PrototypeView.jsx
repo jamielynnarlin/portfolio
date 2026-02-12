@@ -243,16 +243,15 @@ export default function PrototypeView() {
             <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
               <h3 className="text-white font-semibold mb-5">Screen Flow</h3>
               
-              {/* Horizontal step indicators with labels */}
-              <div className="flex items-start justify-between gap-2 mb-5">
+              {/* Horizontal step indicators */}
+              <div className="flex items-center justify-between gap-2 mb-5">
                 {screenLabels.map((screen, index) => (
                   <button
                     key={index}
                     onClick={() => goToScreen(index, index > currentScreen ? 'forward' : 'backward')}
-                    className="flex flex-col items-center group flex-1"
+                    className="flex flex-col items-center group"
                   >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all mb-2 ${
-                      currentScreen === index
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${currentScreen === index
                         ? 'bg-teal-500 text-white ring-2 ring-teal-400/50'
                         : currentScreen > index
                           ? 'bg-teal-500/60 text-white'
@@ -266,11 +265,6 @@ export default function PrototypeView() {
                         index + 1
                       )}
                     </div>
-                    <span className={`text-xs text-center leading-tight ${
-                      currentScreen === index ? 'text-teal-400 font-medium' : 'text-gray-500'
-                    }`}>
-                      {screen.label}
-                    </span>
                   </button>
                 ))}
               </div>

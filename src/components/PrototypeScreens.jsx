@@ -1280,7 +1280,7 @@ export function DocReviewTagScreen({ document, onComplete, onBack }) {
 // ============================================
 
 // Sidebar Navigation Component - 2026 eDiscovery
-function EDiscoverySidebar({ activeView, onNavigate }) {
+function EDiscoverySidebar({ activeView, onNavigate, highlightItem = null }) {
   const navItems = [
     { id: 'eca', label: 'Case Assessment', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
     { id: 'protocol', label: 'Protocol Builder', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' },
@@ -1299,22 +1299,32 @@ function EDiscoverySidebar({ activeView, onNavigate }) {
       
       {/* Nav Items */}
       <div className="flex-1 flex flex-col gap-1">
-        {navItems.map((item) => (
-          <button
-            key={item.id}
-            onClick={() => onNavigate(item.id)}
-            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
-              activeView === item.id 
-                ? 'bg-teal-500/20 text-teal-400' 
-                : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'
-            }`}
-            title={item.label}
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
-            </svg>
-          </button>
-        ))}
+        {navItems.map((item) => {
+          const isHighlighted = highlightItem === item.id
+          return (
+            <button
+              key={item.id}
+              onClick={() => onNavigate(item.id)}
+              className={`relative w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
+                activeView === item.id 
+                  ? 'bg-teal-500/20 text-teal-400' 
+                  : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'
+              } ${isHighlighted ? 'text-teal-400' : ''}`}
+              title={item.label}
+            >
+              {isHighlighted && (
+                <>
+                  <div className="absolute inset-0 rounded-lg bg-teal-400/20 animate-pulse" />
+                  <div className="absolute -inset-1 rounded-xl border-2 border-teal-400/60 animate-ping" style={{ animationDuration: '1.5s' }} />
+                  <div className="absolute inset-0 rounded-lg border-2 border-teal-400" />
+                </>
+              )}
+              <svg className="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
+              </svg>
+            </button>
+          )
+        })}
       </div>
 
       {/* Settings */}
@@ -1387,7 +1397,7 @@ function AIChatDrawer({ isOpen, onClose }) {
 }
 
 // Screen 1: Early Case Assessment (ECA) Dashboard with Concept Map
-export function EDiscoveryDashboard({ onNavigate, onOpenAI }) {
+export function EDiscoveryDashboard({ onNavigate, onOpenAI, highlightNext = false }) {
   // Concept clusters for the visualization
   const conceptClusters = [
     { id: 1, label: 'Financial Disclosures', size: 45, x: 25, y: 30, color: 'from-teal-400 to-cyan-400', docs: 1234 },
@@ -1544,9 +1554,16 @@ export function EDiscoveryDashboard({ onNavigate, onOpenAI }) {
               </div>
               <button 
                 onClick={() => onNavigate('protocol')}
-                className="w-full mt-3 px-3 py-2 bg-teal-500 hover:bg-teal-400 text-slate-900 text-[10px] font-medium rounded transition-colors"
+                className={`relative w-full mt-3 px-3 py-2 bg-teal-500 hover:bg-teal-400 text-slate-900 text-[10px] font-medium rounded transition-colors ${highlightNext ? 'z-10' : ''}`}
               >
-                Build Review Protocol →
+                {highlightNext && (
+                  <>
+                    <div className="absolute inset-0 rounded bg-teal-400/30 animate-pulse" />
+                    <div className="absolute -inset-1 rounded-lg border-2 border-teal-300/60 animate-ping" style={{ animationDuration: '1.5s' }} />
+                    <div className="absolute inset-0 rounded border-2 border-teal-300" />
+                  </>
+                )}
+                <span className="relative z-10">Build Review Protocol →</span>
               </button>
             </div>
           </div>
@@ -1557,7 +1574,7 @@ export function EDiscoveryDashboard({ onNavigate, onOpenAI }) {
 }
 
 // Screen 2: Protocol Builder - Natural Language Review Instructions
-export function EDiscoveryReviewQueue({ onNavigate, onOpenAI }) {
+export function EDiscoveryReviewQueue({ onNavigate, onOpenAI, highlightItem = null }) {
   const [protocolText, setProtocolText] = useState(`Find all documents that discuss revenue recognition timing, Q4 financial results, or communications with external auditors.\n\nExclude routine operational emails unless they mention "board", "audit committee", or any executive by name.\n\nFlag as privileged any communication involving legal counsel or marked "Attorney-Client Privilege".`)
 
   const suggestedCriteria = [
@@ -1577,7 +1594,7 @@ export function EDiscoveryReviewQueue({ onNavigate, onOpenAI }) {
 
   return (
     <div className="h-full flex bg-slate-950 text-white">
-      <EDiscoverySidebar activeView="protocol" onNavigate={onNavigate} />
+      <EDiscoverySidebar activeView="protocol" onNavigate={onNavigate} highlightItem={highlightItem} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
@@ -1747,7 +1764,7 @@ export function EDiscoveryReviewQueue({ onNavigate, onOpenAI }) {
 }
 
 // Screen 3: Citation-Led Document Viewer
-export function EDiscoveryDocumentReview({ document, onNavigate, onOpenAI, onBack, onComplete }) {
+export function EDiscoveryDocumentReview({ document, onNavigate, onOpenAI, onBack, onComplete, highlightItem = null }) {
   const [activeTab, setActiveTab] = useState('text')
   
   const doc = document || { 
@@ -1769,7 +1786,7 @@ export function EDiscoveryDocumentReview({ document, onNavigate, onOpenAI, onBac
 
   return (
     <div className="h-full flex bg-slate-950 text-white">
-      <EDiscoverySidebar activeView="review" onNavigate={onNavigate} />
+      <EDiscoverySidebar activeView="review" onNavigate={onNavigate} highlightItem={highlightItem} />
       
       <div className="flex-1 flex overflow-hidden">
         {/* Document Panel (Left) */}
@@ -2203,27 +2220,33 @@ export function EDiscoveryApp({ currentScreen = 0, onScreenChange, showHotspots 
     setSelectedDocument(doc)
   }
 
-  // Hotspot positions for each screen (positioned over the "next" action)
-  const hotspots = {
-    eca: { bottom: '10px', right: '20px', width: '180px', height: '36px', label: 'Build Review Protocol' },
-    protocol: { left: '10px', top: '230px', width: '48px', height: '40px', label: 'Document Review' },
-    review: { left: '10px', top: '290px', width: '48px', height: '40px', label: 'Privilege Log' },
+  // Determine which item to highlight based on current screen
+  const getHighlightTarget = () => {
+    if (!showHotspots) return { highlightNext: false, highlightItem: null }
+    switch (currentScreen) {
+      case 0: return { highlightNext: true, highlightItem: null } // Highlight button
+      case 1: return { highlightNext: false, highlightItem: 'review' } // Highlight sidebar
+      case 2: return { highlightNext: false, highlightItem: 'privilege' } // Highlight sidebar
+      default: return { highlightNext: false, highlightItem: null }
+    }
   }
 
-  const currentHotspot = showHotspots && currentScreen < 3 ? hotspots[currentView] : null
+  const { highlightNext, highlightItem } = getHighlightTarget()
 
   return (
     <div className="h-full relative">
       {currentView === 'eca' && (
         <EDiscoveryDashboard 
           onNavigate={handleNavigate} 
-          onOpenAI={() => setAiDrawerOpen(true)} 
+          onOpenAI={() => setAiDrawerOpen(true)}
+          highlightNext={highlightNext}
         />
       )}
       {currentView === 'protocol' && (
         <EDiscoveryReviewQueue 
           onNavigate={handleNavigate} 
           onOpenAI={() => setAiDrawerOpen(true)}
+          highlightItem={highlightItem}
         />
       )}
       {currentView === 'review' && (
@@ -2233,6 +2256,7 @@ export function EDiscoveryApp({ currentScreen = 0, onScreenChange, showHotspots 
           onOpenAI={() => setAiDrawerOpen(true)}
           onBack={() => handleNavigate('protocol')}
           onComplete={() => handleNavigate('protocol')}
+          highlightItem={highlightItem}
         />
       )}
       {currentView === 'privilege' && (
@@ -2240,27 +2264,6 @@ export function EDiscoveryApp({ currentScreen = 0, onScreenChange, showHotspots 
           onNavigate={handleNavigate} 
           onOpenAI={() => setAiDrawerOpen(true)} 
         />
-      )}
-      
-      {/* Pulsing Hotspot */}
-      {currentHotspot && (
-        <button
-          onClick={() => onScreenChange && onScreenChange(currentScreen + 1)}
-          className="absolute z-50 rounded-lg cursor-pointer"
-          style={{
-            ...currentHotspot,
-            background: 'transparent',
-          }}
-        >
-          {/* Outer pulsing ring */}
-          <div className="absolute -inset-2 rounded-xl border-2 border-teal-400/60 animate-ping" style={{ animationDuration: '1.5s' }} />
-          {/* Middle ring */}
-          <div className="absolute -inset-1 rounded-lg border border-teal-400/40 animate-pulse" />
-          {/* Inner glow */}
-          <div className="absolute inset-0 rounded-lg bg-teal-400/20 animate-pulse" />
-          {/* Border */}
-          <div className="absolute inset-0 rounded-lg border-2 border-teal-400" />
-        </button>
       )}
       
       <AIChatDrawer isOpen={aiDrawerOpen} onClose={() => setAiDrawerOpen(false)} />
