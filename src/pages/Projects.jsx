@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import ProjectCard from '../components/ProjectCard'
-import { projects, projectCategories } from '../data/projects'
+import { mvpProjects, projectCategories } from '../data/projects'
 
 function Projects() {
   const [activeCategory, setActiveCategory] = useState('all')
 
   const filteredProjects = activeCategory === 'all'
-    ? projects
-    : projects.filter(project => project.category === activeCategory)
+    ? mvpProjects
+    : mvpProjects.filter(project => project.category === activeCategory)
 
   return (
     <div className="py-16 px-4">

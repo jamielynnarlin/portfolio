@@ -768,3 +768,1257 @@ export function CameraScreen({ onCapture, onCancel }) {
     </div>
   )
 }
+
+// Desktop Frame Component for web app prototypes
+export function DesktopFrame({ children }) {
+  return (
+    <div className="relative">
+      {/* Browser window frame */}
+      <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-700">
+        {/* Browser toolbar */}
+        <div className="bg-gray-900 px-4 py-2.5 flex items-center gap-3 border-b border-gray-700">
+          {/* Window controls */}
+          <div className="flex gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-500" />
+            <div className="w-3 h-3 rounded-full bg-yellow-500" />
+            <div className="w-3 h-3 rounded-full bg-green-500" />
+          </div>
+          {/* URL bar */}
+          <div className="flex-1 bg-gray-800 rounded-md px-3 py-1.5 flex items-center gap-2">
+            <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span className="text-gray-400 text-xs">reviewai.app/project/sec-investigation</span>
+          </div>
+        </div>
+        {/* Content area */}
+        <div style={{ width: '900px', height: '560px' }} className="overflow-hidden">
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// DOCUMENT REVIEW PROTOTYPE SCREENS
+// ============================================
+
+// Sample documents data for the prototype
+const sampleDocuments = [
+  { id: 1, title: "RE: Q4 Revenue Adjustments", type: "Email", from: "J. Martinez", to: "CFO", date: "Dec 12, 2024", tags: ["Revenue", "Q4 Timing", "CFO"], confidence: 94 },
+  { id: 2, title: "Q4 Revenue Model v3.xlsx", type: "Spreadsheet", from: "CFO", date: "Dec 5, 2024", tags: ["Revenue", "Financial Model"], confidence: 97 },
+  { id: 3, title: "Accounting Policy Memo", type: "Document", from: "Controller", date: "Dec 10, 2024", tags: ["Revenue", "Policy"], confidence: 91 },
+  { id: 4, title: "FW: Auditor Questions", type: "Email", from: "External Audit", date: "Dec 8, 2024", tags: ["Audit", "Q4 Timing"], confidence: 72 },
+  { id: 5, title: "Board Presentation Draft", type: "PowerPoint", from: "CFO", date: "Dec 14, 2024", tags: ["Executive", "Q4 Timing"], confidence: 88 },
+]
+
+// Screen 1: Document Queue - View all documents to review
+export function DocReviewQueueScreen({ onDocumentClick, onAskAI }) {
+  const [selectedDoc, setSelectedDoc] = useState(null)
+  const [docPanelOpen, setDocPanelOpen] = useState(false)
+  
+  const handleDocClick = (doc) => {
+    setSelectedDoc(doc)
+    setDocPanelOpen(true)
+  }
+
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      {/* Left Panel - Document Preview */}
+      <div className={`${docPanelOpen ? 'w-1/2' : 'w-0'} transition-all duration-300 border-r border-slate-800 flex flex-col overflow-hidden`}>
+        {docPanelOpen && selectedDoc && (
+          <>
+            {/* Document header */}
+            <div className="bg-slate-900 px-4 py-3 flex items-center justify-between border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setDocPanelOpen(false)}
+                  className="p-1 hover:bg-slate-800 rounded"
+                >
+                  <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                  </svg>
+                </button>
+                <span className="text-sm font-medium text-white">{selectedDoc.title}</span>
+              </div>
+              <button className="text-xs text-cyan-400 hover:text-cyan-300">Open in new tab</button>
+            </div>
+            {/* Document content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="bg-white rounded-lg p-4 text-slate-900 min-h-full">
+                <div className="border-b border-slate-200 pb-3 mb-3">
+                  <p className="text-xs text-slate-500"><span className="font-medium">From:</span> {selectedDoc.from}</p>
+                  {selectedDoc.to && <p className="text-xs text-slate-500"><span className="font-medium">To:</span> {selectedDoc.to}</p>}
+                  <p className="text-xs text-slate-500"><span className="font-medium">Date:</span> {selectedDoc.date}</p>
+                </div>
+                <p className="text-sm text-slate-700 leading-relaxed">
+                  Per our discussion, I've attached the revised <span className="bg-amber-200 px-0.5 rounded">recognition schedule</span> for board review.
+                </p>
+                <p className="text-sm text-slate-700 leading-relaxed mt-3">
+                  The timing adjustments we discussed should address the auditor's concerns about <span className="bg-violet-200 px-0.5 rounded">Q4 cutoff</span>. Please confirm before I send to the audit committee.
+                </p>
+              </div>
+            </div>
+            {/* Document actions */}
+            <div className="bg-slate-900 px-4 py-3 border-t border-slate-800">
+              <button 
+                onClick={() => onDocumentClick && onDocumentClick(selectedDoc)}
+                className="w-full py-2 bg-cyan-500 rounded text-sm font-medium text-slate-900 hover:bg-cyan-400"
+              >
+                Open Full Review →
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Right Panel - Document Queue */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="bg-slate-900 px-4 py-3 flex items-center justify-between border-b border-slate-800">
+          <div>
+            <h2 className="text-sm font-semibold text-white">Review Queue</h2>
+            <p className="text-xs text-slate-400">SEC Investigation - 2,341 documents pending</p>
+          </div>
+          <button 
+            onClick={onAskAI}
+            className="px-3 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-xs font-medium text-white hover:from-violet-400 hover:to-indigo-400 flex items-center gap-1.5"
+          >
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+            </svg>
+            Ask AI to Filter
+          </button>
+        </div>
+
+        {/* Filter bar */}
+        <div className="px-4 py-2 bg-slate-900/50 border-b border-slate-800 flex items-center gap-2">
+          <span className="text-xs text-slate-400">Filter by tag:</span>
+          <div className="flex gap-1.5">
+            <button className="px-2 py-1 bg-amber-500/20 text-amber-400 text-xs rounded border border-amber-500/30">Revenue <span className="text-amber-500/70">312</span></button>
+            <button className="px-2 py-1 bg-violet-500/20 text-violet-400 text-xs rounded border border-violet-500/30">Q4 Timing <span className="text-violet-500/70">201</span></button>
+            <button className="px-2 py-1 bg-slate-800 text-slate-400 text-xs rounded border border-slate-700">CFO <span className="text-slate-500">156</span></button>
+            <button className="px-2 py-1 bg-slate-800 text-slate-400 text-xs rounded border border-slate-700">Audit <span className="text-slate-500">89</span></button>
+          </div>
+        </div>
+
+        {/* Document list */}
+        <div className="flex-1 overflow-y-auto">
+          {sampleDocuments.map((doc) => (
+            <div 
+              key={doc.id}
+              onClick={() => handleDocClick(doc)}
+              className={`px-4 py-3 border-b border-slate-800/50 hover:bg-slate-800/50 cursor-pointer flex items-start gap-3 ${doc.confidence < 80 ? 'border-l-2 border-l-amber-500' : ''}`}
+            >
+              {/* Doc type icon */}
+              <div className="w-8 h-8 bg-slate-800 rounded flex items-center justify-center flex-shrink-0">
+                {doc.type === "Email" && (
+                  <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                  </svg>
+                )}
+                {doc.type === "Spreadsheet" && (
+                  <svg className="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 2v3H5V5h14zm-5 5v3h-4v-3h4zm-4 5h4v4H10v-4zm-5-5h3v3H5v-3zm0 5h3v4H5v-4zm14 4h-3v-4h3v4zm0-5h-3v-3h3v3z"/>
+                  </svg>
+                )}
+                {doc.type === "Document" && (
+                  <svg className="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/>
+                  </svg>
+                )}
+                {doc.type === "PowerPoint" && (
+                  <svg className="w-4 h-4 text-orange-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-8 12H9V9h2c1.1 0 2 .9 2 2s-.9 2-2 2z"/>
+                  </svg>
+                )}
+              </div>
+              {/* Doc info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-medium text-white truncate">{doc.title}</h3>
+                  <span className={`text-xs font-medium ${doc.confidence >= 90 ? 'text-emerald-400' : doc.confidence >= 80 ? 'text-cyan-400' : 'text-amber-400'}`}>
+                    {doc.confidence}%
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500">{doc.type} • {doc.from} • {doc.date}</p>
+                <div className="flex gap-1 mt-1.5">
+                  {doc.tags.map((tag, i) => (
+                    <span key={i} className="px-1.5 py-0.5 bg-slate-800 text-slate-400 text-[10px] rounded">{tag}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer stats */}
+        <div className="bg-slate-900 px-4 py-2 border-t border-slate-800 flex items-center justify-between">
+          <div className="flex gap-4 text-xs">
+            <span className="text-emerald-400">✓ 847 Verified</span>
+            <span className="text-slate-400">⏳ 1,494 Pending</span>
+          </div>
+          <span className="text-xs text-slate-500">Click document to preview</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Screen 2: AI Filter - Ask AI to narrow down documents
+export function DocReviewAIFilterScreen({ onDocumentClick, onBack }) {
+  const [selectedDoc, setSelectedDoc] = useState(null)
+
+  const filteredDocs = sampleDocuments.filter(d => d.tags.includes("Revenue"))
+
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      {/* Left Panel - Document Preview */}
+      <div className={`${selectedDoc ? 'w-1/2' : 'w-0'} transition-all duration-300 border-r border-slate-800 flex flex-col overflow-hidden`}>
+        {selectedDoc && (
+          <>
+            <div className="bg-slate-900 px-4 py-3 flex items-center justify-between border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <button onClick={() => setSelectedDoc(null)} className="p-1 hover:bg-slate-800 rounded">
+                  <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                  </svg>
+                </button>
+                <span className="text-sm font-medium text-white">{selectedDoc.title}</span>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="bg-white rounded-lg p-4 text-slate-900">
+                <div className="border-b border-slate-200 pb-3 mb-3">
+                  <p className="text-xs text-slate-500"><span className="font-medium">From:</span> {selectedDoc.from}</p>
+                  <p className="text-xs text-slate-500"><span className="font-medium">Date:</span> {selectedDoc.date}</p>
+                </div>
+                <p className="text-sm text-slate-700 leading-relaxed">
+                  Per our discussion, I've attached the revised <span className="bg-amber-200 px-0.5 rounded">recognition schedule</span> for board review.
+                </p>
+                <p className="text-sm text-slate-700 leading-relaxed mt-3">
+                  The timing adjustments should address the auditor's concerns about <span className="bg-violet-200 px-0.5 rounded">Q4 cutoff</span>.
+                </p>
+              </div>
+            </div>
+            <div className="bg-slate-900 px-4 py-3 border-t border-slate-800">
+              <button 
+                onClick={() => onDocumentClick && onDocumentClick(selectedDoc)}
+                className="w-full py-2 bg-cyan-500 rounded text-sm font-medium text-slate-900"
+              >
+                Review & Tag This Document →
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* Right Panel - AI Chat & Results */}
+      <div className="flex-1 flex flex-col">
+        {/* Header */}
+        <div className="bg-slate-900 px-4 py-3 flex items-center justify-between border-b border-slate-800">
+          <div className="flex items-center gap-2">
+            <button onClick={onBack} className="p-1 hover:bg-slate-800 rounded">
+              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <div className="w-6 h-6 bg-gradient-to-r from-violet-500 to-indigo-500 rounded flex items-center justify-center">
+              <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+              </svg>
+            </div>
+            <span className="text-sm font-semibold text-white">AI Assistant</span>
+          </div>
+        </div>
+
+        {/* Chat area */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {/* User message */}
+          <div className="flex justify-end">
+            <div className="bg-cyan-500/20 rounded-lg px-3 py-2 max-w-[70%]">
+              <p className="text-sm text-cyan-100">Show me all documents tagged "Revenue Recognition"</p>
+            </div>
+          </div>
+
+          {/* AI Response */}
+          <div className="flex gap-2">
+            <div className="w-6 h-6 bg-gradient-to-r from-violet-500 to-indigo-500 rounded flex items-center justify-center flex-shrink-0">
+              <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+              </svg>
+            </div>
+            <div className="flex-1">
+              <div className="bg-slate-800/50 rounded-lg p-3">
+                <p className="text-sm text-slate-300 mb-2">
+                  Found <span className="text-amber-400 font-medium">{filteredDocs.length} documents</span> tagged with "Revenue Recognition":
+                </p>
+                <div className="p-2 bg-slate-900/50 rounded border border-slate-700 mb-3">
+                  <p className="text-xs text-slate-400 mb-1">Tag definition:</p>
+                  <p className="text-xs text-slate-300 italic">"Documents discussing when/how revenue is recorded, timing of recognition, or changes to policies"</p>
+                </div>
+                {/* Results list */}
+                <div className="space-y-1.5">
+                  {filteredDocs.map((doc) => (
+                    <div 
+                      key={doc.id}
+                      onClick={() => setSelectedDoc(doc)}
+                      className="flex items-center gap-2 p-2 bg-slate-900/50 rounded hover:bg-slate-800 cursor-pointer border border-slate-700/50"
+                    >
+                      <span className={`text-xs font-medium ${doc.confidence >= 90 ? 'text-emerald-400' : 'text-cyan-400'}`}>{doc.confidence}%</span>
+                      <span className="text-sm text-white truncate flex-1">{doc.title}</span>
+                      <span className="text-xs text-slate-500">{doc.date}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Chat input */}
+        <div className="px-4 py-3 border-t border-slate-800">
+          <div className="flex gap-2">
+            <input 
+              type="text" 
+              placeholder="Ask about tags, filter documents, or request analysis..." 
+              className="flex-1 bg-slate-800 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 border border-slate-700"
+            />
+            <button className="px-4 py-2 bg-cyan-500 rounded-lg text-sm font-medium text-slate-900">
+              Send
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Screen 3: Tag Document - Review and tag with evidence
+export function DocReviewTagScreen({ document, onComplete, onBack }) {
+  const [isVerified, setIsVerified] = useState(null)
+  const doc = document || sampleDocuments[0]
+
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      {/* Left Panel - Document with highlighted evidence */}
+      <div className="w-1/2 flex flex-col border-r border-slate-800">
+        {/* Document header */}
+        <div className="bg-slate-900 px-4 py-3 flex items-center justify-between border-b border-slate-800">
+          <div className="flex items-center gap-2">
+            <button onClick={onBack} className="p-1 hover:bg-slate-800 rounded">
+              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <span className="text-sm font-medium text-white">{doc.title}</span>
+          </div>
+          <button className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+            </svg>
+            Pop out
+          </button>
+        </div>
+
+        {/* Document content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          <div className="bg-white rounded-lg p-5 text-slate-900 min-h-full">
+            {/* Email header */}
+            <div className="border-b border-slate-200 pb-3 mb-4">
+              <div className="text-sm text-slate-600 space-y-1">
+                <p><span className="font-medium text-slate-700">From:</span> {doc.from}</p>
+                <p><span className="font-medium text-slate-700">To:</span> <span className="bg-rose-100 px-1 rounded">CFO</span>, Controller</p>
+                <p><span className="font-medium text-slate-700">Date:</span> {doc.date}</p>
+                <p><span className="font-medium text-slate-700">Subject:</span> {doc.title}</p>
+              </div>
+            </div>
+
+            {/* Email body with highlights */}
+            <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+              <p>Per our discussion, I've attached the revised <span className="bg-amber-200 px-1 rounded cursor-pointer hover:bg-amber-300" title="Revenue Recognition">recognition schedule</span> for board review.</p>
+              
+              <p>The timing adjustments we discussed should address the auditor's concerns about <span className="bg-violet-200 px-1 rounded cursor-pointer hover:bg-violet-300" title="Q4 Timing">Q4 cutoff</span>. Please confirm before I send to the audit committee.</p>
+              
+              <p className="text-slate-400 pt-3 border-t border-slate-200 mt-4">---</p>
+              <p className="text-slate-400 text-xs">Attachment: Q4_Revenue_Schedule_v3.xlsx</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Evidence legend */}
+        <div className="bg-slate-900 px-4 py-3 border-t border-slate-800">
+          <p className="text-xs text-slate-400 font-medium mb-2">Highlighted Evidence</p>
+          <div className="flex gap-4">
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-3 bg-amber-200 rounded"></span>
+              <span className="text-xs text-amber-400">Revenue Recognition</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-3 bg-violet-200 rounded"></span>
+              <span className="text-xs text-violet-400">Q4 Timing</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-3 bg-rose-200 rounded"></span>
+              <span className="text-xs text-rose-400">CFO</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel - Tagging Controls */}
+      <div className="w-1/2 flex flex-col">
+        {/* Header */}
+        <div className="bg-slate-900 px-4 py-3 flex items-center justify-between border-b border-slate-800">
+          <h2 className="text-sm font-semibold text-white">Review & Tag</h2>
+          <span className={`text-xs font-medium px-2 py-0.5 rounded ${doc.confidence >= 90 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+            {doc.confidence}% AI Confidence
+          </span>
+        </div>
+
+        {/* Tagging controls */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-5">
+          {/* AI Tags */}
+          <div>
+            <p className="text-xs text-slate-400 font-medium mb-2 uppercase tracking-wide">AI-Applied Tags</p>
+            <div className="flex flex-wrap gap-2">
+              {doc.tags.map((tag, i) => (
+                <span key={i} className={`px-2.5 py-1 text-xs rounded-full border ${
+                  tag === 'Revenue' ? 'bg-amber-500/20 text-amber-400 border-amber-500/30' :
+                  tag === 'Q4 Timing' ? 'bg-violet-500/20 text-violet-400 border-violet-500/30' :
+                  tag === 'CFO' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' :
+                  'bg-slate-800 text-slate-400 border-slate-700'
+                }`}>{tag}</span>
+              ))}
+            </div>
+          </div>
+
+          {/* Verify AI Classification */}
+          <div>
+            <p className="text-xs text-slate-400 font-medium mb-2 uppercase tracking-wide">Verify AI Classification</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button 
+                onClick={() => setIsVerified(true)}
+                className={`p-3 rounded-lg border text-center transition-all ${
+                  isVerified === true 
+                    ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' 
+                    : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-emerald-500/50'
+                }`}
+              >
+                <svg className="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                <span className="text-xs font-medium">Correct</span>
+              </button>
+              <button 
+                onClick={() => setIsVerified(false)}
+                className={`p-3 rounded-lg border text-center transition-all ${
+                  isVerified === false 
+                    ? 'bg-rose-500/20 border-rose-500 text-rose-400' 
+                    : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-rose-500/50'
+                }`}
+              >
+                <svg className="w-5 h-5 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span className="text-xs font-medium">Incorrect</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Priority */}
+          <div>
+            <p className="text-xs text-slate-400 font-medium mb-2 uppercase tracking-wide">Priority</p>
+            <div className="flex gap-2">
+              <button className="flex-1 p-2 bg-rose-500/20 border border-rose-500 rounded-lg text-center">
+                <span className="text-xs font-medium text-rose-400">High</span>
+              </button>
+              <button className="flex-1 p-2 bg-slate-800 border border-slate-700 rounded-lg text-center">
+                <span className="text-xs font-medium text-slate-400">Medium</span>
+              </button>
+              <button className="flex-1 p-2 bg-slate-800 border border-slate-700 rounded-lg text-center">
+                <span className="text-xs font-medium text-slate-400">Low</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Notes */}
+          <div>
+            <p className="text-xs text-slate-400 font-medium mb-2 uppercase tracking-wide">Notes for Expert</p>
+            <textarea 
+              className="w-full bg-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 placeholder-slate-500 border border-slate-700 resize-none"
+              rows="2"
+              placeholder="Add context for expert review..."
+              defaultValue="Discusses Q4 timing adjustments - may relate to Doc #189"
+            />
+          </div>
+        </div>
+
+        {/* Action footer */}
+        <div className="bg-slate-900 px-4 py-3 border-t border-slate-800 space-y-2">
+          <button 
+            onClick={onComplete}
+            className="w-full py-2.5 bg-cyan-500 rounded-lg text-sm font-bold text-slate-900 flex items-center justify-center gap-2"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            Send to Expert Review
+          </button>
+          <button className="w-full py-2 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-400">
+            Skip - Review Later
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// EDISCOVERY FULL APPLICATION PROTOTYPE
+// ============================================
+
+// Sidebar Navigation Component
+function EDiscoverySidebar({ activeView, onNavigate }) {
+  const navItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+    { id: 'review', label: 'Review', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+    { id: 'analyze', label: 'Analyze', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+    { id: 'production', label: 'Production', icon: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12' },
+  ]
+
+  return (
+    <div className="w-14 bg-slate-900 border-r border-slate-800 flex flex-col items-center py-3">
+      {/* Logo */}
+      <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg flex items-center justify-center mb-4">
+        <svg className="w-5 h-5 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+        </svg>
+      </div>
+      
+      {/* Nav Items */}
+      <div className="flex-1 flex flex-col gap-1">
+        {navItems.map((item) => (
+          <button
+            key={item.id}
+            onClick={() => onNavigate(item.id)}
+            className={`w-10 h-10 rounded-lg flex items-center justify-center transition-all ${
+              activeView === item.id 
+                ? 'bg-teal-500/20 text-teal-400' 
+                : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'
+            }`}
+            title={item.label}
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
+            </svg>
+          </button>
+        ))}
+      </div>
+
+      {/* Settings */}
+      <button className="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-slate-800">
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      </button>
+    </div>
+  )
+}
+
+// AI Chat Drawer Component
+function AIChatDrawer({ isOpen, onClose }) {
+  if (!isOpen) return null
+  
+  return (
+    <div className="absolute right-0 top-0 bottom-0 w-80 bg-slate-900 border-l border-slate-700 flex flex-col z-50 shadow-2xl">
+      <div className="px-4 py-3 border-b border-slate-700 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 bg-gradient-to-r from-violet-500 to-indigo-500 rounded flex items-center justify-center">
+            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+            </svg>
+          </div>
+          <span className="text-sm font-semibold text-white">AI Co-Pilot</span>
+        </div>
+        <button onClick={onClose} className="p-1 hover:bg-slate-800 rounded">
+          <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+        <div className="flex gap-2">
+          <div className="w-6 h-6 bg-gradient-to-r from-violet-500 to-indigo-500 rounded flex items-center justify-center flex-shrink-0">
+            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+            </svg>
+          </div>
+          <div className="flex-1 bg-slate-800/50 rounded-lg p-3">
+            <p className="text-xs text-slate-300">How can I help with your review? Try:</p>
+            <ul className="mt-2 space-y-1 text-xs text-slate-400">
+              <li>• "Find all emails mentioning Q4 revenue"</li>
+              <li>• "Show privileged communications"</li>
+              <li>• "Flag documents with high urgency"</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div className="p-3 border-t border-slate-700">
+        <div className="flex gap-2">
+          <input 
+            type="text" 
+            placeholder="Ask AI to filter or analyze..." 
+            className="flex-1 bg-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 border border-slate-700"
+          />
+          <button className="px-3 py-2 bg-teal-500 rounded-lg">
+            <svg className="w-4 h-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Main eDiscovery Dashboard Screen
+export function EDiscoveryDashboard({ onNavigate, onOpenAI }) {
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      <EDiscoverySidebar activeView="dashboard" onNavigate={onNavigate} />
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
+          <div>
+            <h1 className="text-sm font-semibold text-white">AI Co-Pilot Dashboard</h1>
+            <p className="text-[10px] text-slate-400">Project Nexus - SEC Investigation</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] rounded">SOC 2 Compliant</span>
+            <button 
+              onClick={onOpenAI}
+              className="px-3 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-[10px] font-medium text-white flex items-center gap-1.5"
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+              </svg>
+              AI Co-Pilot
+            </button>
+          </div>
+        </div>
+
+        {/* Dashboard Grid */}
+        <div className="flex-1 overflow-y-auto p-3">
+          <div className="grid grid-cols-3 gap-3">
+            {/* Review Gap Analysis */}
+            <div className="bg-slate-900 rounded-lg p-3 border border-slate-800">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-[10px] font-medium text-slate-400">Review Gap Analysis</h3>
+                <span className="text-[9px] text-slate-500">Last 30 days</span>
+              </div>
+              <div className="text-xl font-bold text-emerald-400 mb-1">$2.1M SAVED</div>
+              <div className="h-16 flex items-end gap-1">
+                {[40, 55, 45, 70, 85, 90, 75, 88, 92, 95].map((h, i) => (
+                  <div key={i} className="flex-1 bg-gradient-to-t from-teal-500 to-cyan-400 rounded-t" style={{ height: `${h}%` }} />
+                ))}
+              </div>
+              <div className="flex justify-between mt-2 text-[9px] text-slate-500">
+                <div>
+                  <p className="text-slate-400">Precision</p>
+                  <p className="text-emerald-400 font-semibold">96%</p>
+                </div>
+                <div>
+                  <p className="text-slate-400">Recall</p>
+                  <p className="text-emerald-400 font-semibold">89%</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Sentiment Clusters */}
+            <div className="bg-slate-900 rounded-lg p-3 border border-slate-800">
+              <h3 className="text-[10px] font-medium text-slate-400 mb-2">Sentiment & Context Clusters</h3>
+              <div className="h-24 relative">
+                {/* Scatter plot visualization */}
+                <div className="absolute w-2 h-2 bg-emerald-400 rounded-full" style={{ top: '20%', left: '30%' }} />
+                <div className="absolute w-3 h-3 bg-emerald-400/70 rounded-full" style={{ top: '35%', left: '45%' }} />
+                <div className="absolute w-2.5 h-2.5 bg-cyan-400 rounded-full" style={{ top: '50%', left: '60%' }} />
+                <div className="absolute w-2 h-2 bg-amber-400 rounded-full" style={{ top: '25%', left: '70%' }} />
+                <div className="absolute w-3.5 h-3.5 bg-rose-400 rounded-full" style={{ top: '60%', left: '25%' }} />
+                <div className="absolute w-2 h-2 bg-violet-400 rounded-full" style={{ top: '70%', left: '50%' }} />
+                <div className="absolute w-2.5 h-2.5 bg-cyan-400/60 rounded-full" style={{ top: '45%', left: '80%' }} />
+              </div>
+              <div className="flex gap-2 mt-2 text-[8px]">
+                <span className="flex items-center gap-1"><span className="w-2 h-2 bg-emerald-400 rounded-full" />Neutral</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 bg-amber-400 rounded-full" />Urgent</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 bg-rose-400 rounded-full" />Hot</span>
+              </div>
+            </div>
+
+            {/* Hot Doc Maker */}
+            <div className="bg-slate-900 rounded-lg p-3 border border-slate-800">
+              <h3 className="text-[10px] font-medium text-slate-400 mb-2">Hot Doc Quick Tag</h3>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <button className="px-2 py-1 bg-rose-500/20 text-rose-400 text-[9px] rounded border border-rose-500/30">Hot Document</button>
+                  <button className="px-2 py-1 bg-amber-500/20 text-amber-400 text-[9px] rounded border border-amber-500/30">Key Evidence</button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button className="px-2 py-1 bg-violet-500/20 text-violet-400 text-[9px] rounded border border-violet-500/30">Privileged</button>
+                  <button className="px-2 py-1 bg-slate-700 text-slate-400 text-[9px] rounded border border-slate-600">Responsive</button>
+                </div>
+              </div>
+              <div className="mt-3 pt-2 border-t border-slate-800">
+                <p className="text-[9px] text-slate-500 mb-1">Quick Actions</p>
+                <button className="text-[9px] text-teal-400 hover:text-teal-300">+ Create Custom Tag</button>
+              </div>
+            </div>
+
+            {/* Review Progress */}
+            <div className="col-span-2 bg-slate-900 rounded-lg p-3 border border-slate-800">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-[10px] font-medium text-slate-400">Review Progress</h3>
+                <span className="text-[10px] text-teal-400">1,847 / 2,341 reviewed (79%)</span>
+              </div>
+              <div className="h-2 bg-slate-800 rounded-full overflow-hidden mb-3">
+                <div className="h-full bg-gradient-to-r from-teal-500 to-cyan-400 rounded-full" style={{ width: '79%' }} />
+              </div>
+              <div className="grid grid-cols-4 gap-2 text-center">
+                <div className="bg-slate-800/50 rounded p-2">
+                  <p className="text-lg font-bold text-white">48,291</p>
+                  <p className="text-[9px] text-slate-500">Total Docs</p>
+                </div>
+                <div className="bg-slate-800/50 rounded p-2">
+                  <p className="text-lg font-bold text-emerald-400">43,421</p>
+                  <p className="text-[9px] text-slate-500">AI Culled</p>
+                </div>
+                <div className="bg-slate-800/50 rounded p-2">
+                  <p className="text-lg font-bold text-amber-400">2,341</p>
+                  <p className="text-[9px] text-slate-500">For Review</p>
+                </div>
+                <div className="bg-slate-800/50 rounded p-2">
+                  <p className="text-lg font-bold text-rose-400">127</p>
+                  <p className="text-[9px] text-slate-500">Hot Docs</p>
+                </div>
+              </div>
+            </div>
+
+            {/* AI Confidence */}
+            <div className="bg-slate-900 rounded-lg p-3 border border-slate-800">
+              <h3 className="text-[10px] font-medium text-slate-400 mb-2">Calibrated Confidence</h3>
+              <div className="space-y-2">
+                <div>
+                  <div className="flex justify-between text-[9px] mb-1">
+                    <span className="text-slate-400">High (90%+)</span>
+                    <span className="text-emerald-400">1,456</span>
+                  </div>
+                  <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-emerald-400 rounded-full" style={{ width: '78%' }} />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-[9px] mb-1">
+                    <span className="text-slate-400">Medium (70-89%)</span>
+                    <span className="text-amber-400">312</span>
+                  </div>
+                  <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-amber-400 rounded-full" style={{ width: '17%' }} />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-[9px] mb-1">
+                    <span className="text-slate-400">Low (&lt;70%)</span>
+                    <span className="text-rose-400">79</span>
+                  </div>
+                  <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="h-full bg-rose-400 rounded-full" style={{ width: '5%' }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Review Queue Screen
+export function EDiscoveryReviewQueue({ onNavigate, onOpenAI, onSelectDocument }) {
+  const [selectedFilter, setSelectedFilter] = useState('all')
+  
+  const documents = [
+    { id: 1, title: "RE: Q4 Revenue Discussion", type: "email", from: "J. Martinez", date: "Dec 12", confidence: 94, tags: ["Revenue", "Q4"], status: "pending", privilege: "Not Privileged", responsive: "Responsive" },
+    { id: 2, title: "Board Meeting Recording", type: "video", from: "CFO Office", date: "Dec 10", confidence: 91, tags: ["Executive", "Meeting"], status: "pending", privilege: "Privileged", responsive: "Responsive" },
+    { id: 3, title: "Slack: Finance Team Chat", type: "chat", from: "#finance-team", date: "Dec 11", confidence: 87, tags: ["Internal", "Revenue"], status: "pending", privilege: "Not Privileged", responsive: "Responsive" },
+    { id: 4, title: "Quarterly Report Draft.pdf", type: "document", from: "Controller", date: "Dec 8", confidence: 72, tags: ["Financial", "Draft"], status: "flagged", privilege: "Work Product", responsive: "Needs Review" },
+    { id: 5, title: "Zoom Call: Auditor Check-in", type: "video", from: "External Audit", date: "Dec 5", confidence: 96, tags: ["Audit", "External"], status: "reviewed", privilege: "Not Privileged", responsive: "Responsive" },
+  ]
+
+  const getTypeIcon = (type) => {
+    switch(type) {
+      case 'email': return 'M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z'
+      case 'video': return 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z'
+      case 'chat': return 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z'
+      case 'document': return 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+      default: return 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+    }
+  }
+
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      <EDiscoverySidebar activeView="review" onNavigate={onNavigate} />
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
+          <div>
+            <h1 className="text-sm font-semibold text-white">Review Queue</h1>
+            <p className="text-[10px] text-slate-400">494 documents pending review</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={onOpenAI}
+              className="px-3 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-[10px] font-medium text-white flex items-center gap-1.5"
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+              </svg>
+              AI Cull
+            </button>
+          </div>
+        </div>
+
+        {/* Filters */}
+        <div className="px-4 py-2 bg-slate-900/50 border-b border-slate-800 flex items-center gap-2">
+          <span className="text-[10px] text-slate-500">Filter:</span>
+          {['all', 'email', 'video', 'chat', 'document'].map((f) => (
+            <button
+              key={f}
+              onClick={() => setSelectedFilter(f)}
+              className={`px-2 py-1 text-[10px] rounded ${selectedFilter === f ? 'bg-teal-500/20 text-teal-400 border border-teal-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}
+            >
+              {f.charAt(0).toUpperCase() + f.slice(1)}
+            </button>
+          ))}
+          <div className="flex-1" />
+          <span className="text-[10px] text-slate-500">Sort: Confidence ↓</span>
+        </div>
+
+        {/* Document List */}
+        <div className="flex-1 overflow-y-auto">
+          {documents.map((doc) => (
+            <div 
+              key={doc.id}
+              onClick={() => onSelectDocument && onSelectDocument(doc)}
+              className={`px-4 py-2.5 border-b border-slate-800/50 hover:bg-slate-800/30 cursor-pointer flex items-center gap-3 ${doc.confidence < 75 ? 'border-l-2 border-l-amber-500' : ''}`}
+            >
+              {/* Type Icon */}
+              <div className={`w-8 h-8 rounded flex items-center justify-center ${
+                doc.type === 'video' ? 'bg-purple-500/20' : 
+                doc.type === 'chat' ? 'bg-blue-500/20' : 
+                doc.type === 'email' ? 'bg-cyan-500/20' : 'bg-slate-700'
+              }`}>
+                <svg className={`w-4 h-4 ${
+                  doc.type === 'video' ? 'text-purple-400' : 
+                  doc.type === 'chat' ? 'text-blue-400' : 
+                  doc.type === 'email' ? 'text-cyan-400' : 'text-slate-400'
+                }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={getTypeIcon(doc.type)} />
+                </svg>
+              </div>
+
+              {/* Doc Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h4 className="text-[11px] font-medium text-white truncate">{doc.title}</h4>
+                  <span className={`text-[9px] font-medium ${doc.confidence >= 90 ? 'text-emerald-400' : doc.confidence >= 75 ? 'text-cyan-400' : 'text-amber-400'}`}>
+                    {doc.confidence}%
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-[9px] text-slate-500">{doc.from} • {doc.date}</span>
+                  <div className="flex gap-1">
+                    {doc.tags.slice(0, 2).map((tag, i) => (
+                      <span key={i} className="px-1.5 py-0.5 bg-slate-800 text-slate-400 text-[8px] rounded">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Classifications */}
+              <div className="flex gap-2 text-[9px]">
+                <span className={`px-2 py-0.5 rounded ${
+                  doc.privilege === 'Privileged' ? 'bg-rose-500/20 text-rose-400' :
+                  doc.privilege === 'Work Product' ? 'bg-amber-500/20 text-amber-400' :
+                  'bg-slate-700 text-slate-400'
+                }`}>{doc.privilege}</span>
+                <span className={`px-2 py-0.5 rounded ${
+                  doc.responsive === 'Responsive' ? 'bg-emerald-500/20 text-emerald-400' :
+                  'bg-amber-500/20 text-amber-400'
+                }`}>{doc.responsive}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Document Review Screen with split panel
+export function EDiscoveryDocumentReview({ document, onNavigate, onOpenAI, onBack, onComplete }) {
+  const [isPopped, setIsPopped] = useState(false)
+  const doc = document || { 
+    id: 1, 
+    title: "RE: Q4 Revenue Discussion", 
+    type: "email", 
+    from: "J. Martinez", 
+    to: "CFO, Controller",
+    date: "Dec 12, 2024 3:47 PM",
+    confidence: 94, 
+    tags: ["Revenue", "Q4", "Executive"], 
+    privilege: "Not Privileged", 
+    responsive: "Responsive",
+    content: `Per our discussion, I've attached the revised recognition schedule for board review.
+
+The timing adjustments we discussed should address the auditor's concerns about Q4 cutoff. Please confirm before I send to the audit committee.
+
+Best regards,
+J. Martinez`
+  }
+
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      <EDiscoverySidebar activeView="review" onNavigate={onNavigate} />
+      
+      <div className="flex-1 flex overflow-hidden">
+        {/* Document Panel (Left) */}
+        <div className={`${isPopped ? 'hidden' : 'w-1/2'} flex flex-col border-r border-slate-800`}>
+          <div className="bg-slate-900 px-3 py-2 flex items-center justify-between border-b border-slate-800">
+            <div className="flex items-center gap-2">
+              <button onClick={onBack} className="p-1 hover:bg-slate-800 rounded">
+                <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <span className="text-[11px] font-medium text-white truncate">{doc.title}</span>
+            </div>
+            <button 
+              onClick={() => setIsPopped(true)}
+              className="text-[10px] text-teal-400 hover:text-teal-300 flex items-center gap-1"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+              Pop out
+            </button>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-3">
+            <div className="bg-white rounded-lg p-4 text-slate-900 min-h-full text-[11px]">
+              <div className="border-b border-slate-200 pb-2 mb-3">
+                <p><span className="font-medium">From:</span> {doc.from}</p>
+                <p><span className="font-medium">To:</span> <span className="bg-rose-100 px-1 rounded">{doc.to || 'CFO'}</span></p>
+                <p><span className="font-medium">Date:</span> {doc.date}</p>
+                <p><span className="font-medium">Subject:</span> {doc.title}</p>
+              </div>
+              <div className="whitespace-pre-wrap leading-relaxed">
+                Per our discussion, I've attached the revised <span className="bg-amber-200 px-0.5 rounded">recognition schedule</span> for board review.
+                
+                The timing adjustments we discussed should address the auditor's concerns about <span className="bg-violet-200 px-0.5 rounded">Q4 cutoff</span>. Please confirm before I send to the audit committee.
+              </div>
+            </div>
+          </div>
+
+          {/* Evidence Legend */}
+          <div className="bg-slate-900 px-3 py-2 border-t border-slate-800">
+            <p className="text-[9px] text-slate-500 mb-1">Highlighted Evidence</p>
+            <div className="flex gap-3 text-[9px]">
+              <span className="flex items-center gap-1"><span className="w-2 h-2 bg-amber-200 rounded" />Revenue</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 bg-violet-200 rounded" />Q4 Timing</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 bg-rose-200 rounded" />Executive</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Controls Panel (Right) */}
+        <div className="flex-1 flex flex-col">
+          <div className="bg-slate-900 px-3 py-2 flex items-center justify-between border-b border-slate-800">
+            <h2 className="text-[11px] font-semibold text-white">Review & Tag</h2>
+            <div className="flex items-center gap-2">
+              <span className={`text-[9px] font-medium px-2 py-0.5 rounded ${doc.confidence >= 90 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
+                {doc.confidence}% Confidence
+              </span>
+              <button onClick={onOpenAI} className="p-1 bg-violet-500/20 rounded hover:bg-violet-500/30">
+                <svg className="w-3.5 h-3.5 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-3 space-y-4">
+            {/* AI Tags */}
+            <div>
+              <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-1.5">AI-Suggested Tags</p>
+              <div className="flex flex-wrap gap-1.5">
+                {doc.tags.map((tag, i) => (
+                  <span key={i} className="px-2 py-1 bg-teal-500/20 text-teal-400 text-[10px] rounded border border-teal-500/30">{tag}</span>
+                ))}
+                <button className="px-2 py-1 bg-slate-800 text-slate-400 text-[10px] rounded border border-slate-700">+ Add</button>
+              </div>
+            </div>
+
+            {/* Privilege */}
+            <div>
+              <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-1.5">Privilege Classification</p>
+              <div className="grid grid-cols-3 gap-1.5">
+                <button className="p-2 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400 hover:border-rose-500/50">Privileged</button>
+                <button className="p-2 bg-amber-500/20 border border-amber-500 rounded text-[10px] text-amber-400">Work Product</button>
+                <button className="p-2 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400 hover:border-emerald-500/50">Not Privileged</button>
+              </div>
+            </div>
+
+            {/* Responsiveness */}
+            <div>
+              <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-1.5">Responsiveness</p>
+              <div className="grid grid-cols-3 gap-1.5">
+                <button className="p-2 bg-emerald-500/20 border border-emerald-500 rounded text-[10px] text-emerald-400">Responsive</button>
+                <button className="p-2 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">Not Responsive</button>
+                <button className="p-2 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">Needs Review</button>
+              </div>
+            </div>
+
+            {/* Priority */}
+            <div>
+              <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-1.5">Priority</p>
+              <div className="flex gap-1.5">
+                <button className="flex-1 p-2 bg-rose-500/20 border border-rose-500 rounded text-[10px] text-rose-400">Hot Doc</button>
+                <button className="flex-1 p-2 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">Key</button>
+                <button className="flex-1 p-2 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">Normal</button>
+              </div>
+            </div>
+
+            {/* AI Justification */}
+            <div className="bg-slate-800/50 rounded-lg p-2.5 border border-slate-700">
+              <p className="text-[9px] text-violet-400 font-medium mb-1">AI Insight & Justification</p>
+              <p className="text-[10px] text-slate-300 leading-relaxed">
+                This document discusses <span className="text-amber-400">revenue recognition timing</span> for Q4 with direct communication to executive leadership. Flagged for potential relevance to investigation scope.
+              </p>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-1.5">Reviewer Notes</p>
+              <textarea 
+                className="w-full bg-slate-800 rounded px-2 py-1.5 text-[10px] text-slate-300 placeholder-slate-500 border border-slate-700 resize-none"
+                rows="2"
+                placeholder="Add notes for production..."
+              />
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="bg-slate-900 px-3 py-2.5 border-t border-slate-800 space-y-1.5">
+            <button 
+              onClick={onComplete}
+              className="w-full py-2 bg-teal-500 rounded text-[11px] font-bold text-slate-900 flex items-center justify-center gap-1.5"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Complete Review
+            </button>
+            <div className="flex gap-1.5">
+              <button className="flex-1 py-1.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">Skip</button>
+              <button className="flex-1 py-1.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">Flag for QC</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Production Screen
+export function EDiscoveryProduction({ onNavigate, onOpenAI }) {
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      <EDiscoverySidebar activeView="production" onNavigate={onNavigate} />
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
+          <div>
+            <h1 className="text-sm font-semibold text-white">Production & Redaction</h1>
+            <p className="text-[10px] text-slate-400">127 documents ready for production</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="px-3 py-1.5 bg-emerald-500 rounded text-[10px] font-medium text-slate-900 flex items-center gap-1.5">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              Export Production
+            </button>
+          </div>
+        </div>
+
+        <div className="flex-1 flex overflow-hidden">
+          {/* Document Preview */}
+          <div className="w-1/2 flex flex-col border-r border-slate-800">
+            <div className="bg-slate-900/50 px-3 py-2 border-b border-slate-800 flex items-center justify-between">
+              <span className="text-[10px] text-slate-400">Document Preview</span>
+              <span className="text-[10px] text-teal-400">1 of 127</span>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3">
+              <div className="bg-white rounded-lg p-4 text-slate-900 min-h-full text-[11px]">
+                <div className="border-b border-slate-200 pb-2 mb-3">
+                  <p><span className="font-medium">From:</span> J. Martinez</p>
+                  <p><span className="font-medium">To:</span> <span className="bg-black text-white px-1 rounded text-[9px]">REDACTED</span></p>
+                  <p><span className="font-medium">Date:</span> Dec 12, 2024</p>
+                </div>
+                <div className="leading-relaxed">
+                  Per our discussion, I've attached the revised recognition schedule for board review.
+                  
+                  Please contact me at <span className="bg-black text-white px-1 rounded text-[9px]">REDACTED</span> if you have questions.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Production Controls */}
+          <div className="flex-1 flex flex-col">
+            <div className="bg-slate-900/50 px-3 py-2 border-b border-slate-800">
+              <span className="text-[10px] text-slate-400">Auto-Redaction Settings</span>
+            </div>
+            <div className="flex-1 overflow-y-auto p-3 space-y-3">
+              {/* Key Metrics */}
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-slate-800/50 rounded p-2 text-center">
+                  <p className="text-lg font-bold text-white">127</p>
+                  <p className="text-[9px] text-slate-500">Total Docs</p>
+                </div>
+                <div className="bg-slate-800/50 rounded p-2 text-center">
+                  <p className="text-lg font-bold text-amber-400">43</p>
+                  <p className="text-[9px] text-slate-500">Redactions</p>
+                </div>
+                <div className="bg-slate-800/50 rounded p-2 text-center">
+                  <p className="text-lg font-bold text-emerald-400">100%</p>
+                  <p className="text-[9px] text-slate-500">Compliant</p>
+                </div>
+              </div>
+
+              {/* Entity Extraction */}
+              <div>
+                <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-2">System Entity Extraction</p>
+                <div className="space-y-1.5">
+                  {[
+                    { label: 'Social Security Numbers', count: 12, enabled: true },
+                    { label: 'Phone Numbers', count: 28, enabled: true },
+                    { label: 'Email Addresses', count: 45, enabled: false },
+                    { label: 'Bank Accounts', count: 3, enabled: true },
+                  ].map((entity, i) => (
+                    <div key={i} className="flex items-center justify-between bg-slate-800/50 rounded px-2 py-1.5">
+                      <span className="text-[10px] text-slate-300">{entity.label}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] text-slate-500">{entity.count} found</span>
+                        <div className={`w-8 h-4 rounded-full p-0.5 ${entity.enabled ? 'bg-teal-500' : 'bg-slate-700'}`}>
+                          <div className={`w-3 h-3 rounded-full bg-white transition-transform ${entity.enabled ? 'translate-x-4' : ''}`} />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Production Set */}
+              <div>
+                <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-2">Production Set</p>
+                <div className="bg-slate-800/50 rounded p-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] text-white font-medium">NEXUS_PROD_001</span>
+                    <span className="text-[9px] text-emerald-400">Ready</span>
+                  </div>
+                  <div className="text-[9px] text-slate-400">
+                    <p>Format: PDF with load file</p>
+                    <p>Bates Range: NEXUS000001 - NEXUS000127</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-slate-900 px-3 py-2.5 border-t border-slate-800">
+              <button className="w-full py-2 bg-teal-500 rounded text-[11px] font-bold text-slate-900">
+                Generate Production
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Main eDiscovery App Container
+export function EDiscoveryApp() {
+  const [currentView, setCurrentView] = useState('dashboard')
+  const [aiDrawerOpen, setAiDrawerOpen] = useState(false)
+  const [selectedDocument, setSelectedDocument] = useState(null)
+
+  const handleNavigate = (view) => {
+    setCurrentView(view)
+    setSelectedDocument(null)
+  }
+
+  const handleSelectDocument = (doc) => {
+    setSelectedDocument(doc)
+    setCurrentView('document')
+  }
+
+  return (
+    <div className="h-full relative">
+      {currentView === 'dashboard' && (
+        <EDiscoveryDashboard 
+          onNavigate={handleNavigate} 
+          onOpenAI={() => setAiDrawerOpen(true)} 
+        />
+      )}
+      {currentView === 'review' && (
+        <EDiscoveryReviewQueue 
+          onNavigate={handleNavigate} 
+          onOpenAI={() => setAiDrawerOpen(true)}
+          onSelectDocument={handleSelectDocument}
+        />
+      )}
+      {currentView === 'document' && (
+        <EDiscoveryDocumentReview 
+          document={selectedDocument}
+          onNavigate={handleNavigate} 
+          onOpenAI={() => setAiDrawerOpen(true)}
+          onBack={() => setCurrentView('review')}
+          onComplete={() => setCurrentView('review')}
+        />
+      )}
+      {currentView === 'analyze' && (
+        <EDiscoveryDashboard 
+          onNavigate={handleNavigate} 
+          onOpenAI={() => setAiDrawerOpen(true)} 
+        />
+      )}
+      {currentView === 'production' && (
+        <EDiscoveryProduction 
+          onNavigate={handleNavigate} 
+          onOpenAI={() => setAiDrawerOpen(true)} 
+        />
+      )}
+      
+      <AIChatDrawer isOpen={aiDrawerOpen} onClose={() => setAiDrawerOpen(false)} />
+    </div>
+  )
+}

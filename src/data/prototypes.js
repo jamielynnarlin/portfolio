@@ -70,6 +70,28 @@ export const prototypes = [
         "Milestone progress bars show overall completion"
       ]
     }
+  },
+  {
+    id: "ediscovery-ai",
+    title: "AI-Assisted eDiscovery",
+    subtitle: "Intelligent Document Review Platform",
+    description: "Explore how AI transforms document review with natural language culling, calibrated confidence scoring, and multimodal support.",
+    caseStudySlug: "llm-integration-strategy",
+    caseStudyTitle: "LLM Integration Strategy",
+    thumbnail: import.meta.env.BASE_URL + "images/case-studies/ediscovery-hero.jpg",
+    tags: ["Desktop App", "AI/ML", "Legal Tech", "Document Review"],
+    isDesktop: true,
+    isEDiscovery: true,
+    prototype: {
+      title: "eDiscovery AI Co-Pilot",
+      description: "Navigate through the AI-assisted document review workflow",
+      screens: [
+        { id: "dashboard", label: "Dashboard", description: "Overview with metrics, sentiment clusters, and review progress" },
+        { id: "review", label: "Review Queue", description: "AI-prioritized document queue with confidence scoring" },
+        { id: "document", label: "Document Review", description: "Split-panel document review with AI tagging" },
+        { id: "production", label: "Production", description: "Auto-redaction and production set management" }
+      ]
+    }
   }
 ]
 

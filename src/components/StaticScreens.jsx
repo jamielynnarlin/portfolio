@@ -1995,3 +1995,1737 @@ export function InvestigateDocumentScreen() {
     </div>
   )
 }
+
+// Document Review Queue Screen - Shows reviewer's assigned documents
+export function DocumentReviewQueueScreen() {
+  return (
+    <div className="h-full flex flex-col bg-slate-950 text-white">
+      {/* Header */}
+      <div className="bg-slate-900 border-b border-slate-700/50 px-3 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 bg-gradient-to-br from-cyan-400 to-cyan-600 rounded flex items-center justify-center">
+            <svg className="w-3.5 h-3.5 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          </div>
+          <span className="text-xs font-bold text-white">Review Queue</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-[9px] text-slate-400">847 flagged for review</span>
+        </div>
+      </div>
+
+      {/* Filter by Tag */}
+      <div className="px-3 py-2 border-b border-slate-800">
+        <p className="text-[8px] text-slate-500 mb-1.5">FILTER BY AI TAG</p>
+        <div className="flex gap-1.5 flex-wrap">
+          <button className="px-2 py-1 bg-cyan-500/20 text-cyan-400 text-[8px] font-medium rounded-full border border-cyan-500/50">All Tags</button>
+          <button className="px-2 py-1 bg-amber-500/20 text-amber-400 text-[8px] font-medium rounded-full border border-amber-500/30">Revenue (312)</button>
+          <button className="px-2 py-1 bg-violet-500/20 text-violet-400 text-[8px] font-medium rounded-full border border-violet-500/30">Q4 Timing (201)</button>
+          <button className="px-2 py-1 bg-rose-500/20 text-rose-400 text-[8px] font-medium rounded-full border border-rose-500/30">Executive (156)</button>
+        </div>
+      </div>
+
+      {/* Document List with Tags */}
+      <div className="flex-1 overflow-y-auto px-3 py-2 space-y-2">
+        {/* Document 1 - Shows tags prominently */}
+        <div className="bg-slate-800/50 rounded-lg p-2.5 border border-slate-700/50 hover:border-cyan-500/30 cursor-pointer">
+          <div className="flex items-start gap-2">
+            <div className="w-7 h-8 bg-blue-500/20 rounded flex items-center justify-center flex-shrink-0">
+              <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <h4 className="text-[10px] font-semibold text-white truncate">RE: Q4 Revenue Adjustments</h4>
+                <span className="text-[8px] text-emerald-400 font-medium">94%</span>
+              </div>
+              <p className="text-[9px] text-slate-400 mt-0.5">J. Martinez → CFO • Dec 12, 2024</p>
+              {/* AI Tags showing WHY this was flagged */}
+              <div className="flex gap-1 mt-1.5 flex-wrap">
+                <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 text-[7px] rounded">Revenue Recognition</span>
+                <span className="px-1.5 py-0.5 bg-violet-500/20 text-violet-400 text-[7px] rounded">Q4 Timing</span>
+                <span className="px-1.5 py-0.5 bg-rose-500/20 text-rose-400 text-[7px] rounded">CFO</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Document 2 */}
+        <div className="bg-slate-800/50 rounded-lg p-2.5 border border-slate-700/50 hover:border-cyan-500/30 cursor-pointer">
+          <div className="flex items-start gap-2">
+            <div className="w-7 h-8 bg-amber-500/20 rounded flex items-center justify-center flex-shrink-0">
+              <svg className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm-1 2l5 5h-5V4zM6 20V4h5v7h7v9H6z"/>
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <h4 className="text-[10px] font-semibold text-white truncate">Accounting Policy Memo</h4>
+                <span className="text-[8px] text-emerald-400 font-medium">91%</span>
+              </div>
+              <p className="text-[9px] text-slate-400 mt-0.5">Controller • Dec 10, 2024</p>
+              <div className="flex gap-1 mt-1.5 flex-wrap">
+                <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 text-[7px] rounded">Revenue Recognition</span>
+                <span className="px-1.5 py-0.5 bg-cyan-500/20 text-cyan-400 text-[7px] rounded">Policy Change</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Document 3 - Lower confidence, needs attention */}
+        <div className="bg-slate-800/50 rounded-lg p-2.5 border border-amber-500/30 hover:border-amber-500/50 cursor-pointer">
+          <div className="flex items-start gap-2">
+            <div className="w-7 h-8 bg-blue-500/20 rounded flex items-center justify-center flex-shrink-0">
+              <svg className="w-4 h-4 text-blue-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <h4 className="text-[10px] font-semibold text-white truncate">FW: Board Meeting Prep</h4>
+                <span className="text-[8px] text-amber-400 font-medium">72%</span>
+              </div>
+              <p className="text-[9px] text-slate-400 mt-0.5">EA → CEO • Dec 8, 2024</p>
+              <div className="flex gap-1 mt-1.5 flex-wrap">
+                <span className="px-1.5 py-0.5 bg-rose-500/20 text-rose-400 text-[7px] rounded">Executive</span>
+                <span className="px-1.5 py-0.5 bg-slate-700 text-slate-400 text-[7px] rounded">Uncertain match</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Document 4 */}
+        <div className="bg-slate-800/50 rounded-lg p-2.5 border border-slate-700/50 hover:border-cyan-500/30 cursor-pointer">
+          <div className="flex items-start gap-2">
+            <div className="w-7 h-8 bg-emerald-500/20 rounded flex items-center justify-center flex-shrink-0">
+              <svg className="w-4 h-4 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-4 10h-4v4H9v-4H5v-2h4V7h2v4h4v2z"/>
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between">
+                <h4 className="text-[10px] font-semibold text-white truncate">Q4 Revenue Model v3.xlsx</h4>
+                <span className="text-[8px] text-emerald-400 font-medium">97%</span>
+              </div>
+              <p className="text-[9px] text-slate-400 mt-0.5">Finance Team • Dec 5, 2024</p>
+              <div className="flex gap-1 mt-1.5 flex-wrap">
+                <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 text-[7px] rounded">Revenue Recognition</span>
+                <span className="px-1.5 py-0.5 bg-violet-500/20 text-violet-400 text-[7px] rounded">Q4 Timing</span>
+                <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-[7px] rounded">Financial Model</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Stats */}
+      <div className="bg-slate-900 border-t border-slate-700/50 px-3 py-2">
+        <div className="flex items-center justify-between text-[9px]">
+          <span className="text-slate-400">Verified: <span className="text-emerald-400">312</span></span>
+          <span className="text-slate-400">Pending: <span className="text-cyan-400">535</span></span>
+          <span className="text-slate-400">Rejected: <span className="text-rose-400">47</span></span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Document Review Conversation Screen - Filter by tag and find related docs
+export function DocumentReviewConversationScreen() {
+  return (
+    <div className="h-full flex flex-col bg-slate-950 text-white">
+      {/* Header */}
+      <div className="bg-slate-900 border-b border-slate-700/50 px-3 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="w-6 h-6 bg-gradient-to-br from-violet-400 to-violet-600 rounded flex items-center justify-center">
+            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+            </svg>
+          </div>
+          <span className="text-xs font-bold text-white">AI Assistant</span>
+        </div>
+        <span className="text-[9px] text-slate-400">Review Project: SEC Investigation</span>
+      </div>
+
+      {/* AI Conversation */}
+      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-3">
+        {/* User asks to filter by tag */}
+        <div className="flex gap-2 justify-end">
+          <div className="bg-cyan-500/20 rounded-lg p-2.5 max-w-[85%]">
+            <p className="text-[9px] text-cyan-100">Show me all documents tagged "Revenue Recognition"</p>
+          </div>
+          <div className="w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
+            <span className="text-[7px] font-bold text-white">JA</span>
+          </div>
+        </div>
+
+        {/* AI Response with filtered results */}
+        <div className="flex gap-2">
+          <div className="w-5 h-5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded flex items-center justify-center flex-shrink-0">
+            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+            </svg>
+          </div>
+          <div className="flex-1 bg-slate-800/50 rounded-lg p-2.5">
+            <p className="text-[9px] text-slate-300 leading-relaxed mb-2">
+              Found <span className="text-amber-400 font-medium">312 documents</span> tagged with "Revenue Recognition". Here's what triggered this tag:
+            </p>
+            <div className="p-2 bg-slate-900/50 rounded border border-slate-700 mb-2">
+              <p className="text-[8px] text-slate-400 mb-1.5">Tag definition:</p>
+              <p className="text-[9px] text-slate-300 italic">"Documents discussing when/how revenue is recorded, timing of recognition, or changes to recognition policies"</p>
+            </div>
+            <p className="text-[8px] text-slate-400 mb-2">Top matches by confidence:</p>
+            {/* Document list */}
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 p-1.5 bg-slate-900/50 rounded hover:bg-slate-800 cursor-pointer border border-slate-700/50">
+                <span className="text-[8px] text-emerald-400 font-medium">97%</span>
+                <span className="text-[9px] text-white truncate flex-1">Q4 Revenue Model v3.xlsx</span>
+                <span className="text-[7px] text-slate-500">Dec 5</span>
+              </div>
+              <div className="flex items-center gap-2 p-1.5 bg-slate-900/50 rounded hover:bg-slate-800 cursor-pointer border border-slate-700/50">
+                <span className="text-[8px] text-emerald-400 font-medium">94%</span>
+                <span className="text-[9px] text-white truncate flex-1">RE: Q4 Revenue Adjustments</span>
+                <span className="text-[7px] text-slate-500">Dec 12</span>
+              </div>
+              <div className="flex items-center gap-2 p-1.5 bg-slate-900/50 rounded hover:bg-slate-800 cursor-pointer border border-slate-700/50">
+                <span className="text-[8px] text-emerald-400 font-medium">91%</span>
+                <span className="text-[9px] text-white truncate flex-1">Accounting Policy Memo</span>
+                <span className="text-[7px] text-slate-500">Dec 10</span>
+              </div>
+            </div>
+            <button className="mt-2 text-[8px] text-cyan-400 hover:text-cyan-300">View all 312 documents →</button>
+          </div>
+        </div>
+
+        {/* User asks about why specific doc was tagged */}
+        <div className="flex gap-2 justify-end">
+          <div className="bg-cyan-500/20 rounded-lg p-2.5 max-w-[85%]">
+            <p className="text-[9px] text-cyan-100">Why was "RE: Q4 Revenue Adjustments" flagged?</p>
+          </div>
+          <div className="w-5 h-5 bg-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
+            <span className="text-[7px] font-bold text-white">JA</span>
+          </div>
+        </div>
+
+        {/* AI explains the evidence */}
+        <div className="flex gap-2">
+          <div className="w-5 h-5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded flex items-center justify-center flex-shrink-0">
+            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+            </svg>
+          </div>
+          <div className="flex-1 bg-slate-800/50 rounded-lg p-2.5">
+            <p className="text-[9px] text-slate-300 leading-relaxed mb-2">
+              This document was flagged for <span className="text-amber-400 font-medium">3 tags</span>. Here's the evidence for each:
+            </p>
+            
+            {/* Evidence breakdown */}
+            <div className="space-y-2">
+              <div className="p-2 bg-amber-500/10 rounded border border-amber-500/20">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="px-1.5 py-0.5 bg-amber-500/30 text-amber-400 text-[7px] rounded font-medium">Revenue Recognition</span>
+                </div>
+                <p className="text-[8px] text-slate-300 italic">"...revised <span className="bg-amber-500/30 px-0.5">recognition schedule</span> for board review..."</p>
+              </div>
+              
+              <div className="p-2 bg-violet-500/10 rounded border border-violet-500/20">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="px-1.5 py-0.5 bg-violet-500/30 text-violet-400 text-[7px] rounded font-medium">Q4 Timing</span>
+                </div>
+                <p className="text-[8px] text-slate-300 italic">"...address auditor's concerns about <span className="bg-violet-500/30 px-0.5">Q4 cutoff</span>..."</p>
+              </div>
+
+              <div className="p-2 bg-rose-500/10 rounded border border-rose-500/20">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <span className="px-1.5 py-0.5 bg-rose-500/30 text-rose-400 text-[7px] rounded font-medium">CFO</span>
+                </div>
+                <p className="text-[8px] text-slate-300 italic">Sent to: <span className="bg-rose-500/30 px-0.5">CFO</span>, CC: Controller</p>
+              </div>
+            </div>
+
+            <button className="mt-2.5 w-full py-1.5 bg-cyan-500/20 border border-cyan-500/30 rounded text-[9px] text-cyan-400 font-medium hover:bg-cyan-500/30">
+              Open document to verify →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Chat Input */}
+      <div className="px-3 py-2 border-t border-slate-800">
+        <div className="flex gap-2">
+          <input 
+            type="text" 
+            placeholder="Ask about tags, filter documents, or request analysis..." 
+            className="flex-1 bg-slate-800 rounded-lg px-3 py-2 text-[10px] text-white placeholder-slate-500 border border-slate-700 focus:border-cyan-500 focus:outline-none"
+          />
+          <button className="w-8 h-8 bg-cyan-500 rounded-lg flex items-center justify-center">
+            <svg className="w-4 h-4 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Document Tagging Decision Screen - View document with highlighted evidence
+export function DocumentTaggingDecisionScreen() {
+  return (
+    <div className="h-full flex flex-col bg-slate-950 text-white">
+      {/* Header */}
+      <div className="bg-slate-900 border-b border-slate-700/50 px-3 py-2 flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <button className="w-5 h-5 flex items-center justify-center text-slate-400 hover:text-white">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <div>
+            <h3 className="text-[10px] font-semibold text-white">RE: Q4 Revenue Adjustments</h3>
+            <p className="text-[8px] text-slate-400">Email • J. Martinez → CFO, Controller</p>
+          </div>
+        </div>
+        <span className="text-[8px] text-emerald-400 font-medium">94% confidence</span>
+      </div>
+
+      {/* Tags applied to this document */}
+      <div className="px-3 py-2 border-b border-slate-800 bg-slate-900/50">
+        <p className="text-[8px] text-slate-400 mb-1.5">AI Tags (3 found)</p>
+        <div className="flex gap-1.5 flex-wrap">
+          <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[8px] rounded-full border border-amber-500/30">Revenue Recognition</span>
+          <span className="px-2 py-0.5 bg-violet-500/20 text-violet-400 text-[8px] rounded-full border border-violet-500/30">Q4 Timing</span>
+          <span className="px-2 py-0.5 bg-rose-500/20 text-rose-400 text-[8px] rounded-full border border-rose-500/30">CFO</span>
+        </div>
+      </div>
+
+      {/* Document content with highlighted evidence */}
+      <div className="flex-1 overflow-y-auto px-3 py-3">
+        <div className="bg-white rounded-lg p-3 text-slate-900">
+          {/* Email header */}
+          <div className="border-b border-slate-200 pb-2 mb-2">
+            <div className="text-[8px] text-slate-500 space-y-0.5">
+              <p><span className="font-medium">From:</span> J. Martinez</p>
+              <p><span className="font-medium">To:</span> <span className="bg-rose-100 px-1 rounded">CFO</span>, Controller</p>
+              <p><span className="font-medium">Date:</span> Dec 12, 2024 3:47 PM</p>
+              <p><span className="font-medium">Subject:</span> RE: Q4 Revenue Adjustments</p>
+            </div>
+          </div>
+
+          {/* Email body with highlights */}
+          <div className="text-[9px] text-slate-700 leading-relaxed space-y-2">
+            <p>Per our discussion, I've attached the revised <span className="bg-amber-200 px-0.5 rounded cursor-pointer hover:bg-amber-300" title="Revenue Recognition">recognition schedule</span> for board review.</p>
+            
+            <p>The timing adjustments we discussed should address the auditor's concerns about <span className="bg-violet-200 px-0.5 rounded cursor-pointer hover:bg-violet-300" title="Q4 Timing">Q4 cutoff</span>. Please confirm before I send to the audit committee.</p>
+            
+            <p className="text-slate-500 pt-2">---</p>
+            <p className="text-slate-500">Attachment: Q4_Revenue_Schedule_v3.xlsx</p>
+          </div>
+        </div>
+
+        {/* Evidence legend */}
+        <div className="mt-3 p-2.5 bg-slate-800/50 rounded-lg border border-slate-700">
+          <p className="text-[8px] text-slate-400 font-medium mb-2">Highlighted Evidence</p>
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 bg-amber-200 rounded"></span>
+              <span className="text-[8px] text-amber-400">Revenue Recognition</span>
+              <span className="text-[7px] text-slate-500">- 1 match</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 bg-violet-200 rounded"></span>
+              <span className="text-[8px] text-violet-400">Q4 Timing</span>
+              <span className="text-[7px] text-slate-500">- 1 match</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 bg-rose-200 rounded"></span>
+              <span className="text-[8px] text-rose-400">CFO</span>
+              <span className="text-[7px] text-slate-500">- 1 match</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Verification Footer */}
+      <div className="bg-slate-900 border-t border-slate-700/50 px-3 py-2.5">
+        <p className="text-[8px] text-slate-400 mb-2">Verify AI classification:</p>
+        <div className="flex gap-2">
+          <button className="flex-1 py-2 bg-emerald-500/20 border border-emerald-500/30 rounded-lg text-[9px] text-emerald-400 font-medium hover:bg-emerald-500/30">
+            <span className="flex items-center justify-center gap-1.5">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Correct - Send to Expert
+            </span>
+          </button>
+          <button className="flex-1 py-2 bg-rose-500/20 border border-rose-500/30 rounded-lg text-[9px] text-rose-400 font-medium hover:bg-rose-500/30">
+            <span className="flex items-center justify-center gap-1.5">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+              Incorrect - Remove
+            </span>
+          </button>
+        </div>
+        <button className="w-full mt-2 py-1.5 bg-slate-800 border border-slate-700 rounded-lg text-[8px] text-slate-400 hover:text-white">
+          Flag for second review
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// EDISCOVERY APPLICATION SCREENS
+// ============================================
+
+// Shared sidebar component for eDiscovery screens
+function EDiscoverySidebar({ activeItem = 'dashboard' }) {
+  const navItems = [
+    { id: 'dashboard', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
+    { id: 'review', label: 'Review', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+    { id: 'analyze', label: 'Analyze', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+    { id: 'production', label: 'Production', icon: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12' },
+  ]
+
+  return (
+    <div className="w-14 bg-slate-900 border-r border-slate-800 flex flex-col items-center py-3">
+      {/* Logo */}
+      <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg flex items-center justify-center mb-6">
+        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+        </svg>
+      </div>
+      {/* Nav items */}
+      {navItems.map((item) => (
+        <button
+          key={item.id}
+          className={`w-10 h-10 rounded-lg flex items-center justify-center mb-2 transition-colors ${
+            activeItem === item.id 
+              ? 'bg-teal-500/20 text-teal-400' 
+              : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'
+          }`}
+          title={item.label}
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={item.icon} />
+          </svg>
+        </button>
+      ))}
+      {/* Settings at bottom */}
+      <div className="mt-auto">
+        <button className="w-10 h-10 rounded-lg flex items-center justify-center text-slate-500 hover:text-slate-300 hover:bg-slate-800" title="Settings">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  )
+}
+
+// Dashboard Screen - Main metrics and overview
+export function EDiscoveryDashboardScreen() {
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      <EDiscoverySidebar activeItem="dashboard" />
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Top bar */}
+        <div className="h-12 bg-slate-900 border-b border-slate-800 px-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="text-sm font-semibold">AI Co-Pilot Dashboard</h1>
+            <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] rounded-full">SOC 2 Compliant</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="px-3 py-1.5 bg-slate-800 rounded text-xs text-slate-300 flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+              </svg>
+              AI Assistant
+            </button>
+            <div className="w-7 h-7 bg-indigo-600 rounded-full flex items-center justify-center">
+              <span className="text-[10px] font-bold">JA</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Dashboard content */}
+        <div className="flex-1 overflow-y-auto p-4">
+          {/* Row 1: Key Metrics */}
+          <div className="grid grid-cols-4 gap-3 mb-4">
+            {/* Review Gap Analysis */}
+            <div className="col-span-2 bg-slate-900 rounded-xl p-4 border border-slate-800">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-medium text-slate-400">Review Gap Analysis</h3>
+                <span className="text-[10px] text-slate-500">Last 30 days</span>
+              </div>
+              <div className="flex items-baseline gap-2 mb-3">
+                <span className="text-2xl font-bold text-emerald-400">$9M</span>
+                <span className="text-xs text-emerald-400">SAVED</span>
+              </div>
+              {/* Mini chart placeholder */}
+              <div className="h-16 flex items-end gap-1">
+                {[40, 55, 45, 60, 75, 65, 80, 70, 85, 90, 82, 95].map((h, i) => (
+                  <div key={i} className="flex-1 bg-gradient-to-t from-emerald-500/50 to-emerald-400/80 rounded-t" style={{ height: `${h}%` }} />
+                ))}
+              </div>
+              <div className="flex justify-between mt-3 pt-3 border-t border-slate-800">
+                <div>
+                  <p className="text-[10px] text-slate-500">Precision</p>
+                  <p className="text-lg font-bold text-white">96%</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-500">Recall</p>
+                  <p className="text-lg font-bold text-white">89%</p>
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-500">F1 Score</p>
+                  <p className="text-lg font-bold text-white">92%</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Sentiment & Context Clusters */}
+            <div className="bg-slate-900 rounded-xl p-4 border border-slate-800">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-xs font-medium text-slate-400">Sentiment Clusters</h3>
+                <button className="text-[10px] text-teal-400">Explore</button>
+              </div>
+              {/* Scatter plot placeholder */}
+              <div className="h-24 relative">
+                <div className="absolute w-2 h-2 bg-emerald-400 rounded-full" style={{ top: '20%', left: '30%' }} />
+                <div className="absolute w-3 h-3 bg-emerald-400 rounded-full" style={{ top: '35%', left: '45%' }} />
+                <div className="absolute w-2 h-2 bg-amber-400 rounded-full" style={{ top: '50%', left: '60%' }} />
+                <div className="absolute w-4 h-4 bg-rose-400 rounded-full" style={{ top: '25%', left: '70%' }} />
+                <div className="absolute w-2 h-2 bg-emerald-400 rounded-full" style={{ top: '60%', left: '25%' }} />
+                <div className="absolute w-3 h-3 bg-amber-400 rounded-full" style={{ top: '70%', left: '50%' }} />
+                <div className="absolute w-2 h-2 bg-rose-400 rounded-full" style={{ top: '40%', left: '80%' }} />
+              </div>
+              <div className="flex gap-3 mt-2">
+                <span className="flex items-center gap-1 text-[9px] text-slate-400">
+                  <span className="w-2 h-2 bg-emerald-400 rounded-full" /> Neutral
+                </span>
+                <span className="flex items-center gap-1 text-[9px] text-slate-400">
+                  <span className="w-2 h-2 bg-amber-400 rounded-full" /> Urgent
+                </span>
+                <span className="flex items-center gap-1 text-[9px] text-slate-400">
+                  <span className="w-2 h-2 bg-rose-400 rounded-full" /> High-Tension
+                </span>
+              </div>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="bg-slate-900 rounded-xl p-4 border border-slate-800">
+              <h3 className="text-xs font-medium text-slate-400 mb-3">Project Stats</h3>
+              <div className="space-y-3">
+                <div>
+                  <div className="flex justify-between text-[10px] mb-1">
+                    <span className="text-slate-400">Documents Ingested</span>
+                    <span className="text-white font-medium">142,847</span>
+                  </div>
+                  <div className="h-1.5 bg-slate-800 rounded-full">
+                    <div className="h-full bg-cyan-500 rounded-full" style={{ width: '100%' }} />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-[10px] mb-1">
+                    <span className="text-slate-400">AI Culled</span>
+                    <span className="text-white font-medium">128,562</span>
+                  </div>
+                  <div className="h-1.5 bg-slate-800 rounded-full">
+                    <div className="h-full bg-emerald-500 rounded-full" style={{ width: '90%' }} />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-[10px] mb-1">
+                    <span className="text-slate-400">For Review</span>
+                    <span className="text-white font-medium">14,285</span>
+                  </div>
+                  <div className="h-1.5 bg-slate-800 rounded-full">
+                    <div className="h-full bg-amber-500 rounded-full" style={{ width: '10%' }} />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-[10px] mb-1">
+                    <span className="text-slate-400">Reviewed</span>
+                    <span className="text-white font-medium">8,421</span>
+                  </div>
+                  <div className="h-1.5 bg-slate-800 rounded-full">
+                    <div className="h-full bg-violet-500 rounded-full" style={{ width: '59%' }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Row 2: Model Accuracy & Hot Docs */}
+          <div className="grid grid-cols-3 gap-3 mb-4">
+            {/* Model Accuracy */}
+            <div className="bg-slate-900 rounded-xl p-4 border border-slate-800">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 bg-gradient-to-br from-violet-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-xs font-medium text-white">Model Accuracy</h3>
+                  <p className="text-[10px] text-slate-500">Calibrated Confidence</p>
+                </div>
+              </div>
+              <p className="text-[10px] text-slate-400 mb-3">Training on 1,247 verified samples. Golden Dataset regression: passing.</p>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-slate-400">Responsiveness</span>
+                  <span className="text-[10px] text-emerald-400 font-medium">94.2%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-slate-400">Privilege</span>
+                  <span className="text-[10px] text-emerald-400 font-medium">91.8%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-slate-400">Hot Document</span>
+                  <span className="text-[10px] text-amber-400 font-medium">87.3%</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Conversation Tester */}
+            <div className="col-span-2 bg-slate-900 rounded-xl p-4 border border-slate-800">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-medium text-slate-400">AI Natural Language Culling</h3>
+                <button className="text-[10px] text-teal-400">Expand</button>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg p-3 mb-3">
+                <p className="text-[10px] text-slate-500 mb-1">Example query:</p>
+                <p className="text-xs text-slate-300 italic">"Find all discussions regarding the Q3 budget leak excluding official HR announcements"</p>
+              </div>
+              <div className="bg-slate-800/50 rounded-lg p-3">
+                <div className="flex items-start gap-2">
+                  <div className="w-5 h-5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="text-[10px] text-slate-300">Found <span className="text-amber-400 font-medium">847 documents</span> matching your query. Key clusters: Executive Emails (312), Slack Channels (298), Meeting Transcripts (237).</p>
+                  </div>
+                </div>
+              </div>
+              <button className="mt-3 w-full py-2 bg-teal-500/20 border border-teal-500/30 rounded-lg text-xs text-teal-400 font-medium">
+                Open Query Interface
+              </button>
+            </div>
+          </div>
+
+          {/* Row 3: Review Progress & Hot Docs */}
+          <div className="grid grid-cols-2 gap-3">
+            {/* Review Progress by Reviewer */}
+            <div className="bg-slate-900 rounded-xl p-4 border border-slate-800">
+              <h3 className="text-xs font-medium text-slate-400 mb-3">Reviewer Progress</h3>
+              <div className="space-y-2">
+                {[
+                  { name: 'Sarah M.', reviewed: 1247, total: 1500, rate: '52 docs/hr' },
+                  { name: 'John D.', reviewed: 892, total: 1200, rate: '48 docs/hr' },
+                  { name: 'Emily R.', reviewed: 634, total: 1000, rate: '45 docs/hr' },
+                ].map((reviewer, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <div className="w-6 h-6 bg-slate-700 rounded-full flex items-center justify-center text-[9px] font-medium text-slate-300">
+                      {reviewer.name.split(' ').map(n => n[0]).join('')}
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex justify-between text-[10px] mb-1">
+                        <span className="text-slate-300">{reviewer.name}</span>
+                        <span className="text-slate-500">{reviewer.rate}</span>
+                      </div>
+                      <div className="h-1.5 bg-slate-800 rounded-full">
+                        <div className="h-full bg-teal-500 rounded-full" style={{ width: `${(reviewer.reviewed / reviewer.total) * 100}%` }} />
+                      </div>
+                    </div>
+                    <span className="text-[10px] text-slate-400">{reviewer.reviewed}/{reviewer.total}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Hot Documents */}
+            <div className="bg-slate-900 rounded-xl p-4 border border-slate-800">
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-xs font-medium text-slate-400">Hot Documents</h3>
+                <span className="px-2 py-0.5 bg-rose-500/20 text-rose-400 text-[10px] rounded-full">23 new</span>
+              </div>
+              <div className="space-y-2">
+                {[
+                  { title: 'RE: Q4 Budget Discussion', confidence: 97, type: 'Email' },
+                  { title: 'Exec Strategy Call - Dec 5', confidence: 94, type: 'Zoom' },
+                  { title: 'CFO <> Controller Thread', confidence: 91, type: 'Slack' },
+                ].map((doc, i) => (
+                  <div key={i} className="flex items-center gap-2 p-2 bg-slate-800/50 rounded-lg hover:bg-slate-800 cursor-pointer">
+                    <div className={`w-6 h-6 rounded flex items-center justify-center ${doc.type === 'Email' ? 'bg-blue-500/20 text-blue-400' : doc.type === 'Zoom' ? 'bg-orange-500/20 text-orange-400' : 'bg-purple-500/20 text-purple-400'}`}>
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path d={doc.type === 'Email' ? 'M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z' : doc.type === 'Zoom' ? 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z' : 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z'} />
+                      </svg>
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] text-white truncate">{doc.title}</p>
+                      <p className="text-[9px] text-slate-500">{doc.type}</p>
+                    </div>
+                    <span className="text-[10px] text-rose-400 font-medium">{doc.confidence}%</span>
+                  </div>
+                ))}
+              </div>
+              <button className="mt-3 w-full py-1.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">
+                View All Hot Documents
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Review Queue Screen - Document list for review
+export function EDiscoveryReviewQueueScreen() {
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      <EDiscoverySidebar activeItem="review" />
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Top bar */}
+        <div className="h-12 bg-slate-900 border-b border-slate-800 px-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <h1 className="text-sm font-semibold">Review Queue</h1>
+            <span className="text-xs text-slate-400">5,864 documents pending</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="px-3 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-xs text-white flex items-center gap-1.5">
+              <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+              </svg>
+              AI Culling
+            </button>
+            <button className="px-3 py-1.5 bg-slate-800 rounded text-xs text-slate-300">Filters</button>
+          </div>
+        </div>
+
+        {/* Filter tabs */}
+        <div className="px-4 py-2 bg-slate-900/50 border-b border-slate-800 flex items-center gap-4">
+          <button className="text-xs text-teal-400 font-medium border-b-2 border-teal-400 pb-1">All (5,864)</button>
+          <button className="text-xs text-slate-400 pb-1">Responsive (3,421)</button>
+          <button className="text-xs text-slate-400 pb-1">Privileged (847)</button>
+          <button className="text-xs text-slate-400 pb-1">Hot Docs (156)</button>
+          <button className="text-xs text-slate-400 pb-1">Needs Review (1,440)</button>
+          <div className="ml-auto flex items-center gap-2">
+            <span className="text-[10px] text-slate-500">Sort by:</span>
+            <select className="bg-slate-800 text-xs text-slate-300 rounded px-2 py-1 border border-slate-700">
+              <option>AI Confidence</option>
+              <option>Date</option>
+              <option>Custodian</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Document list */}
+        <div className="flex-1 overflow-y-auto">
+          {[
+            { id: 1, title: 'RE: Q4 Revenue Adjustments', type: 'Email', custodian: 'J. Martinez', date: 'Dec 12, 2024', confidence: 97, tags: ['Responsive', 'Hot Doc'], status: 'pending' },
+            { id: 2, title: 'Strategy Call - Q4 Planning', type: 'Zoom', custodian: 'CFO Office', date: 'Dec 10, 2024', confidence: 94, tags: ['Responsive', 'Privilege'], status: 'pending' },
+            { id: 3, title: 'CFO <> Controller Direct Message', type: 'Slack', custodian: 'Controller', date: 'Dec 9, 2024', confidence: 91, tags: ['Responsive'], status: 'pending' },
+            { id: 4, title: 'Board Presentation Draft v3.pptx', type: 'Document', custodian: 'J. Martinez', date: 'Dec 8, 2024', confidence: 89, tags: ['Responsive'], status: 'pending' },
+            { id: 5, title: 'FW: Auditor Questions', type: 'Email', custodian: 'External Audit', date: 'Dec 7, 2024', confidence: 72, tags: ['Needs Review'], status: 'flagged' },
+            { id: 6, title: 'Accounting Policy Memo', type: 'Document', custodian: 'Controller', date: 'Dec 6, 2024', confidence: 88, tags: ['Responsive'], status: 'pending' },
+          ].map((doc) => (
+            <div 
+              key={doc.id}
+              className={`px-4 py-3 border-b border-slate-800/50 hover:bg-slate-800/30 cursor-pointer flex items-center gap-4 ${doc.status === 'flagged' ? 'border-l-2 border-l-amber-500' : ''}`}
+            >
+              <input type="checkbox" className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-teal-500" />
+              
+              {/* Doc type icon */}
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
+                doc.type === 'Email' ? 'bg-blue-500/20 text-blue-400' :
+                doc.type === 'Zoom' ? 'bg-orange-500/20 text-orange-400' :
+                doc.type === 'Slack' ? 'bg-purple-500/20 text-purple-400' :
+                'bg-slate-700 text-slate-400'
+              }`}>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d={
+                    doc.type === 'Email' ? 'M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z' :
+                    doc.type === 'Zoom' ? 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z' :
+                    doc.type === 'Slack' ? 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z' :
+                    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
+                  } />
+                </svg>
+              </div>
+
+              {/* Doc info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <h4 className="text-sm font-medium text-white truncate">{doc.title}</h4>
+                  {doc.tags.includes('Hot Doc') && <span className="px-1.5 py-0.5 bg-rose-500/20 text-rose-400 text-[9px] rounded">HOT</span>}
+                  {doc.tags.includes('Privilege') && <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 text-[9px] rounded">PRIV</span>}
+                </div>
+                <div className="flex items-center gap-3 mt-0.5">
+                  <span className="text-[10px] text-slate-500">{doc.type}</span>
+                  <span className="text-[10px] text-slate-500">•</span>
+                  <span className="text-[10px] text-slate-500">{doc.custodian}</span>
+                  <span className="text-[10px] text-slate-500">•</span>
+                  <span className="text-[10px] text-slate-500">{doc.date}</span>
+                </div>
+              </div>
+
+              {/* Tags */}
+              <div className="flex gap-1">
+                {doc.tags.filter(t => !['Hot Doc', 'Privilege'].includes(t)).map((tag, i) => (
+                  <span key={i} className={`px-2 py-0.5 text-[9px] rounded ${
+                    tag === 'Responsive' ? 'bg-emerald-500/20 text-emerald-400' :
+                    tag === 'Needs Review' ? 'bg-amber-500/20 text-amber-400' :
+                    'bg-slate-700 text-slate-400'
+                  }`}>{tag}</span>
+                ))}
+              </div>
+
+              {/* Confidence */}
+              <div className="text-right w-16">
+                <span className={`text-sm font-medium ${doc.confidence >= 90 ? 'text-emerald-400' : doc.confidence >= 80 ? 'text-cyan-400' : 'text-amber-400'}`}>
+                  {doc.confidence}%
+                </span>
+                <p className="text-[9px] text-slate-500">confidence</p>
+              </div>
+
+              {/* Action */}
+              <button className="px-3 py-1.5 bg-teal-500/20 border border-teal-500/30 rounded text-xs text-teal-400">
+                Review
+              </button>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="h-12 bg-slate-900 border-t border-slate-800 px-4 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <input type="checkbox" className="w-4 h-4 rounded border-slate-600 bg-slate-800" />
+            <span className="text-xs text-slate-400">Select all visible</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button className="px-3 py-1.5 bg-slate-800 rounded text-xs text-slate-300">Bulk Tag</button>
+            <button className="px-3 py-1.5 bg-slate-800 rounded text-xs text-slate-300">Add to Production</button>
+            <span className="text-xs text-slate-500 ml-4">Page 1 of 98</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Document Review Screen - Split view with document and controls
+export function EDiscoveryDocumentReviewScreen() {
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      <EDiscoverySidebar activeItem="review" />
+      
+      <div className="flex-1 flex overflow-hidden">
+        {/* Left Panel - Document Viewer */}
+        <div className="w-1/2 flex flex-col border-r border-slate-800">
+          {/* Document header */}
+          <div className="h-11 bg-slate-900 border-b border-slate-800 px-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <button className="p-1 hover:bg-slate-800 rounded">
+                <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <span className="text-xs font-medium">RE: Q4 Revenue Adjustments</span>
+              <span className="px-1.5 py-0.5 bg-blue-500/20 text-blue-400 text-[9px] rounded">Email</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <button className="p-1.5 hover:bg-slate-800 rounded text-slate-400" title="Pop out">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </button>
+              <button className="p-1.5 hover:bg-slate-800 rounded text-slate-400" title="Download">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          {/* Document content */}
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="bg-white rounded-lg p-5 text-slate-900 shadow-sm">
+              {/* Email header */}
+              <div className="border-b border-slate-200 pb-4 mb-4">
+                <div className="text-sm space-y-1">
+                  <p><span className="font-medium text-slate-600">From:</span> J. Martinez &lt;jmartinez@company.com&gt;</p>
+                  <p><span className="font-medium text-slate-600">To:</span> <span className="bg-rose-100 px-1 rounded">CFO</span>, Controller</p>
+                  <p><span className="font-medium text-slate-600">Date:</span> December 12, 2024 3:47 PM</p>
+                  <p><span className="font-medium text-slate-600">Subject:</span> RE: Q4 Revenue Adjustments</p>
+                </div>
+              </div>
+
+              {/* Email body with highlights */}
+              <div className="text-sm text-slate-700 leading-relaxed space-y-3">
+                <p>Hi team,</p>
+                <p>Per our discussion, I've attached the revised <span className="bg-amber-200 px-0.5 rounded cursor-pointer" title="Revenue Recognition">recognition schedule</span> for board review.</p>
+                <p>The <span className="bg-violet-200 px-0.5 rounded cursor-pointer" title="Q4 Timing">timing adjustments</span> we discussed should address the auditor's concerns about <span className="bg-violet-200 px-0.5 rounded cursor-pointer" title="Q4 Timing">Q4 cutoff</span>. Please confirm before I send to the audit committee.</p>
+                <p>I've also included the <span className="bg-amber-200 px-0.5 rounded cursor-pointer" title="Revenue Recognition">revenue allocation methodology</span> changes we discussed in the last call.</p>
+                <p className="text-slate-500 mt-6">---</p>
+                <p className="text-slate-500 text-xs">Attachment: Q4_Revenue_Schedule_v3.xlsx (124 KB)</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Evidence legend */}
+          <div className="bg-slate-900/50 px-4 py-2 border-t border-slate-800">
+            <div className="flex items-center gap-4">
+              <span className="text-[10px] text-slate-500">AI Highlights:</span>
+              <span className="flex items-center gap-1 text-[10px] text-slate-400">
+                <span className="w-3 h-3 bg-amber-200 rounded" /> Revenue Recognition
+              </span>
+              <span className="flex items-center gap-1 text-[10px] text-slate-400">
+                <span className="w-3 h-3 bg-violet-200 rounded" /> Q4 Timing
+              </span>
+              <span className="flex items-center gap-1 text-[10px] text-slate-400">
+                <span className="w-3 h-3 bg-rose-200 rounded" /> Key People
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Panel - Review Controls */}
+        <div className="w-1/2 flex flex-col">
+          {/* Controls header */}
+          <div className="h-11 bg-slate-900 border-b border-slate-800 px-4 flex items-center justify-between">
+            <span className="text-xs font-medium">Review & Tag</span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] text-slate-400">Doc 1,247 of 5,864</span>
+              <div className="flex items-center gap-1">
+                <button className="p-1 hover:bg-slate-800 rounded text-slate-400">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button className="p-1 hover:bg-slate-800 rounded text-slate-400">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* AI Insight */}
+          <div className="p-4 border-b border-slate-800">
+            <div className="bg-gradient-to-r from-violet-500/10 to-indigo-500/10 rounded-lg p-3 border border-violet-500/20">
+              <div className="flex items-start gap-2">
+                <div className="w-6 h-6 bg-gradient-to-r from-violet-500 to-indigo-500 rounded flex items-center justify-center flex-shrink-0">
+                  <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-[10px] text-violet-300 font-medium mb-1">AI Analysis (97% confidence)</p>
+                  <p className="text-xs text-slate-300">This document discusses <span className="text-amber-400">revenue recognition timing</span> for Q4 reporting. References to "auditor concerns" and "cutoff" are typical of responsive documents. Sent to CFO indicates executive involvement.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Tagging controls */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {/* Responsiveness */}
+            <div>
+              <label className="text-[10px] text-slate-400 font-medium uppercase tracking-wide mb-2 block">Responsiveness</label>
+              <div className="grid grid-cols-3 gap-2">
+                <button className="p-2 bg-emerald-500/20 border-2 border-emerald-500 rounded-lg text-center">
+                  <svg className="w-5 h-5 mx-auto text-emerald-400 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                  <span className="text-[10px] text-emerald-400 font-medium">Responsive</span>
+                </button>
+                <button className="p-2 bg-slate-800 border border-slate-700 rounded-lg text-center hover:border-slate-600">
+                  <svg className="w-5 h-5 mx-auto text-slate-400 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  <span className="text-[10px] text-slate-400 font-medium">Not Responsive</span>
+                </button>
+                <button className="p-2 bg-slate-800 border border-slate-700 rounded-lg text-center hover:border-slate-600">
+                  <svg className="w-5 h-5 mx-auto text-slate-400 mb-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span className="text-[10px] text-slate-400 font-medium">Needs Review</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Privilege */}
+            <div>
+              <label className="text-[10px] text-slate-400 font-medium uppercase tracking-wide mb-2 block">Privilege Designation</label>
+              <div className="space-y-2">
+                <button className="w-full p-2 bg-slate-800 border border-slate-700 rounded-lg flex items-center gap-3 hover:border-slate-600">
+                  <div className="w-4 h-4 rounded-full border-2 border-slate-600" />
+                  <span className="text-xs text-slate-300">Not Privileged</span>
+                </button>
+                <button className="w-full p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg flex items-center gap-3">
+                  <div className="w-4 h-4 rounded-full bg-amber-500 flex items-center justify-center">
+                    <svg className="w-2.5 h-2.5 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <span className="text-xs text-amber-400">Attorney-Client Privilege</span>
+                  <span className="text-[9px] text-slate-500 ml-auto">AI: 15% likely</span>
+                </button>
+                <button className="w-full p-2 bg-slate-800 border border-slate-700 rounded-lg flex items-center gap-3 hover:border-slate-600">
+                  <div className="w-4 h-4 rounded-full border-2 border-slate-600" />
+                  <span className="text-xs text-slate-300">Work Product</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Issue Tags */}
+            <div>
+              <label className="text-[10px] text-slate-400 font-medium uppercase tracking-wide mb-2 block">Issue Tags</label>
+              <div className="flex flex-wrap gap-1.5">
+                <button className="px-2 py-1 bg-amber-500/20 border border-amber-500/50 rounded-full text-[10px] text-amber-400">Revenue Recognition</button>
+                <button className="px-2 py-1 bg-violet-500/20 border border-violet-500/50 rounded-full text-[10px] text-violet-400">Q4 Timing</button>
+                <button className="px-2 py-1 bg-rose-500/20 border border-rose-500/50 rounded-full text-[10px] text-rose-400">Hot Document</button>
+                <button className="px-2 py-1 bg-slate-800 border border-slate-700 rounded-full text-[10px] text-slate-400">Audit</button>
+                <button className="px-2 py-1 bg-slate-800 border border-slate-700 rounded-full text-[10px] text-slate-400">+ Add Tag</button>
+              </div>
+            </div>
+
+            {/* Notes */}
+            <div>
+              <label className="text-[10px] text-slate-400 font-medium uppercase tracking-wide mb-2 block">Notes</label>
+              <textarea 
+                className="w-full bg-slate-800 rounded-lg px-3 py-2 text-xs text-slate-300 placeholder-slate-500 border border-slate-700 resize-none"
+                rows="2"
+                placeholder="Add notes for this document..."
+                defaultValue="Key document re: Q4 adjustments. Link to Doc #1189 (Controller response)."
+              />
+            </div>
+
+            {/* Suggested Privilege Basis */}
+            <div className="bg-slate-800/50 rounded-lg p-3">
+              <label className="text-[10px] text-slate-400 font-medium mb-2 block">AI-Suggested Privilege Basis</label>
+              <p className="text-xs text-slate-300 italic">"Communication between corporate officers regarding revenue reporting. Does not contain legal advice or attorney involvement. Recommend: Not Privileged."</p>
+            </div>
+          </div>
+
+          {/* Action footer */}
+          <div className="bg-slate-900 border-t border-slate-800 p-3 space-y-2">
+            <div className="flex gap-2">
+              <button className="flex-1 py-2 bg-teal-500 rounded-lg text-xs font-bold text-slate-900 flex items-center justify-center gap-1.5">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Save & Next
+              </button>
+              <button className="px-4 py-2 bg-slate-800 rounded-lg text-xs text-slate-300 border border-slate-700">
+                Skip
+              </button>
+            </div>
+            <button className="w-full py-1.5 bg-slate-800/50 rounded text-[10px] text-slate-500">
+              Add to Production
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ============================================
+// EDISCOVERY STATIC SCREENS FOR CASE STUDY
+// ============================================
+
+// Small Desktop Frame for eDiscovery case study gallery
+export function SmallDesktopFrame({ children }) {
+  return (
+    <div className="relative w-full">
+      {/* Browser outer frame */}
+      <div className="relative bg-gradient-to-b from-slate-700 via-slate-800 to-slate-900 rounded-xl p-[2px] shadow-xl">
+        {/* Browser chrome */}
+        <div className="bg-slate-800 rounded-t-[10px] px-2 py-1.5 flex items-center gap-1.5">
+          {/* Traffic lights */}
+          <div className="flex gap-1">
+            <div className="w-2 h-2 rounded-full bg-red-500" />
+            <div className="w-2 h-2 rounded-full bg-yellow-500" />
+            <div className="w-2 h-2 rounded-full bg-green-500" />
+          </div>
+          {/* URL bar */}
+          <div className="flex-1 ml-1.5 bg-slate-700/50 rounded px-2 py-0.5 flex items-center gap-1">
+            <svg className="w-2 h-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span className="text-[8px] text-slate-400 font-medium">nexus.ediscovery.ai</span>
+          </div>
+        </div>
+        {/* Screen container */}
+        <div 
+          className="relative bg-slate-950 rounded-b-[10px] overflow-hidden"
+          style={{ height: '280px' }}
+        >
+          {children}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// eDiscovery Dashboard Screen (Static)
+export function EDiscoveryDashboardStatic() {
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      {/* Mini Sidebar */}
+      <div className="w-8 bg-slate-900 border-r border-slate-800 flex flex-col items-center py-2">
+        <div className="w-5 h-5 bg-gradient-to-br from-teal-400 to-cyan-500 rounded flex items-center justify-center mb-2">
+          <svg className="w-3 h-3 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+          </svg>
+        </div>
+        <div className="flex-1 flex flex-col gap-0.5">
+          <div className="w-5 h-5 rounded bg-teal-500/20 flex items-center justify-center">
+            <svg className="w-3 h-3 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+          </div>
+        </div>
+      </div>
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-slate-900 px-2 py-1.5 flex items-center justify-between border-b border-slate-800">
+          <div>
+            <h1 className="text-[9px] font-semibold text-white">AI Co-Pilot Dashboard</h1>
+            <p className="text-[7px] text-slate-400">Project Nexus - SEC Investigation</p>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="px-1 py-0.5 bg-emerald-500/20 text-emerald-400 text-[7px] rounded">SOC 2</span>
+            <button className="px-1.5 py-0.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-[7px] font-medium text-white">
+              AI Co-Pilot
+            </button>
+          </div>
+        </div>
+
+        {/* Dashboard Grid */}
+        <div className="flex-1 overflow-y-auto p-2">
+          <div className="grid grid-cols-3 gap-1.5">
+            {/* Review Gap */}
+            <div className="bg-slate-900 rounded p-1.5 border border-slate-800">
+              <h3 className="text-[7px] text-slate-400 mb-0.5">Review Gap Analysis</h3>
+              <div className="text-sm font-bold text-emerald-400">$2.1M</div>
+              <div className="text-[7px] text-slate-500">saved</div>
+              <div className="h-8 flex items-end gap-0.5 mt-1">
+                {[40, 55, 45, 70, 85, 90, 75, 88].map((h, i) => (
+                  <div key={i} className="flex-1 bg-gradient-to-t from-teal-500 to-cyan-400 rounded-t" style={{ height: `${h}%` }} />
+                ))}
+              </div>
+            </div>
+
+            {/* Sentiment Clusters */}
+            <div className="bg-slate-900 rounded p-1.5 border border-slate-800">
+              <h3 className="text-[7px] text-slate-400 mb-0.5">Sentiment Clusters</h3>
+              <div className="h-14 relative">
+                <div className="absolute w-1.5 h-1.5 bg-emerald-400 rounded-full" style={{ top: '20%', left: '30%' }} />
+                <div className="absolute w-2 h-2 bg-emerald-400/70 rounded-full" style={{ top: '35%', left: '45%' }} />
+                <div className="absolute w-1.5 h-1.5 bg-cyan-400 rounded-full" style={{ top: '50%', left: '60%' }} />
+                <div className="absolute w-1.5 h-1.5 bg-amber-400 rounded-full" style={{ top: '25%', left: '70%' }} />
+                <div className="absolute w-2 h-2 bg-rose-400 rounded-full" style={{ top: '60%', left: '25%' }} />
+                <div className="absolute w-1.5 h-1.5 bg-violet-400 rounded-full" style={{ top: '70%', left: '50%' }} />
+              </div>
+            </div>
+
+            {/* Confidence */}
+            <div className="bg-slate-900 rounded p-1.5 border border-slate-800">
+              <h3 className="text-[7px] text-slate-400 mb-0.5">AI Confidence</h3>
+              <div className="space-y-1">
+                <div>
+                  <div className="flex justify-between text-[6px] mb-0.5">
+                    <span className="text-slate-400">High</span>
+                    <span className="text-emerald-400">78%</span>
+                  </div>
+                  <div className="h-1 bg-slate-800 rounded-full"><div className="h-full bg-emerald-400 rounded-full" style={{ width: '78%' }} /></div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-[6px] mb-0.5">
+                    <span className="text-slate-400">Med</span>
+                    <span className="text-amber-400">17%</span>
+                  </div>
+                  <div className="h-1 bg-slate-800 rounded-full"><div className="h-full bg-amber-400 rounded-full" style={{ width: '17%' }} /></div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-[6px] mb-0.5">
+                    <span className="text-slate-400">Low</span>
+                    <span className="text-rose-400">5%</span>
+                  </div>
+                  <div className="h-1 bg-slate-800 rounded-full"><div className="h-full bg-rose-400 rounded-full" style={{ width: '5%' }} /></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Progress Bar - spans 2 cols */}
+            <div className="col-span-2 bg-slate-900 rounded p-1.5 border border-slate-800">
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="text-[7px] text-slate-400">Review Progress</h3>
+                <span className="text-[7px] text-teal-400">79%</span>
+              </div>
+              <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden mb-1">
+                <div className="h-full bg-gradient-to-r from-teal-500 to-cyan-400" style={{ width: '79%' }} />
+              </div>
+              <div className="grid grid-cols-4 gap-1 text-center">
+                <div><p className="text-[9px] font-bold text-white">48K</p><p className="text-[6px] text-slate-500">Total</p></div>
+                <div><p className="text-[9px] font-bold text-emerald-400">43K</p><p className="text-[6px] text-slate-500">Culled</p></div>
+                <div><p className="text-[9px] font-bold text-amber-400">2.3K</p><p className="text-[6px] text-slate-500">Review</p></div>
+                <div><p className="text-[9px] font-bold text-rose-400">127</p><p className="text-[6px] text-slate-500">Hot</p></div>
+              </div>
+            </div>
+
+            {/* Quick Tags */}
+            <div className="bg-slate-900 rounded p-1.5 border border-slate-800">
+              <h3 className="text-[7px] text-slate-400 mb-1">Hot Doc Tags</h3>
+              <div className="flex flex-wrap gap-0.5">
+                <span className="px-1 py-0.5 bg-rose-500/20 text-rose-400 text-[6px] rounded">Hot</span>
+                <span className="px-1 py-0.5 bg-amber-500/20 text-amber-400 text-[6px] rounded">Key</span>
+                <span className="px-1 py-0.5 bg-violet-500/20 text-violet-400 text-[6px] rounded">Priv</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// eDiscovery Natural Language Culling Screen (Static)
+export function EDiscoveryNLCullingStatic() {
+  return (
+    <div className="h-full flex flex-col bg-slate-950 text-white relative">
+      {/* Top Bar - Assignment Context + Doc Tabs */}
+      <div className="bg-slate-900 border-b border-slate-800">
+        {/* Assignment header */}
+        <div className="px-3 py-1.5 flex items-center justify-between border-b border-slate-800/50">
+          <div className="flex items-center gap-2">
+            <span className="text-[8px] font-medium text-white">SEC Investigation</span>
+            <span className="text-[6px] text-slate-500">•</span>
+            <span className="text-[6px] text-slate-400">2,341 docs assigned</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[6px] text-teal-400">847 reviewed</span>
+            <div className="w-12 h-1 bg-slate-700 rounded-full overflow-hidden">
+              <div className="h-full bg-teal-500 rounded-full" style={{ width: '36%' }} />
+            </div>
+          </div>
+        </div>
+        
+        {/* Document tabs - horizontal scroll feel without actual scroll */}
+        <div className="px-2 py-1 flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-1">
+            {[
+              { name: 'RE: Q3 Budget...', active: true },
+              { name: 'Slack: Finance', hot: true },
+              { name: 'Meeting 8/15' },
+              { name: 'CFO Email' },
+            ].map((doc, i) => (
+              <div 
+                key={i} 
+                className={`px-2 py-1 rounded text-[7px] flex items-center gap-1 cursor-pointer whitespace-nowrap ${
+                  doc.active 
+                    ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40' 
+                    : 'bg-slate-800/50 text-slate-400 hover:bg-slate-800'
+                }`}
+              >
+                {doc.hot && <span className="w-1.5 h-1.5 bg-rose-400 rounded-full" />}
+                {doc.name}
+              </div>
+            ))}
+            <div className="px-2 py-1 text-[7px] text-slate-500">+1,494 more</div>
+          </div>
+          
+          {/* AI Toggle */}
+          <button className="px-2 py-1 bg-violet-500/20 border border-violet-500/40 rounded flex items-center gap-1 text-[7px] text-violet-300">
+            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+            </svg>
+            Ask AI
+          </button>
+        </div>
+      </div>
+
+      {/* Main Content - Document Viewer */}
+      <div className="flex-1 flex">
+        {/* Document Panel */}
+        <div className="flex-1 flex flex-col">
+          {/* Document Header */}
+          <div className="px-4 py-2 flex items-center justify-between bg-slate-900/50">
+            <div>
+              <h2 className="text-[10px] font-medium text-white">RE: Q3 Budget Review - CONFIDENTIAL</h2>
+              <p className="text-[7px] text-slate-500">j.smith@company.com → finance-team@company.com • Aug 14, 2024</p>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <button className="px-2 py-1 bg-violet-500/20 border border-violet-500/30 rounded text-[7px] text-violet-300">Privileged ✓</button>
+              <button className="px-2 py-1 bg-rose-500/20 border border-rose-500/30 rounded text-[7px] text-rose-300">Hot Doc</button>
+              <button className="px-2 py-1 bg-slate-800 border border-slate-600 rounded text-[7px] text-slate-400">+ Tag</button>
+            </div>
+          </div>
+          
+          {/* Document Body */}
+          <div className="flex-1 p-4 flex justify-center">
+            <div className="bg-white rounded-lg p-4 text-slate-900 text-[9px] leading-relaxed shadow-xl max-w-sm w-full">
+              <p className="mb-3">Team,</p>
+              <p className="mb-3">
+                Following up on our discussion regarding the <span className="bg-amber-200 px-0.5 rounded font-medium">Q3 budget</span> figures. 
+                As discussed, the <span className="bg-amber-200 px-0.5 rounded font-medium">preliminary numbers</span> show a significant variance 
+                from our projections.
+              </p>
+              <p className="mb-3">
+                I want to flag that this information is <span className="bg-rose-200 px-0.5 rounded font-medium">strictly confidential</span> and 
+                should not be shared outside of this group until we've had a chance to review with 
+                <span className="bg-amber-200 px-0.5 rounded font-medium">legal counsel</span>.
+              </p>
+              <p className="mb-3">
+                The <span className="bg-amber-200 px-0.5 rounded font-medium">discrepancy</span> appears to stem from the accounting adjustments 
+                made in late July. We need to understand the full impact before the 
+                <span className="bg-amber-200 px-0.5 rounded font-medium">board meeting</span> next week.
+              </p>
+              <p className="text-slate-500 mt-4 text-[8px]">— J. Smith, Controller</p>
+            </div>
+          </div>
+          
+          {/* Bottom Bar - Navigation + Legend */}
+          <div className="px-4 py-2 bg-slate-900/50 flex items-center justify-between">
+            <div className="flex items-center gap-3 text-[6px]">
+              <span className="flex items-center gap-1"><span className="w-2 h-2 bg-amber-300 rounded" />Search match</span>
+              <span className="flex items-center gap-1"><span className="w-2 h-2 bg-rose-300 rounded" />Privilege indicator</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button className="px-2 py-1 bg-slate-800 rounded text-[7px] text-slate-400">← Prev</button>
+              <span className="text-[7px] text-slate-500">142 of 2,341</span>
+              <button className="px-2 py-1 bg-teal-500 rounded text-[7px] text-slate-900 font-medium">Next →</button>
+            </div>
+          </div>
+        </div>
+
+        {/* AI Drawer - Overlaid on right */}
+        <div className="w-40 bg-slate-900 border-l border-slate-800 flex flex-col">
+          <div className="px-2 py-2 border-b border-slate-800 flex items-center justify-between">
+            <div className="flex items-center gap-1">
+              <svg className="w-3 h-3 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+              </svg>
+              <span className="text-[8px] font-medium text-white">AI Assistant</span>
+            </div>
+            <button className="text-[8px] text-slate-500">×</button>
+          </div>
+          
+          {/* Conversation */}
+          <div className="flex-1 p-2 space-y-2">
+            <div className="bg-slate-800 rounded-lg p-2">
+              <p className="text-[7px] text-white">"Find similar budget discussions from J. Smith"</p>
+            </div>
+            
+            <div className="bg-violet-500/10 border border-violet-500/20 rounded-lg p-2">
+              <p className="text-[7px] text-violet-200 mb-1.5">Found 12 related documents:</p>
+              <div className="space-y-1">
+                {['Email 8/12: Variance report', 'Slack 8/10: Q3 concerns', 'Notes 8/8: Finance sync'].map((d, i) => (
+                  <div key={i} className="flex items-center gap-1 text-[6px] text-slate-300 cursor-pointer hover:text-white">
+                    <span className="w-1 h-1 bg-teal-400 rounded-full" />
+                    {d}
+                  </div>
+                ))}
+              </div>
+              <button className="mt-1.5 text-[6px] text-teal-400">Jump to first match →</button>
+            </div>
+          </div>
+          
+          {/* Input */}
+          <div className="p-2 border-t border-slate-800">
+            <div className="flex items-center gap-1.5 px-2 py-1.5 bg-slate-800 rounded-lg">
+              <input 
+                type="text" 
+                placeholder="Ask about docs..." 
+                className="flex-1 bg-transparent text-[7px] text-white placeholder-slate-500 outline-none"
+              />
+              <svg className="w-3 h-3 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// eDiscovery Multimodal Review Screen (Static) - Video/Audio
+export function EDiscoveryMultimodalStatic() {
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      {/* Mini Sidebar */}
+      <div className="w-8 bg-slate-900 border-r border-slate-800 flex flex-col items-center py-2">
+        <div className="w-5 h-5 bg-gradient-to-br from-teal-400 to-cyan-500 rounded flex items-center justify-center mb-2">
+          <svg className="w-3 h-3 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+          </svg>
+        </div>
+      </div>
+      
+      <div className="flex-1 flex overflow-hidden">
+        {/* Video Panel */}
+        <div className="w-1/2 flex flex-col border-r border-slate-800">
+          <div className="bg-slate-900 px-2 py-1 border-b border-slate-800">
+            <h3 className="text-[8px] font-medium text-white">Zoom: Q3 Review Meeting</h3>
+            <span className="text-[6px] text-slate-400">Duration: 47:23</span>
+          </div>
+          
+          {/* Video Placeholder */}
+          <div className="flex-1 bg-slate-800 flex items-center justify-center relative">
+            <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center">
+              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+            {/* Playback bar */}
+            <div className="absolute bottom-0 left-0 right-0 px-2 py-1 bg-gradient-to-t from-slate-900">
+              <div className="h-1 bg-slate-700 rounded-full">
+                <div className="h-full bg-teal-500 rounded-full" style={{ width: '35%' }} />
+              </div>
+              <div className="flex justify-between text-[6px] text-slate-400 mt-0.5">
+                <span>16:42</span>
+                <span>47:23</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Transcript Panel with Sentiment Heat Map */}
+        <div className="flex-1 flex flex-col">
+          <div className="bg-slate-900 px-2 py-1 border-b border-slate-800 flex items-center justify-between">
+            <h3 className="text-[8px] font-medium text-white">Transcript</h3>
+            <span className="text-[6px] text-violet-400">AI Annotated</span>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto">
+            {/* Transcript lines with sentiment colors */}
+            <div className="p-1.5 space-y-1">
+              <div className="px-1.5 py-1 rounded bg-slate-800/50 border-l-2 border-slate-600">
+                <p className="text-[6px] text-slate-500">16:42 - CFO</p>
+                <p className="text-[7px] text-slate-300">"Let's look at the Q3 numbers for a moment..."</p>
+              </div>
+              <div className="px-1.5 py-1 rounded bg-amber-500/10 border-l-2 border-amber-500">
+                <p className="text-[6px] text-amber-400">16:45 - Controller</p>
+                <p className="text-[7px] text-slate-300">"There's something I need to flag about the timing..."</p>
+              </div>
+              <div className="px-1.5 py-1 rounded bg-rose-500/10 border-l-2 border-rose-500">
+                <p className="text-[6px] text-rose-400">16:47 - CFO (Elevated)</p>
+                <p className="text-[7px] text-slate-300">"Wait, what do you mean the books were adjusted?"</p>
+              </div>
+              <div className="px-1.5 py-1 rounded bg-rose-500/20 border-l-2 border-rose-600">
+                <p className="text-[6px] text-rose-400">16:48 - Controller (High Tension)</p>
+                <p className="text-[7px] text-slate-300">"I'm just saying we need to discuss this offline..."</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Sentiment Legend */}
+          <div className="px-2 py-1 bg-slate-900/80 border-t border-slate-800 flex items-center gap-2 text-[6px]">
+            <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 bg-slate-600 rounded" />Neutral</span>
+            <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 bg-amber-500 rounded" />Urgent</span>
+            <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 bg-rose-500 rounded" />Hot</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// eDiscovery Defensibility Dashboard Screen (Static)
+export function EDiscoveryDefensibilityStatic() {
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      {/* Mini Sidebar */}
+      <div className="w-8 bg-slate-900 border-r border-slate-800 flex flex-col items-center py-2">
+        <div className="w-5 h-5 bg-gradient-to-br from-teal-400 to-cyan-500 rounded flex items-center justify-center mb-2">
+          <svg className="w-3 h-3 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+          </svg>
+        </div>
+      </div>
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-slate-900 px-2 py-1.5 flex items-center justify-between border-b border-slate-800">
+          <h1 className="text-[9px] font-semibold text-white">Defensibility Dashboard</h1>
+          <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-[7px] rounded">Court Ready</span>
+        </div>
+
+        {/* Metrics Grid */}
+        <div className="flex-1 p-2 space-y-2">
+          {/* Main Metrics */}
+          <div className="grid grid-cols-3 gap-1.5">
+            <div className="bg-slate-900 rounded-lg p-2 border border-slate-800 text-center">
+              <div className="text-2xl font-bold text-emerald-400">96%</div>
+              <div className="text-[7px] text-slate-400">Precision</div>
+              <div className="text-[6px] text-slate-500">When flagged, correct</div>
+            </div>
+            <div className="bg-slate-900 rounded-lg p-2 border border-slate-800 text-center">
+              <div className="text-2xl font-bold text-cyan-400">89%</div>
+              <div className="text-[7px] text-slate-400">Recall</div>
+              <div className="text-[6px] text-slate-500">Caught of total</div>
+            </div>
+            <div className="bg-slate-900 rounded-lg p-2 border border-slate-800 text-center">
+              <div className="text-2xl font-bold text-violet-400">92%</div>
+              <div className="text-[7px] text-slate-400">F1 Score</div>
+              <div className="text-[6px] text-slate-500">Harmonic mean</div>
+            </div>
+          </div>
+
+          {/* Training Progress */}
+          <div className="bg-slate-900 rounded-lg p-2 border border-slate-800">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[8px] font-medium text-white">Model Training Progress</span>
+              <span className="text-[7px] text-emerald-400">+4.2% this week</span>
+            </div>
+            <div className="h-12 flex items-end gap-0.5">
+              {[65, 72, 78, 82, 85, 87, 89, 91, 92, 94, 95, 96].map((h, i) => (
+                <div 
+                  key={i} 
+                  className={`flex-1 rounded-t ${i >= 10 ? 'bg-emerald-400' : i >= 8 ? 'bg-teal-400' : 'bg-slate-600'}`} 
+                  style={{ height: `${h}%` }} 
+                />
+              ))}
+            </div>
+            <div className="flex justify-between text-[6px] text-slate-500 mt-1">
+              <span>Week 1</span>
+              <span>Week 12</span>
+            </div>
+          </div>
+
+          {/* Disagreement Log */}
+          <div className="bg-slate-900 rounded-lg p-2 border border-slate-800">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-[8px] font-medium text-white">Overruled Decisions Log</span>
+              <span className="text-[7px] text-slate-400">Audit Trail</span>
+            </div>
+            <div className="space-y-1">
+              {['Reviewer overruled: Not Privileged → Privileged', 'AI corrected: Added work product basis', 'Edge case: Multi-party privilege'].map((log, i) => (
+                <div key={i} className="flex items-center gap-1 px-1.5 py-1 bg-slate-800/50 rounded text-[7px]">
+                  <svg className="w-2 h-2 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                  </svg>
+                  <span className="text-slate-300 truncate">{log}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// eDiscovery Production with Auto-Redaction (Static)
+export function EDiscoveryProductionStatic() {
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      {/* Mini Sidebar */}
+      <div className="w-8 bg-slate-900 border-r border-slate-800 flex flex-col items-center py-2">
+        <div className="w-5 h-5 bg-gradient-to-br from-teal-400 to-cyan-500 rounded flex items-center justify-center mb-2">
+          <svg className="w-3 h-3 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+          </svg>
+        </div>
+      </div>
+      
+      <div className="flex-1 flex overflow-hidden">
+        {/* Document Preview with Redactions */}
+        <div className="w-1/2 flex flex-col border-r border-slate-800">
+          <div className="bg-slate-900 px-2 py-1 border-b border-slate-800">
+            <h3 className="text-[8px] font-medium text-white">Document Preview</h3>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-1.5">
+            <div className="bg-white rounded p-2 text-slate-900 text-[7px]">
+              <div className="border-b border-slate-200 pb-1 mb-1.5 text-[6px]">
+                <p><span className="font-medium">From:</span> J. Martinez</p>
+                <p><span className="font-medium">To:</span> <span className="bg-black text-white px-0.5 rounded text-[5px]">REDACTED</span></p>
+                <p><span className="font-medium">Date:</span> Dec 12, 2024</p>
+              </div>
+              <p className="leading-relaxed">
+                Per our discussion about the <span className="bg-amber-200/60 px-0.5 rounded">recognition schedule</span>, I've updated the numbers.
+              </p>
+              <p className="mt-1 leading-relaxed">
+                Contact me at <span className="bg-black text-white px-0.5 rounded text-[5px]">REDACTED</span> with questions.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Redaction Controls */}
+        <div className="flex-1 flex flex-col">
+          <div className="bg-slate-900 px-2 py-1 border-b border-slate-800">
+            <h3 className="text-[8px] font-medium text-white">Auto-Redaction</h3>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-1.5 space-y-1.5">
+            {/* Stats */}
+            <div className="grid grid-cols-3 gap-1">
+              <div className="bg-slate-800/50 rounded p-1 text-center">
+                <p className="text-sm font-bold text-white">127</p>
+                <p className="text-[6px] text-slate-500">Docs</p>
+              </div>
+              <div className="bg-slate-800/50 rounded p-1 text-center">
+                <p className="text-sm font-bold text-amber-400">43</p>
+                <p className="text-[6px] text-slate-500">Redactions</p>
+              </div>
+              <div className="bg-slate-800/50 rounded p-1 text-center">
+                <p className="text-sm font-bold text-emerald-400">100%</p>
+                <p className="text-[6px] text-slate-500">Complete</p>
+              </div>
+            </div>
+
+            {/* Entity Toggles */}
+            <div className="bg-slate-900 rounded p-1.5 border border-slate-800">
+              <p className="text-[7px] text-slate-400 mb-1">Entity Extraction</p>
+              <div className="space-y-1">
+                {[
+                  { label: 'SSN', count: 12, on: true },
+                  { label: 'Phone', count: 28, on: true },
+                  { label: 'Email', count: 45, on: false },
+                  { label: 'Bank Acct', count: 3, on: true },
+                ].map((e, i) => (
+                  <div key={i} className="flex items-center justify-between text-[7px]">
+                    <span className="text-slate-300">{e.label}</span>
+                    <div className="flex items-center gap-1">
+                      <span className="text-slate-500">{e.count}</span>
+                      <div className={`w-5 h-2.5 rounded-full p-0.5 ${e.on ? 'bg-teal-500' : 'bg-slate-700'}`}>
+                        <div className={`w-1.5 h-1.5 rounded-full bg-white ${e.on ? 'ml-auto' : ''}`} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Production Set */}
+            <div className="bg-slate-900 rounded p-1.5 border border-slate-800">
+              <div className="flex items-center justify-between mb-0.5">
+                <span className="text-[7px] font-medium text-white">NEXUS_PROD_001</span>
+                <span className="text-[6px] text-emerald-400">Ready</span>
+              </div>
+              <p className="text-[6px] text-slate-500">Bates: NEXUS000001 - 000127</p>
+            </div>
+
+            <button className="w-full py-1 bg-teal-500 rounded text-[8px] font-bold text-slate-900">
+              Generate Production
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// eDiscovery HITL Training Screen (Static)
+export function EDiscoveryHITLStatic() {
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      {/* Mini Sidebar */}
+      <div className="w-8 bg-slate-900 border-r border-slate-800 flex flex-col items-center py-2">
+        <div className="w-5 h-5 bg-gradient-to-br from-teal-400 to-cyan-500 rounded flex items-center justify-center mb-2">
+          <svg className="w-3 h-3 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+          </svg>
+        </div>
+      </div>
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-slate-900 px-2 py-1.5 flex items-center justify-between border-b border-slate-800">
+          <h1 className="text-[9px] font-semibold text-white">Human-in-the-Loop Training</h1>
+          <span className="text-[7px] text-violet-400">47/500 samples</span>
+        </div>
+
+        {/* Training Interface */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Document */}
+          <div className="w-1/2 flex flex-col border-r border-slate-800">
+            <div className="bg-slate-900/50 px-2 py-1 border-b border-slate-800">
+              <span className="text-[7px] text-slate-400">Sample #47</span>
+            </div>
+            <div className="flex-1 overflow-y-auto p-1.5">
+              <div className="bg-white rounded p-2 text-slate-900 text-[7px]">
+                <div className="border-b border-slate-200 pb-1 mb-1.5 text-[6px]">
+                  <p><span className="font-medium">From:</span> Outside Counsel</p>
+                  <p><span className="font-medium">To:</span> General Counsel</p>
+                  <p><span className="font-medium">Re:</span> Legal Strategy Discussion</p>
+                </div>
+                <p className="leading-relaxed">
+                  As we discussed in our <span className="bg-violet-200/60 px-0.5 rounded">privileged</span> call yesterday, I recommend we proceed with the settlement approach...
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Training Controls */}
+          <div className="flex-1 flex flex-col">
+            <div className="bg-slate-900/50 px-2 py-1 border-b border-slate-800">
+              <span className="text-[7px] text-slate-400">AI Classification</span>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-1.5 space-y-2">
+              {/* AI Prediction */}
+              <div className="bg-violet-500/10 rounded p-1.5 border border-violet-500/30">
+                <div className="flex items-center gap-1 mb-0.5">
+                  <svg className="w-2.5 h-2.5 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+                  </svg>
+                  <span className="text-[7px] font-medium text-violet-400">AI says: Privileged</span>
+                  <span className="ml-auto text-[7px] text-violet-300">94%</span>
+                </div>
+                <p className="text-[6px] text-slate-300">Detected: attorney communication, legal advice, settlement discussion</p>
+              </div>
+
+              {/* Reviewer Decision */}
+              <div>
+                <p className="text-[7px] text-slate-400 mb-1">Your Classification</p>
+                <div className="grid grid-cols-2 gap-1">
+                  <button className="p-1.5 bg-rose-500/20 border border-rose-500 rounded text-[8px] text-rose-400">Privileged</button>
+                  <button className="p-1.5 bg-slate-800 border border-slate-700 rounded text-[8px] text-slate-400">Not Privileged</button>
+                </div>
+              </div>
+
+              {/* Basis */}
+              <div>
+                <p className="text-[7px] text-slate-400 mb-1">Privilege Basis</p>
+                <div className="flex flex-wrap gap-1">
+                  <span className="px-1.5 py-0.5 bg-violet-500/20 text-violet-400 text-[7px] rounded border border-violet-500/30">Attorney-Client</span>
+                  <span className="px-1.5 py-0.5 bg-slate-800 text-slate-400 text-[7px] rounded border border-slate-700">Work Product</span>
+                </div>
+              </div>
+
+              {/* Impact */}
+              <div className="bg-slate-800/50 rounded p-1.5">
+                <p className="text-[6px] text-slate-400 mb-0.5">Training Impact</p>
+                <p className="text-[7px] text-emerald-400">Your decision will improve accuracy by ~0.3%</p>
+              </div>
+            </div>
+
+            <div className="bg-slate-900 px-2 py-1.5 border-t border-slate-800">
+              <button className="w-full py-1.5 bg-teal-500 rounded text-[8px] font-bold text-slate-900">
+                Confirm & Next Sample
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}

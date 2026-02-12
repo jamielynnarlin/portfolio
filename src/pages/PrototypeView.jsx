@@ -3,10 +3,15 @@ import { useParams, Link } from 'react-router-dom'
 import { prototypes } from '../data/prototypes'
 import { 
   PhoneFrame, 
+  DesktopFrame,
   DashboardScreen, 
   EventTasksScreen, 
   ExpandedTasksScreen,
-  CameraScreen
+  CameraScreen,
+  DocReviewQueueScreen,
+  DocReviewAIFilterScreen,
+  DocReviewTagScreen,
+  EDiscoveryApp
 } from '../components/PrototypeScreens'
 
 export default function PrototypeView() {
@@ -75,15 +80,20 @@ export default function PrototypeView() {
     goToScreen(2, 'backward')
   }
 
-  const screenLabels = [
-    { label: 'Dashboard', description: 'View upcoming events, stats, and tap the next event to see tasks' },
-    { label: 'Event Tasks', description: 'See task categories for your event' },
-    { label: 'Complete Tasks', description: 'Check off your tasks before the event' },
-    { label: 'Camera', description: 'Take a photo to complete the task' }
-  ]
+  const screenLabels = id === 'document-review' 
+    ? prototype.prototype.screens
+    : [
+        { label: 'Dashboard', description: 'View upcoming events, stats, and tap the next event to see tasks' },
+        { label: 'Event Tasks', description: 'See task categories for your event' },
+        { label: 'Complete Tasks', description: 'Check off your tasks before the event' },
+        { label: 'Camera', description: 'Take a photo to complete the task' }
+      ]
 
-  // Check if this is the mobile-task-tracker prototype
+  // Check prototype type
   const isInteractivePrototype = id === 'mobile-task-tracker'
+  const isDocReviewPrototype = id === 'document-review'
+  const isEDiscoveryPrototype = id === 'ediscovery-ai'
+  const isDesktopPrototype = prototype?.isDesktop === true
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 py-20 px-4">
@@ -129,9 +139,44 @@ export default function PrototypeView() {
         </div>
 
         <div className="flex flex-col lg:flex-row items-center justify-center gap-12">
-          {/* Phone Display */}
+          {/* Display Frame - Phone or Desktop */}
           <div className="relative">
-            {isInteractivePrototype ? (
+            {isEDiscoveryPrototype ? (
+              <DesktopFrame>
+                <EDiscoveryApp />
+              </DesktopFrame>
+            ) : isDocReviewPrototype ? (
+              <DesktopFrame>
+                <div 
+                  className={`h-full transition-all duration-300 ease-out ${
+                    isAnimating 
+                      ? direction === 'forward' 
+                        ? 'opacity-0 translate-x-4' 
+                        : 'opacity-0 -translate-x-4'
+                      : 'opacity-100 translate-x-0'
+                  }`}
+                >
+                  {currentScreen === 0 && (
+                    <DocReviewQueueScreen 
+                      onAskAI={nextScreen}
+                      onDocumentClick={() => goToScreen(2, 'forward')}
+                    />
+                  )}
+                  {currentScreen === 1 && (
+                    <DocReviewAIFilterScreen 
+                      onBack={prevScreen}
+                      onDocumentClick={() => goToScreen(2, 'forward')}
+                    />
+                  )}
+                  {currentScreen === 2 && (
+                    <DocReviewTagScreen 
+                      onBack={prevScreen}
+                      onComplete={() => goToScreen(0, 'backward')}
+                    />
+                  )}
+                </div>
+              </DesktopFrame>
+            ) : isInteractivePrototype ? (
               <PhoneFrame>
                 <div 
                   className={`h-full transition-all duration-300 ease-out ${
@@ -176,13 +221,13 @@ export default function PrototypeView() {
             )}
             
             {/* Tap Hint - only show on first screen */}
-            {isInteractivePrototype && currentScreen === 0 && (
+            {(isInteractivePrototype || isDocReviewPrototype) && currentScreen === 0 && (
               <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full mt-4">
                 <div className="flex items-center gap-2 text-gray-400 text-sm animate-pulse">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
                   </svg>
-                  Tap the event card to navigate
+                  {isDocReviewPrototype ? 'Click documents or use the navigation panel' : 'Tap the event card to navigate'}
                 </div>
               </div>
             )}
@@ -239,7 +284,7 @@ export default function PrototypeView() {
               {/* Navigation Buttons */}
               <div className="flex gap-3 mt-6">
                 <button
-                  onClick={currentScreen === 3 ? handleCameraCancel : prevScreen}
+                  onClick={isInteractivePrototype && currentScreen === 3 ? handleCameraCancel : prevScreen}
                   disabled={currentScreen === 0}
                   className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
                     currentScreen === 0
@@ -250,13 +295,13 @@ export default function PrototypeView() {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  {currentScreen === 3 ? 'Cancel' : 'Back'}
+                  {isInteractivePrototype && currentScreen === 3 ? 'Cancel' : 'Back'}
                 </button>
                 <button
                   onClick={nextScreen}
-                  disabled={currentScreen >= 2}
+                  disabled={isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 2}
                   className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
-                    currentScreen >= 2
+                    (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 2)
                       ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
                       : 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-400 hover:to-cyan-400'
                   }`}
@@ -278,26 +323,53 @@ export default function PrototypeView() {
                 Interactive Features
               </h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li className="flex items-start gap-2">
-                  <span className="text-teal-400 mt-0.5">•</span>
-                  Tap event cards to navigate
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-teal-400 mt-0.5">•</span>
-                  Check off tasks interactively
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-teal-400 mt-0.5">•</span>
-                  Tap "Take Photo" to open camera
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-teal-400 mt-0.5">•</span>
-                  Capture photos with flash animation
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-teal-400 mt-0.5">•</span>
-                  Photo thumbnail appears after capture
-                </li>
+                {isDocReviewPrototype ? (
+                  <>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Click documents to preview in left panel
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Ask AI to filter by specific tags
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      See highlighted evidence in documents
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Verify AI classifications interactively
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Tag and send documents for expert review
+                    </li>
+                  </>
+                ) : (
+                  <>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Tap event cards to navigate
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Check off tasks interactively
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Tap "Take Photo" to open camera
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Capture photos with flash animation
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Photo thumbnail appears after capture
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
           </div>

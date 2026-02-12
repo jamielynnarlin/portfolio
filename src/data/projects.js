@@ -7,6 +7,7 @@ export const projects = [
     category: "ai",
     liveUrl: null,
     caseStudyUrl: "/projects/mobile-task-tracker",
+    mvp: true,
   },
   {
     id: 2,
@@ -16,12 +17,13 @@ export const projects = [
     category: "delivery",
     liveUrl: null,
     caseStudyUrl: "/projects/enterprise-designops-transformation",
+    mvp: true,
   },
   {
     id: 3,
-    title: "LLM Integration Strategy",
-    description: "Developed and executed enterprise LLM integration roadmap, enabling teams to leverage AI assistants for requirements gathering, user research synthesis, and stakeholder communication.",
-    tags: ["AI/ML", "Strategy", "Innovation"],
+    title: "Conversational Document Review",
+    description: "Designed an AI assistant for legal document review, helping contract reviewers analyze and tag 2,000+ documents through natural conversation. Achieved 60% faster review time and 2x documents processed per day.",
+    tags: ["Conversational UI", "LLM Integration", "Legal Tech"],
     category: "ai",
     liveUrl: null,
     caseStudyUrl: "/projects/llm-integration-strategy",
@@ -37,15 +39,6 @@ export const projects = [
   },
   {
     id: 5,
-    title: "Gen AI Resume Builder",
-    description: "Designed a conversational AI powered resume builder leveraging LLMs to create personalized, targeted resumes through natural dialogue. Features realtime preview, multiversion management, and intelligent content suggestions.",
-    tags: ["AI/ML", "Product Design", "Conversational UI"],
-    category: "ux",
-    liveUrl: null,
-    caseStudyUrl: "/projects/gen-ai-resume-builder",
-  },
-  {
-    id: 6,
     title: "Rewards Network Redesign",
     description: "Redesigned the Rewards Network earn page to build user trust and streamline signups across multiple dining reward programs. Achieved 30% increase in new member signups and reduced bounce rates by 10%.",
     tags: ["UX Research", "Marketing", "Conversion Optimization"],
@@ -54,6 +47,9 @@ export const projects = [
     caseStudyUrl: "/projects/rewards-network-marketing-website",
   },
 ]
+
+// MVP filtered projects - only show these in production
+export const mvpProjects = projects.filter(p => p.mvp)
 
 export const projectCategories = [
   { id: "all", label: "All Projects" },

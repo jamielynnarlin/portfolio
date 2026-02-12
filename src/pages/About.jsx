@@ -68,9 +68,6 @@ function About() {
             <p className="text-gray-600 dark:text-gray-300 mb-6">
               Currently, I'm focused on implementing agentic AI systems that amplify team capabilities while maintaining the human-centered approach that makes products truly valuable.
             </p>
-            <a href="/resume.pdf" download className="btn-primary inline-block">
-              Download Resume
-            </a>
           </div>
         </div>
 

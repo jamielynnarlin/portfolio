@@ -390,139 +390,256 @@ export const caseStudies = {
   },
 
   'llm-integration-strategy': {
-    title: "LLM Integration Strategy",
-    subtitle: "Transforming the product development lifecycle with AI powered assistants for requirements gathering, research synthesis, and stakeholder communication, demonstrated through the Mobile Task Tracker project.",
-    tags: ["AI/ML", "LLM Integration", "Product Strategy", "Automation", "Research Synthesis"],
-    roles: [
-      "AI Strategy",
-      "Product Design",
-      "UX Research",
-      "Stakeholder Management",
-      "Process Innovation"
-    ],
-    timeline: "Ongoing",
-    team: "Cross functional: Product, Engineering, Design, Marketing",
+    title: "AI-Powered eDiscovery Review",
+    subtitle: "Transforming skeptical attorneys into AI advocates through explainable, human-in-the-loop document review.",
+    tags: ["eDiscovery", "LLM Integration", "Human-in-the-Loop", "Legal Tech"],
+    heroImage: {
+      src: import.meta.env.BASE_URL + "images/case-studies/ediscovery-hero.jpg",
+      alt: "Stack of legal documents",
+      clientName: "Project Nexus",
+      clientDescription: "Tier-1 eDiscovery provider building AI-powered document review for litigation."
+    },
+    roles: ["Delivery Lead", "UX Strategy", "Product Partnership"],
+    timeline: "4 months",
+    team: "PM, Engineering Lead, AI/ML Engineers, Legal SMEs",
     challenge: [
-      "Manual interview transcription",
-      "Time intensive research synthesis",
-      "Slow documentation process",
-      "Distributed team communication"
+      "48,000+ documents per case",
+      "Attorneys deeply skeptical of AI",
+      "Court requires defensibility",
+      "Zero tolerance for errors"
     ],
     solution: [
-      "LLM assistants in workflow",
-      "Automated research synthesis",
-      "AI accelerated documentation",
-      "Realtime alignment tools"
+      "Human-in-the-loop training",
+      "Explainable AI decisions",
+      "Trust-building dashboards",
+      "Progressive autonomy"
     ],
     process: [
       {
-        title: "The Vision: AI Augmented Product Development",
-        content: [
-          "The goal was to identify high impact touchpoints in the product development lifecycle where LLMs could dramatically accelerate work without sacrificing quality. We focused on three core areas: requirements gathering, user research synthesis, and stakeholder communication.",
-          "Rather than replacing human judgment, the strategy positions AI as an intelligent assistant, handling the heavy lifting of data processing while humans focus on strategic decisions and creative problem solving.",
-          "The Mobile Task Tracker project for BookedOut became our proving ground, demonstrating how AI integration transforms each phase of the design process."
-        ],
-        highlights: [
-          "AI as augmentation, not replacement",
-          "Focus on high impact, time intensive tasks",
-          "Preserve human judgment for strategic decisions",
-          "Measurable productivity improvements"
-        ]
-      },
-      {
-        title: "AI for Requirements Gathering",
-        content: [
-          "For the Mobile Task Tracker, we needed to understand a complex problem space: event staff missing tasks, managers lacking visibility, and no accountability mechanisms. Traditional requirements gathering meant hours of stakeholder interviews and manual documentation.",
-          "With LLM integration, we transformed this process. The AI assistant joined stakeholder calls, generating realtime transcripts and extracting key requirements as bullet points. It automatically identified user stories from conversations: 'As an event manager, I need to see which staff members have completed their tasks so that I can ensure event success.'",
-          "The AI also flagged potential conflicts or gaps in requirements, prompting clarifying questions like: 'Stakeholder A mentioned tasks should be completed before checkout while Stakeholder B said during the event. Can we clarify the timeline expectations?'"
-        ],
-        highlights: [
-          "Realtime transcription and extraction",
-          "Automatic user story generation",
-          "Conflict detection across stakeholders",
-          "80% reduction in documentation time"
-        ],
-        quote: {
-          text: "How do I get to my events? Where can I see upcoming events? I am easily distracted when onsite at an event, so I need something that I can get to quickly to check off a task.",
-          author: "Event Staff, User Interview (AI transcribed and synthesized)"
+        problemBento: {
+          visualType: "document-folders",
+          callout: {
+            headline: "50 attorneys who didn't trust AI.",
+            subtext: "One missed privileged document could torpedo a case. Their skepticism became our design spec.",
+            painPoints: [
+              "AI threatens my job",
+              "Black box decisions",
+              "Can't defend in court",
+              "Zero error tolerance",
+              "My judgment matters"
+            ]
+          }
         }
       },
       {
-        title: "AI for User Research Synthesis",
+        title: "The Review Gap",
+        combinedReviewSection: {
+          beforeAfter: {
+            before: {
+              title: "Manual Review",
+              items: [
+                "Read every document linearly",
+                "$2.50 per document cost",
+                "Review costs exceed case value",
+                "Weeks to reach production"
+              ]
+            },
+            after: {
+              title: "AI-Augmented",
+              items: [
+                "AI triages, humans verify",
+                "90% volume reduction",
+                "Focus on ambiguous cases",
+                "72 hours to production"
+              ]
+            }
+          },
+          concernMapping: [
+            {
+              concern: "AI threatens my job",
+              feature: "Human-in-the-loop review",
+              outcome: "AI triages, attorneys decide"
+            },
+            {
+              concern: "Black box decisions",
+              feature: "Explainable reasoning",
+              outcome: "Every tag shows its 'why'"
+            },
+            {
+              concern: "Can't defend in court",
+              feature: "Complete audit trails",
+              outcome: "Court-ready documentation"
+            },
+            {
+              concern: "Zero error tolerance",
+              feature: "Calibrated confidence",
+              outcome: "Humans review edge cases"
+            },
+            {
+              concern: "My judgment matters",
+              feature: "Active feedback loop",
+              outcome: "AI learns from corrections"
+            }
+          ]
+        }
+      },
+      {
+        title: "From Black Box to Co-Pilot",
         content: [
-          "The Mobile Task Tracker research phase involved surveys, interviews, and walkthroughs with event staff and managers. Traditionally, synthesizing this data into actionable insights takes days or weeks of manual analysis.",
-          "Our LLM powered research assistant processed interview transcripts, survey responses, and session recordings to identify patterns and themes automatically. It generated affinity diagrams, extracted pain point clusters, and even suggested persona attributes based on demographic patterns.",
-          "For the Task Tracker, the AI identified that users fell into two distinct groups: 'Checklist Completers' who wanted simple task verification, and 'Progress Trackers' who needed visibility into overall event status. This insight directly informed the dual mode interface design."
+          "The AI explains its thinking. Reviewers correct it. Trust builds through transparency."
+        ],
+        interactivePrototype: {
+          title: "The AI Co-Pilot Experience",
+          description: "Interactive prototype showing the AI-assisted review workflow",
+          prototypeLink: "/prototypes/ediscovery-ai",
+          steps: [
+            { label: "Dashboard", description: "Precision, recall, sentiment clusters" },
+            { label: "Queue", description: "AI-prioritized with confidence scores" },
+            { label: "Review", description: "Split-panel with AI reasoning" },
+            { label: "Production", description: "Auto-redaction, audit trails" }
+          ],
+          bullets: [
+            "Natural language replaces Boolean",
+            "Three-tier confidence scoring",
+            "Human-in-the-loop feedback",
+            "Multimodal: video, audio, chat",
+            "Real-time accuracy metrics",
+            "Auto-redaction"
+          ]
+        }
+      },
+      {
+        title: "Multimodal Review",
+        researchStats: {
+          inputData: [
+            { icon: "video", label: "Zoom calls", value: "AI transcribes + flags tension" },
+            { icon: "chat", label: "Slack/Teams", value: "Sentiment analysis on threads" },
+            { icon: "document", label: "Email chains", value: "Thread summarization" }
+          ],
+          comparison: {
+            before: { time: "90 min", label: "Manual video review" },
+            after: { time: "10 min", label: "AI-assisted triage" }
+          },
+          keyInsight: {
+            stat: "9x",
+            description: "Faster review of video evidence",
+            detail: "Sentiment heat maps flag high-tension moments"
+          }
+        }
+      },
+      {
+        title: "Building Trust",
+        beforeAfter: {
+          before: {
+            title: "Skepticism",
+            items: [
+              "AI is replacing me",
+              "I can't verify its decisions",
+              "Courts won't accept AI",
+              "My expertise is devalued"
+            ]
+          },
+          after: {
+            title: "Advocacy",
+            items: [
+              "I'm teaching the AI my expertise",
+              "Every decision shows reasoning",
+              "Full audit trail for court",
+              "I focus on complex cases"
+            ]
+          }
+        }
+      },
+      {
+        title: "The Workflow",
+        table: {
+          headers: ["Phase", "AI Does", "Human Does"],
+          rows: [
+            ["Ingestion", "Filter junk", "Spot-check"],
+            ["Culling", "First-pass + confidence", "Review low-confidence"],
+            ["Review", "Summarize threads", "Privilege calls"],
+            ["Production", "Auto-redact PII", "Verify"]
+          ]
+        }
+      },
+      {
+        title: "Progressive Autonomy",
+        content: [
+          "We delivered value in Sprint 2 - then earned more autonomy as trust grew."
         ],
         highlights: [
-          "Automated affinity mapping",
-          "Pain point clustering and prioritization",
-          "Persona generation from data patterns",
-          "Theme extraction across multiple sources"
+          "Tier 1: Keywords (Sprint 2)",
+          "Tier 2: LLM + spot-checks",
+          "Tier 3: Autonomous (500+ samples)",
+          "Trust unlocks capability"
         ]
       },
       {
-        title: "AI for Stakeholder Communication",
+        title: "Technical Architecture",
+        table: {
+          headers: ["Challenge", "Solution"],
+          rows: [
+            ["Token limits", "Map-Reduce chunking"],
+            ["Hallucination", "RAG with strict bounds"],
+            ["Overconfidence", "Calibrated confidence UI"],
+            ["Prompt drift", "Golden Dataset regression"]
+          ]
+        }
+      },
+      {
+        title: "My Role",
         content: [
-          "Keeping marketing agency leadership, product managers, and engineering aligned on the Mobile Task Tracker required constant communication: status updates, decision documentation, and change requests.",
-          "The LLM assistant became our communication hub. It generated weekly stakeholder updates from design files and Jira tickets, translated technical constraints into business impact statements, and drafted meeting agendas based on open decisions.",
-          "When we needed to explain why the photo upload feature was deprioritized, the AI helped craft messaging that acknowledged stakeholder concerns while clearly articulating technical constraints and proposed alternatives."
+          "Data scientists speak probabilities. Lawyers speak absolutes. I translated between them."
         ],
         highlights: [
-          "Automated status report generation",
-          "Technical to business translation",
-          "Meeting agenda and summary drafting",
-          "Change request communication templates"
+          "70% build / 30% research",
+          "Skepticism → advocacy",
+          "Non-linear progress comms",
+          "AI delivery frameworks"
         ]
       },
       {
-        title: "Practical Implementation: The Task Tracker Example",
-        content: [
-          "Here's how the LLM integration played out across the Mobile Task Tracker project phases:",
-          "Discovery: AI processed initial stakeholder interviews, generating a requirements matrix that mapped user needs (event visibility, task completion, checkout process) to business goals (increased retention, better productivity tracking). This took hours instead of days.",
-          "Research: The AI analyzed user testing feedback, noting that users don't see upcoming events, no task completion milestones displayed, no accountability for tasks, and automatically generated a prioritized problem list with severity scores based on frequency and impact.",
-          "Design: As we iterated on wireframes, the AI helped document design decisions and their rationale, creating a searchable knowledge base that engineering could reference during implementation."
-        ],
-        highlights: [
-          "Requirements matrix generation",
-          "Automated problem prioritization",
-          "Design decision documentation",
-          "Searchable project knowledge base"
-        ]
-      },
-      {
-        title: "Results & Scalability",
-        content: [
-          "The Mobile Task Tracker launched successfully with positive feedback from users and stakeholders. But beyond the project itself, the LLM integration strategy proved its value as a repeatable framework.",
-          "Key metrics: 60% reduction in time from research to insights, 80% faster requirements documentation, 50% fewer stakeholder alignment meetings (because communication was clearer and more consistent).",
-          "The framework has since been applied to multiple projects across the organization, with AI assistants becoming standard tools in the product development toolkit."
-        ],
-        highlights: [
-          "Repeatable framework for any project",
-          "Dramatic time savings across phases",
-          "Improved stakeholder alignment",
-          "Scalable to entire organization"
-        ]
+        title: "Results",
+        researchStats: {
+          inputData: [
+            { icon: "chart", label: "Volume reduction", value: "90% of docs culled by AI" },
+            { icon: "users", label: "Reviewer throughput", value: "3x documents per day" },
+            { icon: "dollar", label: "Cost savings", value: "$2M in attorney fees" }
+          ],
+          comparison: {
+            before: { time: "4 weeks", label: "Time to production" },
+            after: { time: "72 hrs", label: "With AI-assisted workflow" }
+          },
+          keyInsight: {
+            stat: "96%",
+            description: "Precision at 89% recall",
+            detail: "Higher accuracy than manual review"
+          }
+        }
       }
     ],
     results: [
-      { metric: "60%", label: "Faster research to insights cycle" },
-      { metric: "80%", label: "Reduction in documentation time" },
-      { metric: "50%", label: "Fewer alignment meetings needed" },
-      { metric: "3x", label: "More projects supported per quarter" }
+      { metric: "90%", label: "Reduction in reviewable volume" },
+      { metric: "85%", label: "Precision at 80% recall" },
+      { metric: "$2M", label: "Saved in contract attorney fees" },
+      { metric: "72hrs", label: "Time to production (from 4 weeks)" }
     ],
     takeaways: [
       {
-        title: "AI Amplifies Human Expertise",
-        description: "The best results come from positioning AI as a powerful assistant that handles data heavy tasks, freeing humans to focus on judgment, creativity, and relationship building."
+        title: "Explainability is Non-Negotiable",
+        description: "Legal AI must show its reasoning. 'Flagged as privileged' isn't enough - the system must explain why (attorney present, legal advice sought, work product doctrine applies)."
       },
       {
-        title: "Start with High Impact Bottlenecks",
-        description: "Identify where your team spends disproportionate time on repetitive tasks like research synthesis, documentation, and status updates, then target AI integration there first."
+        title: "Interactive Alignment Over Automation",
+        description: "The best legal AI isn't fully autonomous - it's a co-pilot. Reviewers teaching the model creates both better accuracy and the trust needed for court defensibility."
       },
       {
-        title: "Build Repeatable Frameworks",
-        description: "Don't just solve one project's problems. Create templates, prompts, and workflows that can be applied across the entire product portfolio."
+        title: "Prompt Governance is Code Governance",
+        description: "System prompts are production logic that deserve version control, regression testing against Golden Datasets, and formal review processes. A 'minor' prompt tweak can break classification accuracy."
+      },
+      {
+        title: "Design for the Review Gap",
+        description: "When manual review costs exceed case value, cases go unreviewed. AI that closes this gap opens access to justice for matters that were previously economically unfeasible."
       }
     ]
   },
@@ -575,8 +692,8 @@ export const caseStudies = {
             ]
           },
           image: {
-            src: "https://images.unsplash.com/photo-1568667256549-094345857637?w=1200&q=80",
-            alt: "Magnifying glass on scattered documents"
+            src: "https://images.unsplash.com/photo-1589330273594-fade1ee91647?w=1200&q=80",
+            alt: "Stack of papers"
           }
         }
       },

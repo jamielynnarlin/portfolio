@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { caseStudies } from '../data/caseStudies'
 import { 
   SmallPhoneFrame,
+  SmallDesktopFrame,
   BrowserFrame,
   DesktopBrowserFrame,
   ProfileScreenStatic,
@@ -17,7 +18,16 @@ import {
   InvestigateDocumentScreen,
   NLPDocumentSearchScreen,
   SourceInspectorScreen,
-  EmptySearchScreen
+  EmptySearchScreen,
+  DocumentReviewQueueScreen,
+  DocumentReviewConversationScreen,
+  DocumentTaggingDecisionScreen,
+  EDiscoveryDashboardStatic,
+  EDiscoveryNLCullingStatic,
+  EDiscoveryMultimodalStatic,
+  EDiscoveryDefensibilityStatic,
+  EDiscoveryProductionStatic,
+  EDiscoveryHITLStatic
 } from '../components/StaticScreens'
 import { DocumentationViewer } from '../components/DocumentationViewer'
 import { CodeReviewViewer } from '../components/CodeReviewViewer'
@@ -220,6 +230,61 @@ function SamJourneyTimeline({ journeySteps }) {
         })}
       </div>
     </div>
+  )
+}
+
+// Animated Counter Component
+function AnimatedCounter({ target, duration = 2, delay = 0 }) {
+  const [count, setCount] = useState(0)
+  const [hasStarted, setHasStarted] = useState(false)
+  const ref = useRef(null)
+  
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !hasStarted) {
+          setHasStarted(true)
+        }
+      },
+      { threshold: 0.5 }
+    )
+    
+    if (ref.current) {
+      observer.observe(ref.current)
+    }
+    
+    return () => observer.disconnect()
+  }, [hasStarted])
+  
+  useEffect(() => {
+    if (!hasStarted) return
+    
+    const timeout = setTimeout(() => {
+      const startTime = Date.now()
+      const endTime = startTime + duration * 1000
+      
+      const animate = () => {
+        const now = Date.now()
+        const progress = Math.min((now - startTime) / (duration * 1000), 1)
+        const eased = 1 - Math.pow(1 - progress, 3) // ease-out cubic
+        const currentCount = Math.floor(eased * target)
+        setCount(currentCount)
+        
+        if (progress < 1) {
+          requestAnimationFrame(animate)
+        }
+      }
+      
+      requestAnimationFrame(animate)
+    }, delay * 1000)
+    
+    return () => clearTimeout(timeout)
+  }, [hasStarted, target, duration, delay])
+  
+  return (
+    <span ref={ref} className="text-amber-400 tabular-nums">
+      {count.toLocaleString()}+
+    </span>
   )
 }
 
@@ -685,8 +750,309 @@ function BeforeAfterComparison({ beforeAfter }) {
   )
 }
 
+// Combined Review Section - Before/After with Concern Mapping
+function CombinedReviewSection({ data }) {
+  const [hoveredRow, setHoveredRow] = useState(null)
+  
+  return (
+    <div className="mt-8 space-y-10">
+      {/* Before/After Cards */}
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* Before - Manual Review */}
+        <motion.div
+          className="bg-gradient-to-br from-violet-950/80 to-indigo-950/80 backdrop-blur rounded-2xl p-6 border border-violet-700/40 relative overflow-hidden"
+          initial={{ opacity: 0, x: -30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-violet-500/10 rounded-full blur-2xl" />
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h4 className="text-lg font-semibold text-white">{data.beforeAfter.before.title}</h4>
+            </div>
+            <ul className="space-y-3">
+              {data.beforeAfter.before.items.map((item, i) => (
+                <motion.li
+                  key={i}
+                  className="text-violet-100 text-sm"
+                  initial={{ opacity: 0, x: -10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.1 * i }}
+                >
+                  {item}
+                </motion.li>
+              ))}
+            </ul>
+          </div>
+        </motion.div>
+
+        {/* After - AI-Augmented */}
+        <motion.div
+          className="bg-gradient-to-br from-teal-900/70 to-emerald-900/70 backdrop-blur rounded-2xl p-6 border border-teal-500/40 relative overflow-hidden"
+          initial={{ opacity: 0, x: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+        >
+          <div className="absolute top-0 right-0 w-32 h-32 bg-teal-500/10 rounded-full blur-2xl" />
+          <div className="relative">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-500 flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+              </div>
+              <h4 className="text-lg font-semibold text-white">{data.beforeAfter.after.title}</h4>
+            </div>
+            <ul className="space-y-3">
+              {data.beforeAfter.after.items.map((item, i) => (
+                <motion.li
+                  key={i}
+                  className="text-teal-100 text-sm"
+                  initial={{ opacity: 0, x: 10 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: 0.2 + 0.1 * i }}
+                >
+                  {item}
+                </motion.li>
+              ))}
+            </ul>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Concern to Feature Mapping */}
+      <motion.div
+        className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 backdrop-blur rounded-2xl border border-slate-600/50 overflow-hidden"
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+      >
+        <div className="px-6 py-4 border-b border-slate-600/50 bg-slate-800/60">
+          <h4 className="text-base font-semibold text-white">How We Earned Trust</h4>
+          <p className="text-sm text-slate-300 mt-1">Each concern became a design requirement</p>
+        </div>
+        <div className="divide-y divide-slate-600/30">
+          {data.concernMapping.map((row, i) => (
+            <motion.div
+              key={i}
+              className={`grid grid-cols-1 md:grid-cols-[1fr,auto,1fr,auto,1fr] gap-3 md:gap-4 items-center px-6 py-4 transition-colors duration-200 ${
+                hoveredRow === i ? 'bg-slate-700/40' : ''
+              }`}
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.3, delay: 0.3 + 0.05 * i }}
+              onMouseEnter={() => setHoveredRow(i)}
+              onMouseLeave={() => setHoveredRow(null)}
+            >
+              {/* Concern */}
+              <div className="text-left">
+                <span className="text-sm text-amber-200 font-medium">{row.concern}</span>
+              </div>
+              
+              {/* Arrow 1 */}
+              <div className="hidden md:flex items-center justify-center text-slate-500">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </div>
+              
+              {/* Feature */}
+              <div className="text-left pl-4 md:pl-0">
+                <span className="text-sm text-teal-200 font-medium">{row.feature}</span>
+              </div>
+              
+              {/* Arrow 2 */}
+              <div className="hidden md:flex items-center justify-center text-slate-500">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </div>
+              
+              {/* Outcome */}
+              <div className="text-left pl-4 md:pl-0">
+                <span className="text-sm text-emerald-200 font-medium">{row.outcome}</span>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </motion.div>
+    </div>
+  )
+}
+
 // Static Screen Gallery Component - Shows screens with link to interactive prototype
 function ScreenGallery({ prototype, prototypeLink, isDark }) {
+  const [expandedScreen, setExpandedScreen] = useState(null)
+  
+  // Check if this is an eDiscovery prototype (has steps/bullets with ediscovery link)
+  const isEDiscovery = prototypeLink && prototypeLink.includes('ediscovery')
+  
+  if (isEDiscovery) {
+    // eDiscovery desktop screens
+    const ediscoveryScreens = [
+      { 
+        component: EDiscoveryDashboardStatic, 
+        title: 'AI Co-Pilot Dashboard',
+        description: 'Real-time metrics showing review progress, AI confidence calibration, and sentiment clusters. The Review Gap Analysis quantifies cost savings by tracking documents the AI successfully culled from manual review.'
+      },
+      { 
+        component: EDiscoveryNLCullingStatic, 
+        title: 'Natural Language Culling',
+        description: 'Replace complex Boolean queries with conversational prompts. The AI interprets intent, identifies relevant terms, and shows its reasoning before applying filters to the document set.'
+      },
+      { 
+        component: EDiscoveryMultimodalStatic, 
+        title: 'Multimodal Review',
+        description: 'Video and audio review with synchronized transcripts and sentiment heat maps. AI annotations highlight high-tension moments, allowing reviewers to jump directly to potentially significant exchanges.'
+      },
+      { 
+        component: EDiscoveryHITLStatic, 
+        title: 'Human-in-the-Loop Training',
+        description: 'Reviewers teach the AI by correcting its first 500 samples. Each decision improves model accuracy while building the trust required for court defensibility.'
+      },
+      { 
+        component: EDiscoveryDefensibilityStatic, 
+        title: 'Defensibility Dashboard',
+        description: 'Court-ready metrics showing Precision, Recall, and F1 scores. The training progress visualization and Disagreement Log create the audit trail required for legal proceedings.'
+      },
+      { 
+        component: EDiscoveryProductionStatic, 
+        title: 'Production & Redaction',
+        description: 'Auto-redaction with configurable entity extraction. Toggle which PII types to redact, preview documents with redactions applied, and generate production sets with Bates numbering.'
+      }
+    ]
+
+    return (
+      <div className="mt-12">
+        {/* Expanded Screen Modal */}
+        <AnimatePresence>
+          {expandedScreen !== null && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+              onClick={() => setExpandedScreen(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                className="relative max-w-5xl w-full max-h-[90vh] overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Close button */}
+                <button
+                  onClick={() => setExpandedScreen(null)}
+                  className="absolute top-4 right-4 z-10 p-2 bg-slate-800/80 hover:bg-slate-700 rounded-full text-white transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                
+                {/* Screen title */}
+                <div className="bg-slate-900 px-6 py-4 rounded-t-2xl border-b border-slate-700">
+                  <h3 className="text-xl font-bold text-white">{ediscoveryScreens[expandedScreen].title}</h3>
+                  <p className="text-sm text-slate-400 mt-1">{ediscoveryScreens[expandedScreen].description}</p>
+                </div>
+                
+                {/* Large screen display */}
+                <div className="bg-slate-950 rounded-b-2xl overflow-hidden" style={{ height: '560px' }}>
+                  {(() => {
+                    const ScreenComponent = ediscoveryScreens[expandedScreen].component
+                    return <ScreenComponent />
+                  })()}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Section Header with Prototype Link */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
+          <div>
+            <h3 className={`text-2xl md:text-3xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+              {prototype.title}
+            </h3>
+            <p className={`max-w-2xl ${isDark ? 'text-gray-300' : 'text-gray-600 dark:text-gray-300'}`}>
+              {prototype.description}
+            </p>
+          </div>
+          {prototypeLink && (
+            <Link 
+              to={prototypeLink}
+              className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-teal-500 to-cyan-500 text-white font-semibold rounded-full hover:from-teal-600 hover:to-cyan-600 transition-all shadow-lg hover:shadow-xl group whitespace-nowrap"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Try Interactive Prototype
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+          )}
+        </div>
+
+        {/* eDiscovery Screen Gallery Grid */}
+        <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
+          {ediscoveryScreens.map((screen, i) => {
+            const ScreenComponent = screen.component
+            return (
+              <div key={i} className="group">
+                {/* Desktop Frame with Screen - Clickable */}
+                <div 
+                  className={`relative rounded-2xl p-6 md:p-8 mb-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${
+                    i % 6 === 0 ? 'bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20' :
+                    i % 6 === 1 ? 'bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-900/20 dark:to-indigo-900/20' :
+                    i % 6 === 2 ? 'bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20' :
+                    i % 6 === 3 ? 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20' :
+                    i % 6 === 4 ? 'bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20' :
+                    'bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20'
+                  }`}
+                  onClick={() => setExpandedScreen(i)}
+                >
+                  {/* Expand hint */}
+                  <div className="absolute top-3 right-3 p-2 bg-white/80 dark:bg-slate-800/80 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                    <svg className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                    </svg>
+                  </div>
+                  <SmallDesktopFrame>
+                    <ScreenComponent />
+                  </SmallDesktopFrame>
+                </div>
+                
+                {/* Title and Description */}
+                <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                  {screen.title}
+                </h4>
+                <p className={isDark ? 'text-gray-300' : 'text-gray-600 dark:text-gray-300'}>
+                  {screen.description}
+                </p>
+              </div>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
+  // Legacy mobile task tracker screens
   const screens = [
     { 
       component: ShiftSummaryScreen, 
@@ -1247,6 +1613,40 @@ function CaseStudy() {
                       </motion.div>
                     )}
 
+                    {/* Table section */}
+                    {section.table && (
+                      <motion.div 
+                        className="mt-6 overflow-x-auto"
+                        initial={{ opacity: 0, y: 30 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                      >
+                        <table className="w-full border-collapse">
+                          <thead>
+                            <tr className="border-b-2 border-teal-500/30">
+                              {section.table.headers.map((header, i) => (
+                                <th key={i} className={`text-left py-3 px-4 text-sm font-semibold ${isDark ? 'text-teal-400' : 'text-teal-600 dark:text-teal-400'}`}>
+                                  {header}
+                                </th>
+                              ))}
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {section.table.rows.map((row, i) => (
+                              <tr key={i} className={`border-b ${isDark ? 'border-gray-700' : 'border-gray-200 dark:border-gray-700'}`}>
+                                {row.map((cell, j) => (
+                                  <td key={j} className={`py-3 px-4 text-sm ${j === 0 ? (isDark ? 'text-white font-medium' : 'text-gray-900 dark:text-white font-medium') : (isDark ? 'text-gray-300' : 'text-gray-600 dark:text-gray-300')}`}>
+                                    {cell}
+                                  </td>
+                                ))}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </motion.div>
+                    )}
+
                     {/* Combined Problem + Research Bento Layout */}
                     {(section.problemBento || section.researchBanner) && (
                       <motion.div 
@@ -1300,8 +1700,104 @@ function CaseStudy() {
                             </div>
                           )}
 
+                          {/* Right Side - Document Folders Visual */}
+                          {!section.researchBanner && section.problemBento && section.problemBento.visualType === 'document-folders' && (
+                            <div className="relative h-72 md:h-80 flex items-center justify-center">
+                              {/* Folder stack */}
+                              <div className="relative w-64 h-48">
+                                {/* Back folders */}
+                                {[...Array(3)].map((_, i) => (
+                                  <motion.div
+                                    key={i}
+                                    className="absolute"
+                                    style={{
+                                      left: `${i * 20}px`,
+                                      bottom: `${i * 8}px`,
+                                      zIndex: i
+                                    }}
+                                    initial={{ opacity: 0, y: 30, rotate: -5 + i * 2 }}
+                                    whileInView={{ opacity: 1, y: 0, rotate: -3 + i * 2 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.5, delay: 0.1 * i }}
+                                  >
+                                    {/* Folder */}
+                                    <div className="w-40 h-32 relative">
+                                      {/* Folder back */}
+                                      <div className={`absolute inset-0 rounded-t-lg rounded-b-sm ${
+                                        i === 0 ? 'bg-gradient-to-br from-amber-600 to-amber-700' :
+                                        i === 1 ? 'bg-gradient-to-br from-orange-600 to-orange-700' :
+                                        'bg-gradient-to-br from-yellow-600 to-yellow-700'
+                                      } shadow-lg`} />
+                                      {/* Folder tab */}
+                                      <div className={`absolute -top-3 left-4 w-12 h-4 rounded-t-md ${
+                                        i === 0 ? 'bg-amber-500' :
+                                        i === 1 ? 'bg-orange-500' :
+                                        'bg-yellow-500'
+                                      }`} />
+                                      {/* Papers peeking out */}
+                                      <motion.div
+                                        className="absolute top-2 left-3 right-3 h-24 bg-gradient-to-b from-amber-50 to-white rounded-t-sm shadow-inner"
+                                        animate={{ y: [0, -2, 0] }}
+                                        transition={{ duration: 2, repeat: Infinity, delay: i * 0.3 }}
+                                      >
+                                        {/* Paper lines */}
+                                        <div className="p-3 space-y-1.5">
+                                          {[...Array(5)].map((_, j) => (
+                                            <div key={j} className="h-1 bg-slate-300/60 rounded-full" style={{ width: `${50 + Math.random() * 40}%` }} />
+                                          ))}
+                                        </div>
+                                      </motion.div>
+                                    </div>
+                                  </motion.div>
+                                ))}
+                                
+                                {/* Front open folder with papers spilling */}
+                                <motion.div
+                                  className="absolute right-0 bottom-0 z-10"
+                                  initial={{ opacity: 0, y: 30, rotate: 5 }}
+                                  whileInView={{ opacity: 1, y: 0, rotate: 3 }}
+                                  viewport={{ once: true }}
+                                  transition={{ duration: 0.5, delay: 0.4 }}
+                                >
+                                  <div className="w-44 h-36 relative">
+                                    {/* Folder back */}
+                                    <div className="absolute inset-0 rounded-t-lg rounded-b-sm bg-gradient-to-br from-teal-600 to-teal-700 shadow-xl" />
+                                    {/* Folder tab */}
+                                    <div className="absolute -top-3 left-4 w-14 h-4 rounded-t-md bg-teal-500" />
+                                    {/* Papers spilling out */}
+                                    {[...Array(4)].map((_, i) => (
+                                      <motion.div
+                                        key={i}
+                                        className="absolute bg-gradient-to-b from-white to-amber-50 rounded-sm shadow-md border border-amber-100/50"
+                                        style={{
+                                          width: '90%',
+                                          height: '80%',
+                                          left: '5%',
+                                          top: `${-10 - i * 6}px`,
+                                          zIndex: 4 - i
+                                        }}
+                                        initial={{ y: 20, rotate: 0 }}
+                                        animate={{ 
+                                          y: [-10 - i * 6, -12 - i * 6, -10 - i * 6],
+                                          rotate: [-2 + i * 1.5, -1 + i * 1.5, -2 + i * 1.5]
+                                        }}
+                                        transition={{ duration: 2, repeat: Infinity, delay: i * 0.2 }}
+                                      >
+                                        <div className="p-2 space-y-1">
+                                          {[...Array(4)].map((_, j) => (
+                                            <div key={j} className="h-1 bg-slate-300/50 rounded-full" style={{ width: `${40 + Math.random() * 50}%` }} />
+                                          ))}
+                                        </div>
+                                      </motion.div>
+                                    ))}
+                                  </div>
+                                </motion.div>
+                              </div>
+                            </div>
+                          )}
+
                           {/* Right Side - Animated Stacking Papers */}
-                          {!section.researchBanner && section.problemBento && (
+                          {!section.researchBanner && section.problemBento && section.problemBento.visualType !== 'skeptical-attorneys' && section.problemBento.visualType !== 'concern-feature-outcome' && section.problemBento.visualType !== 'document-folders' && (
                             <div className="relative h-72 md:h-80 flex items-center justify-center">
                               {/* Paper stack animation */}
                               <div className="relative w-48 h-64">
@@ -1421,6 +1917,181 @@ function CaseStudy() {
                                   }}
                                 />
                               ))}
+                            </div>
+                          )}
+
+                          {/* Right Side - Skeptical Attorneys Grid */}
+                          {!section.researchBanner && section.problemBento && section.problemBento.visualType === 'skeptical-attorneys' && (
+                            <div className="relative h-72 md:h-80 flex items-center justify-center">
+                              {/* Attorney grid */}
+                              <div className="relative">
+                                {/* Grid of skeptical attorney avatars */}
+                                <div className="grid grid-cols-5 gap-2">
+                                  {[...Array(25)].map((_, i) => {
+                                    const delays = [0, 0.05, 0.1, 0.03, 0.08, 0.12, 0.02, 0.07, 0.15, 0.04,
+                                                   0.09, 0.13, 0.01, 0.06, 0.11, 0.14, 0.03, 0.08, 0.16, 0.05,
+                                                   0.1, 0.02, 0.07, 0.12, 0.04]
+                                    const skepticismLevel = [2, 1, 3, 1, 2, 1, 3, 2, 1, 2,
+                                                           3, 1, 2, 3, 1, 2, 1, 3, 2, 1,
+                                                           2, 3, 1, 2, 3][i]
+                                    return (
+                                      <motion.div
+                                        key={i}
+                                        className="relative"
+                                        initial={{ opacity: 0, scale: 0.5 }}
+                                        whileInView={{ opacity: 1, scale: 1 }}
+                                        viewport={{ once: true }}
+                                        transition={{ duration: 0.4, delay: delays[i] }}
+                                      >
+                                        {/* Avatar circle */}
+                                        <motion.div
+                                          className={`w-10 h-10 rounded-full flex items-center justify-center ${
+                                            skepticismLevel === 3 
+                                              ? 'bg-gradient-to-br from-rose-600/40 to-rose-800/40 border border-rose-500/30' 
+                                              : skepticismLevel === 2
+                                              ? 'bg-gradient-to-br from-amber-600/30 to-amber-800/30 border border-amber-500/20'
+                                              : 'bg-gradient-to-br from-slate-600/30 to-slate-800/30 border border-slate-500/20'
+                                          }`}
+                                          animate={skepticismLevel === 3 ? { 
+                                            scale: [1, 1.05, 1],
+                                          } : {}}
+                                          transition={{ duration: 2, repeat: Infinity, delay: i * 0.1 }}
+                                        >
+                                          {/* Person silhouette with crossed arms */}
+                                          <svg className={`w-6 h-6 ${
+                                            skepticismLevel === 3 ? 'text-rose-300' : 
+                                            skepticismLevel === 2 ? 'text-amber-300' : 'text-slate-400'
+                                          }`} viewBox="0 0 24 24" fill="currentColor">
+                                            <circle cx="12" cy="7" r="4" />
+                                            <path d="M12 14c-4 0-8 2-8 4v2h16v-2c0-2-4-4-8-4z" />
+                                          </svg>
+                                        </motion.div>
+                                        
+                                        {/* Skepticism indicator - X or ? */}
+                                        {skepticismLevel === 3 && (
+                                          <motion.div 
+                                            className="absolute -top-1 -right-1 w-4 h-4 bg-rose-500 rounded-full flex items-center justify-center"
+                                            animate={{ scale: [1, 1.2, 1] }}
+                                            transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.05 }}
+                                          >
+                                            <span className="text-[10px] font-bold text-white">✕</span>
+                                          </motion.div>
+                                        )}
+                                        {skepticismLevel === 2 && (
+                                          <motion.div 
+                                            className="absolute -top-1 -right-1 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center"
+                                            initial={{ opacity: 0 }}
+                                            animate={{ opacity: [0.6, 1, 0.6] }}
+                                            transition={{ duration: 2, repeat: Infinity, delay: i * 0.08 }}
+                                          >
+                                            <span className="text-[10px] font-bold text-white">?</span>
+                                          </motion.div>
+                                        )}
+                                      </motion.div>
+                                    )
+                                  })}
+                                </div>
+
+                                {/* AI chip trying to connect - blocked */}
+                                <motion.div
+                                  className="absolute -right-16 top-1/2 -translate-y-1/2"
+                                  initial={{ opacity: 0, x: 20 }}
+                                  whileInView={{ opacity: 1, x: 0 }}
+                                  viewport={{ once: true }}
+                                  transition={{ delay: 0.5 }}
+                                >
+                                  <motion.div
+                                    className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-600/50 to-indigo-600/50 border border-violet-400/30 flex items-center justify-center shadow-lg shadow-violet-500/20"
+                                    animate={{ x: [-3, 3, -3] }}
+                                    transition={{ duration: 1.5, repeat: Infinity }}
+                                  >
+                                    <svg className="w-8 h-8 text-violet-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                  </motion.div>
+                                  
+                                  {/* Connection lines being blocked */}
+                                  <motion.div
+                                    className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 flex items-center"
+                                    animate={{ opacity: [0.3, 0.7, 0.3] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                  >
+                                    <div className="w-8 h-0.5 bg-gradient-to-l from-violet-400/60 to-transparent" />
+                                    <motion.div
+                                      className="w-4 h-4 rounded-full bg-rose-500/80 flex items-center justify-center -ml-1"
+                                      animate={{ scale: [1, 1.2, 1] }}
+                                      transition={{ duration: 1, repeat: Infinity }}
+                                    >
+                                      <span className="text-[8px] font-bold text-white">✕</span>
+                                    </motion.div>
+                                  </motion.div>
+                                </motion.div>
+
+                                {/* "50" counter badge */}
+                                <motion.div
+                                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 px-4 py-1.5 bg-slate-800/80 border border-slate-600/50 rounded-full"
+                                  initial={{ opacity: 0, y: -10 }}
+                                  whileInView={{ opacity: 1, y: 0 }}
+                                  viewport={{ once: true }}
+                                  transition={{ delay: 0.8 }}
+                                >
+                                  <span className="text-sm font-semibold text-slate-300">
+                                    <span className="text-rose-400">50</span> skeptical reviewers
+                                  </span>
+                                </motion.div>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Right Side - Concern Feature Outcome - Full Width Table */}
+                          {!section.researchBanner && section.problemBento && section.problemBento.visualType === 'concern-feature-outcome' && section.problemBento.callout?.concernMapping && (
+                            <div className="space-y-4">
+                              <div className="overflow-hidden rounded-xl border border-slate-700/50">
+                                {/* Table header with arrows */}
+                                <div className="grid grid-cols-3 bg-slate-800/60 border-b border-slate-700/50">
+                                  <div className="px-4 py-3 text-center">
+                                    <span className="text-xs font-bold uppercase tracking-wider text-rose-400">Concern</span>
+                                  </div>
+                                  <div className="px-4 py-3 text-center border-x border-slate-700/50 relative">
+                                    <span className="text-xs font-bold uppercase tracking-wider text-teal-400">Feature</span>
+                                    <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 text-slate-500">→</div>
+                                    <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 text-slate-500">→</div>
+                                  </div>
+                                  <div className="px-4 py-3 text-center">
+                                    <span className="text-xs font-bold uppercase tracking-wider text-emerald-400">Outcome</span>
+                                  </div>
+                                </div>
+                                
+                                {/* Table rows */}
+                                {section.problemBento.callout.concernMapping.map((row, i) => (
+                                  <motion.div
+                                    key={i}
+                                    className={`grid grid-cols-3 ${i % 2 === 0 ? 'bg-slate-800/30' : 'bg-slate-800/10'} ${i < section.problemBento.callout.concernMapping.length - 1 ? 'border-b border-slate-700/30' : ''}`}
+                                    initial={{ opacity: 0, x: -20 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ duration: 0.4, delay: 0.1 * i }}
+                                  >
+                                    <div className="px-4 py-3 flex items-center">
+                                      <div className="flex items-center gap-2">
+                                        <div className="w-1.5 h-1.5 rounded-full bg-rose-400 flex-shrink-0" />
+                                        <span className="text-sm text-rose-200">{row.concern}</span>
+                                      </div>
+                                    </div>
+                                    <div className="px-4 py-3 flex items-center justify-center border-x border-slate-700/30">
+                                      <span className="text-sm text-teal-200 text-center">{row.feature}</span>
+                                    </div>
+                                    <div className="px-4 py-3 flex items-center">
+                                      <div className="flex items-center gap-2">
+                                        <svg className="w-4 h-4 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        <span className="text-sm text-emerald-200">{row.outcome}</span>
+                                      </div>
+                                    </div>
+                                  </motion.div>
+                                ))}
+                              </div>
                             </div>
                           )}
 
@@ -1984,7 +2655,10 @@ function CaseStudy() {
                       const ScreenComponent = {
                         'EmptySearchScreen': EmptySearchScreen,
                         'NLPDocumentSearchScreen': NLPDocumentSearchScreen,
-                        'SourceInspectorScreen': SourceInspectorScreen
+                        'SourceInspectorScreen': SourceInspectorScreen,
+                        'DocumentReviewQueueScreen': DocumentReviewQueueScreen,
+                        'DocumentReviewConversationScreen': DocumentReviewConversationScreen,
+                        'DocumentTaggingDecisionScreen': DocumentTaggingDecisionScreen
                       }[item.component]
 
                       return (
@@ -1998,7 +2672,7 @@ function CaseStudy() {
                         >
                           {/* Title */}
                           <div className="text-center max-w-3xl mx-auto">
-                            <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight">
+                            <h3 className={`text-3xl md:text-4xl lg:text-5xl font-bold ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'} mb-6 leading-tight`}>
                               {item.title}
                             </h3>
                           </div>
@@ -2019,6 +2693,398 @@ function CaseStudy() {
                         </motion.div>
                       )
                     })}
+                  </div>
+                )}
+
+                {/* Conversation Showcase - Shows AI/User chat examples */}
+                {section.conversationShowcase && section.conversations && (
+                  <div className="mt-16">
+                    {/* Section Header */}
+                    <div className="text-center mb-12">
+                      <span className="inline-block px-4 py-1.5 bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-sm font-medium rounded-full mb-4">
+                        {section.tagline}
+                      </span>
+                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                        {section.headline}
+                      </h3>
+                      {section.intro && (
+                        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                          {section.intro}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Conversation Cards */}
+                    <div className="space-y-8">
+                      {section.conversations.map((convo, i) => (
+                        <motion.div
+                          key={i}
+                          className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-lg"
+                          initial={{ opacity: 0, y: 30 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.1 }}
+                        >
+                          {/* Context Header */}
+                          <div className="px-6 py-4 bg-gradient-to-r from-violet-50 to-indigo-50 dark:from-violet-900/20 dark:to-indigo-900/20 border-b border-gray-200 dark:border-gray-700">
+                            <span className="text-sm font-semibold text-violet-700 dark:text-violet-300">{convo.context}</span>
+                          </div>
+
+                          {/* Chat Messages */}
+                          <div className="p-6 space-y-4">
+                            {convo.exchanges.map((exchange, j) => (
+                              <div key={j} className={`flex gap-3 ${exchange.role === 'user' ? 'justify-end' : ''}`}>
+                                {exchange.role === 'ai' && (
+                                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center flex-shrink-0">
+                                    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                      <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+                                    </svg>
+                                  </div>
+                                )}
+                                <div className={`max-w-[80%] ${exchange.role === 'user' ? 'order-first' : ''}`}>
+                                  <div className={`rounded-2xl px-4 py-3 ${
+                                    exchange.role === 'user' 
+                                      ? 'bg-cyan-500 text-white' 
+                                      : 'bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white'
+                                  }`}>
+                                    <p className="text-sm leading-relaxed">{exchange.message}</p>
+                                  </div>
+                                  {/* Highlights */}
+                                  {exchange.highlights && (
+                                    <div className="mt-2 flex flex-wrap gap-2">
+                                      {exchange.highlights.map((h, k) => (
+                                        <span key={k} className="px-2 py-1 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-xs rounded-full">
+                                          {h}
+                                        </span>
+                                      ))}
+                                    </div>
+                                  )}
+                                  {/* Related Docs */}
+                                  {exchange.relatedDocs && (
+                                    <div className="mt-3 space-y-2">
+                                      {exchange.relatedDocs.map((doc, k) => (
+                                        <div key={k} className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300">
+                                          <span className="text-gray-400">{k + 1}.</span>
+                                          {doc}
+                                        </div>
+                                      ))}
+                                    </div>
+                                  )}
+                                </div>
+                                {exchange.role === 'user' && (
+                                  <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center flex-shrink-0">
+                                    <span className="text-xs font-bold text-white">JA</span>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Day in Life Timeline */}
+                {section.dayInLife && section.timeline && section.timeline.length > 0 && (
+                  <div className="mt-16">
+                    {/* Section Header */}
+                    <div className="text-center mb-12">
+                      <span className="inline-block px-4 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-sm font-medium rounded-full mb-4">
+                        {section.tagline}
+                      </span>
+                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
+                        {section.headline}
+                      </h3>
+                    </div>
+
+                    {/* Timeline */}
+                    <div className="relative">
+                      {/* Vertical Line */}
+                      <div className="absolute left-16 top-0 bottom-0 w-0.5 bg-gradient-to-b from-amber-300 via-rose-300 to-slate-300 dark:from-amber-600 dark:via-rose-600 dark:to-slate-600" />
+
+                      <div className="space-y-6">
+                        {section.timeline.map((item, i) => {
+                          const emotionColors = {
+                            overwhelmed: 'bg-amber-500',
+                            uncertain: 'bg-yellow-500',
+                            frustrated: 'bg-orange-500',
+                            anxious: 'bg-rose-500',
+                            embarrassed: 'bg-red-500',
+                            exhausted: 'bg-slate-500'
+                          }
+                          const emotionIcons = {
+                            overwhelmed: '😰',
+                            uncertain: '🤔',
+                            frustrated: '😤',
+                            anxious: '😟',
+                            embarrassed: '😳',
+                            exhausted: '😩'
+                          }
+                          return (
+                            <motion.div
+                              key={i}
+                              className="flex gap-6 items-start"
+                              initial={{ opacity: 0, x: -20 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: i * 0.1 }}
+                            >
+                              {/* Time */}
+                              <div className="w-20 flex-shrink-0 text-right">
+                                <span className="text-sm font-mono font-bold text-gray-500 dark:text-gray-400">{item.time}</span>
+                              </div>
+
+                              {/* Dot */}
+                              <div className={`w-8 h-8 rounded-full ${emotionColors[item.emotion]} flex items-center justify-center flex-shrink-0 z-10 shadow-lg`}>
+                                <span className="text-sm">{emotionIcons[item.emotion]}</span>
+                              </div>
+
+                              {/* Content */}
+                              <div className="flex-1 pb-8">
+                                <div className="bg-white dark:bg-gray-800 rounded-xl p-5 shadow-md border border-gray-200 dark:border-gray-700">
+                                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">{item.activity}</h4>
+                                  <p className="text-sm text-gray-600 dark:text-gray-400">{item.pain}</p>
+                                </div>
+                              </div>
+                            </motion.div>
+                          )
+                        })}
+                      </div>
+
+                      {/* Insight Callout */}
+                      {section.insight && (
+                        <motion.div
+                          className="mt-8 ml-[4.5rem] p-6 bg-gradient-to-r from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 rounded-2xl border-l-4 border-violet-500"
+                          initial={{ opacity: 0, y: 20 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                        >
+                          <p className="text-lg font-medium text-violet-900 dark:text-violet-100 italic">
+                            💡 {section.insight}
+                          </p>
+                        </motion.div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tagging Workflow */}
+                {section.taggingWorkflow && section.categories && (
+                  <div className="mt-16">
+                    {/* Section Header */}
+                    <div className="text-center mb-12">
+                      <span className="inline-block px-4 py-1.5 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 text-sm font-medium rounded-full mb-4">
+                        {section.tagline}
+                      </span>
+                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
+                        {section.headline}
+                      </h3>
+                    </div>
+
+                    {/* Category Cards */}
+                    <div className="grid md:grid-cols-2 gap-6 mb-12">
+                      {section.categories.map((cat, i) => {
+                        const colorClasses = {
+                          emerald: 'from-emerald-500 to-teal-600 border-emerald-200 dark:border-emerald-800',
+                          amber: 'from-amber-500 to-orange-600 border-amber-200 dark:border-amber-800',
+                          violet: 'from-violet-500 to-purple-600 border-violet-200 dark:border-violet-800',
+                          cyan: 'from-cyan-500 to-blue-600 border-cyan-200 dark:border-cyan-800'
+                        }
+                        return (
+                          <motion.div
+                            key={i}
+                            className={`bg-white dark:bg-gray-800 rounded-2xl border-2 ${colorClasses[cat.color].split(' ').slice(2).join(' ')} overflow-hidden shadow-lg`}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1 }}
+                          >
+                            {/* Header */}
+                            <div className={`px-6 py-4 bg-gradient-to-r ${colorClasses[cat.color].split(' ').slice(0, 2).join(' ')}`}>
+                              <h4 className="text-lg font-bold text-white">{cat.name}</h4>
+                              <p className="text-white/80 text-sm">{cat.question}</p>
+                            </div>
+
+                            {/* Options */}
+                            <div className="p-6">
+                              <div className="flex flex-wrap gap-2 mb-4">
+                                {cat.options.map((opt, j) => (
+                                  <span key={j} className="px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm rounded-full">
+                                    {opt}
+                                  </span>
+                                ))}
+                              </div>
+                              <div className="flex items-start gap-2 text-sm text-gray-600 dark:text-gray-400">
+                                <svg className="w-5 h-5 text-violet-500 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                                  <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+                                </svg>
+                                <span><strong>AI helps:</strong> {cat.aiHelp}</span>
+                              </div>
+                            </div>
+                          </motion.div>
+                        )
+                      })}
+                    </div>
+
+                    {/* Before/After */}
+                    {section.beforeAfter && (
+                      <div className="grid md:grid-cols-2 gap-6">
+                        <div className="bg-gray-100 dark:bg-gray-800 rounded-2xl p-6 text-center">
+                          <span className="text-4xl font-bold text-gray-400">{section.beforeAfter.before.time}</span>
+                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Before: {section.beforeAfter.before.description}</p>
+                        </div>
+                        <div className="bg-gradient-to-r from-emerald-500 to-teal-600 rounded-2xl p-6 text-center">
+                          <span className="text-4xl font-bold text-white">{section.beforeAfter.after.time}</span>
+                          <p className="text-sm text-white/80 mt-2">After: {section.beforeAfter.after.description}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* Prompt Engineering Examples */}
+                {section.promptEngineering && section.prompts && (
+                  <div className="mt-16">
+                    {/* Section Header */}
+                    <div className="text-center mb-8">
+                      <span className="inline-block px-4 py-1.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-medium rounded-full mb-4">
+                        {section.tagline}
+                      </span>
+                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                        {section.headline}
+                      </h3>
+                      {section.insight && (
+                        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                          {section.insight}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Prompt Examples */}
+                    <div className="space-y-8">
+                      {section.prompts.map((prompt, i) => (
+                        <motion.div
+                          key={i}
+                          className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 overflow-hidden shadow-lg"
+                          initial={{ opacity: 0, y: 30 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: i * 0.1 }}
+                        >
+                          {/* Intent Header */}
+                          <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
+                            <span className="text-sm font-medium text-gray-500 dark:text-gray-400">User Intent: </span>
+                            <span className="font-semibold text-gray-900 dark:text-white">{prompt.userIntent}</span>
+                          </div>
+
+                          <div className="p-6 grid md:grid-cols-2 gap-6">
+                            {/* Bad Response */}
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2">
+                                <span className="w-6 h-6 rounded-full bg-rose-500 flex items-center justify-center">
+                                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                  </svg>
+                                </span>
+                                <span className="text-sm font-medium text-rose-600 dark:text-rose-400">Weak Response</span>
+                              </div>
+                              <div className="bg-rose-50 dark:bg-rose-900/20 rounded-xl p-4 border border-rose-200 dark:border-rose-800">
+                                <p className="text-sm text-gray-700 dark:text-gray-300">{prompt.badResponse}</p>
+                              </div>
+                            </div>
+
+                            {/* Good Response */}
+                            <div className="space-y-3">
+                              <div className="flex items-center gap-2">
+                                <span className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
+                                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                  </svg>
+                                </span>
+                                <span className="text-sm font-medium text-emerald-600 dark:text-emerald-400">Strong Response</span>
+                              </div>
+                              <div className="bg-emerald-50 dark:bg-emerald-900/20 rounded-xl p-4 border border-emerald-200 dark:border-emerald-800">
+                                <p className="text-sm text-gray-700 dark:text-gray-300">{prompt.goodResponse}</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Design Principle */}
+                          <div className="px-6 py-4 bg-violet-50 dark:bg-violet-900/20 border-t border-gray-200 dark:border-gray-700">
+                            <span className="text-sm text-violet-700 dark:text-violet-300">
+                              <strong>Design Principle:</strong> {prompt.designPrinciple}
+                            </span>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Metrics Showcase */}
+                {section.metricsShowcase && section.stats && (
+                  <div className="mt-16">
+                    {/* Section Header */}
+                    <div className="text-center mb-12">
+                      <span className="inline-block px-4 py-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-sm font-medium rounded-full mb-4">
+                        {section.tagline}
+                      </span>
+                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
+                        {section.headline}
+                      </h3>
+                    </div>
+
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+                      {section.stats.map((stat, i) => {
+                        const iconMap = {
+                          clock: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+                          document: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+                          question: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+                          check: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        }
+                        return (
+                          <motion.div
+                            key={i}
+                            className="bg-white dark:bg-gray-800 rounded-2xl p-6 text-center shadow-lg border border-gray-200 dark:border-gray-700"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1 }}
+                          >
+                            <div className="w-12 h-12 mx-auto mb-4 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white">
+                              {iconMap[stat.icon]}
+                            </div>
+                            <div className="text-4xl font-bold text-gray-900 dark:text-white mb-1">{stat.metric}</div>
+                            <div className="text-sm font-medium text-gray-700 dark:text-gray-300">{stat.label}</div>
+                            {stat.detail && (
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">{stat.detail}</div>
+                            )}
+                          </motion.div>
+                        )
+                      })}
+                    </div>
+
+                    {/* Quote */}
+                    {section.quote && (
+                      <motion.div
+                        className="bg-gradient-to-r from-violet-100 to-indigo-100 dark:from-violet-900/30 dark:to-indigo-900/30 rounded-2xl p-8 text-center"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                      >
+                        <svg className="w-12 h-12 mx-auto mb-4 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h4v10h-10z" />
+                        </svg>
+                        <p className="text-xl md:text-2xl text-gray-900 dark:text-white font-medium mb-4 italic">
+                          "{section.quote.text}"
+                        </p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                          - {section.quote.author}
+                        </p>
+                      </motion.div>
+                    )}
                   </div>
                 )}
 
@@ -2057,8 +3123,13 @@ function CaseStudy() {
                 )}
 
                 {/* Before/After Comparison */}
-                {section.beforeAfter && (
+                {section.beforeAfter && !section.combinedReviewSection && (
                   <BeforeAfterComparison beforeAfter={section.beforeAfter} />
+                )}
+
+                {/* Combined Review Section - Before/After with Concern Mapping */}
+                {section.combinedReviewSection && (
+                  <CombinedReviewSection data={section.combinedReviewSection} />
                 )}
 
                 {/* Legacy images support */}

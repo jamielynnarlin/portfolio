@@ -316,9 +316,6 @@ function Home() {
               <Link to="/projects" className="btn-primary">
                 View My Work
               </Link>
-              <a href="/resume.pdf" download className="btn-secondary">
-                Download Resume
-              </a>
             </div>
           </div>
         </div>
