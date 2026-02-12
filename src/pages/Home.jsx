@@ -316,6 +316,9 @@ function Home() {
               <Link to="/projects" className="btn-primary">
                 View My Work
               </Link>
+              <Link to="/resume" className="btn-secondary">
+                View Resume
+              </Link>
             </div>
           </div>
         </div>

@@ -10,6 +10,7 @@ import BlogPost from './pages/BlogPost'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import CaseStudy from './pages/CaseStudy'
+import Resume from './pages/Resume'
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/resume" element={<Resume />} />
         </Routes>
       </main>
       <Footer />
