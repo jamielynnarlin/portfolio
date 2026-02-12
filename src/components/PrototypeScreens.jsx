@@ -2252,11 +2252,14 @@ export function EDiscoveryApp({ currentScreen = 0, onScreenChange, showHotspots 
             background: 'transparent',
           }}
         >
-          <div className="absolute inset-0 rounded-lg border-2 border-teal-400 animate-pulse" />
-          <div className="absolute inset-0 rounded-lg bg-teal-400/10" />
-          <div className="absolute -top-8 left-1/2 -translate-x-1/2 whitespace-nowrap bg-teal-500 text-white text-[10px] px-2 py-1 rounded font-medium">
-            Click here →
-          </div>
+          {/* Outer pulsing ring */}
+          <div className="absolute -inset-2 rounded-xl border-2 border-teal-400/60 animate-ping" style={{ animationDuration: '1.5s' }} />
+          {/* Middle ring */}
+          <div className="absolute -inset-1 rounded-lg border border-teal-400/40 animate-pulse" />
+          {/* Inner glow */}
+          <div className="absolute inset-0 rounded-lg bg-teal-400/20 animate-pulse" />
+          {/* Border */}
+          <div className="absolute inset-0 rounded-lg border-2 border-teal-400" />
         </button>
       )}
       

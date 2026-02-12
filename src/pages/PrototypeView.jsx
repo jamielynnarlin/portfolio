@@ -238,20 +238,20 @@ export default function PrototypeView() {
           </div>
 
           {/* Navigation Panel */}
-          <div className="lg:w-80">
+          <div className="lg:w-96">
             {/* Screen Progress */}
             <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-              <h3 className="text-white font-semibold mb-4">Screen Flow</h3>
+              <h3 className="text-white font-semibold mb-5">Screen Flow</h3>
               
-              {/* Horizontal step indicators */}
-              <div className="flex items-center justify-between mb-4">
+              {/* Horizontal step indicators with labels */}
+              <div className="flex items-start justify-between gap-2 mb-5">
                 {screenLabels.map((screen, index) => (
                   <button
                     key={index}
                     onClick={() => goToScreen(index, index > currentScreen ? 'forward' : 'backward')}
-                    className="flex flex-col items-center group"
+                    className="flex flex-col items-center group flex-1"
                   >
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all mb-2 ${
                       currentScreen === index
                         ? 'bg-teal-500 text-white ring-2 ring-teal-400/50'
                         : currentScreen > index
@@ -259,20 +259,25 @@ export default function PrototypeView() {
                           : 'bg-gray-700 text-gray-400 group-hover:bg-gray-600'
                     }`}>
                       {currentScreen > index ? (
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
                       ) : (
                         index + 1
                       )}
                     </div>
+                    <span className={`text-xs text-center leading-tight ${
+                      currentScreen === index ? 'text-teal-400 font-medium' : 'text-gray-500'
+                    }`}>
+                      {screen.label}
+                    </span>
                   </button>
                 ))}
               </div>
 
               {/* Current screen details */}
               <div className="bg-gradient-to-r from-teal-500/10 to-cyan-500/10 rounded-xl p-4 border border-teal-500/20">
-                <p className="text-white font-semibold mb-1">
+                <p className="text-white font-semibold mb-2">
                   {screenLabels[currentScreen]?.label}
                 </p>
                 <p className="text-sm text-gray-400 leading-relaxed">
