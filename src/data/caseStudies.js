@@ -894,7 +894,7 @@ export const caseStudies = {
         ]
       },
       {
-        title: "Working with Developers: LLM Integration",
+        title: "LLM Integration Practice",
         llmIntegrationSection: true,
         pillars: [
           {
@@ -933,7 +933,7 @@ export const caseStudies = {
         ],
         codeReviewIntro: {
           title: "LLM Response Handling in Practice",
-          description: "I oversaw this implementation with engineering. The review highlights how the AI summary and citation components were built to support trust and verification."
+          description: "This sample shows how the AI summary and citation components were built to support trust and verification. The code demonstrates the pattern - actual implementation details vary by project."
         },
         showCodeReviewViewer: true
       },

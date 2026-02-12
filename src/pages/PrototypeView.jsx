@@ -80,7 +80,7 @@ export default function PrototypeView() {
     goToScreen(2, 'backward')
   }
 
-  const screenLabels = id === 'document-review' 
+  const screenLabels = (id === 'document-review' || id === 'ediscovery-ai')
     ? prototype.prototype.screens
     : [
         { label: 'Dashboard', description: 'View upcoming events, stats, and tap the next event to see tasks' },
@@ -323,7 +323,30 @@ export default function PrototypeView() {
                 Interactive Features
               </h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                {isDocReviewPrototype ? (
+                {isEDiscoveryPrototype ? (
+                  <>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Explore concept map clusters
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Write natural language protocols
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      View AI rationale with citations
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Approve AI-drafted privilege logs
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Navigate using sidebar icons
+                    </li>
+                  </>
+                ) : isDocReviewPrototype ? (
                   <>
                     <li className="flex items-start gap-2">
                       <span className="text-teal-400 mt-0.5">•</span>

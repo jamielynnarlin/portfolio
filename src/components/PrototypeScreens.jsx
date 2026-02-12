@@ -1279,13 +1279,13 @@ export function DocReviewTagScreen({ document, onComplete, onBack }) {
 // EDISCOVERY FULL APPLICATION PROTOTYPE
 // ============================================
 
-// Sidebar Navigation Component
+// Sidebar Navigation Component - 2026 eDiscovery
 function EDiscoverySidebar({ activeView, onNavigate }) {
   const navItems = [
-    { id: 'dashboard', label: 'Dashboard', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-    { id: 'review', label: 'Review', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-    { id: 'analyze', label: 'Analyze', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
-    { id: 'production', label: 'Production', icon: 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12' },
+    { id: 'eca', label: 'Case Assessment', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
+    { id: 'protocol', label: 'Protocol Builder', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' },
+    { id: 'review', label: 'Document Review', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+    { id: 'privilege', label: 'Privilege Log', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
   ]
 
   return (
@@ -1386,21 +1386,40 @@ function AIChatDrawer({ isOpen, onClose }) {
   )
 }
 
-// Main eDiscovery Dashboard Screen
+// Screen 1: Early Case Assessment (ECA) Dashboard with Concept Map
 export function EDiscoveryDashboard({ onNavigate, onOpenAI }) {
+  // Concept clusters for the visualization
+  const conceptClusters = [
+    { id: 1, label: 'Financial Disclosures', size: 45, x: 25, y: 30, color: 'from-teal-400 to-cyan-400', docs: 1234 },
+    { id: 2, label: 'Executive Comms', size: 35, x: 55, y: 25, color: 'from-violet-400 to-indigo-400', docs: 892 },
+    { id: 3, label: 'Audit Reports', size: 28, x: 70, y: 55, color: 'from-amber-400 to-orange-400', docs: 456 },
+    { id: 4, label: 'Legal Holds', size: 22, x: 20, y: 65, color: 'from-rose-400 to-pink-400', docs: 234 },
+    { id: 5, label: 'Board Minutes', size: 18, x: 45, y: 70, color: 'from-emerald-400 to-green-400', docs: 189 },
+  ]
+
+  const entities = [
+    { name: 'John Mitchell', type: 'Person', mentions: 847, role: 'CFO' },
+    { name: 'Sarah Chen', type: 'Person', mentions: 623, role: 'General Counsel' },
+    { name: 'Acme Holdings', type: 'Org', mentions: 1243, role: 'Parent Company' },
+    { name: 'Q4 Revenue Report', type: 'Document', mentions: 456, role: 'Key Evidence' },
+  ]
+
   return (
     <div className="h-full flex bg-slate-950 text-white">
-      <EDiscoverySidebar activeView="dashboard" onNavigate={onNavigate} />
+      <EDiscoverySidebar activeView="eca" onNavigate={onNavigate} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
           <div>
-            <h1 className="text-sm font-semibold text-white">AI Co-Pilot Dashboard</h1>
-            <p className="text-[10px] text-slate-400">Project Nexus - SEC Investigation</p>
+            <h1 className="text-sm font-semibold text-white">Early Case Assessment</h1>
+            <p className="text-[10px] text-slate-400">Project Nexus - SEC Investigation • 48,291 documents</p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] rounded">SOC 2 Compliant</span>
+            <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-800 rounded text-[10px]">
+              <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
+              <span className="text-slate-300">Analysis Complete</span>
+            </div>
             <button 
               onClick={onOpenAI}
               className="px-3 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-[10px] font-medium text-white flex items-center gap-1.5"
@@ -1408,138 +1427,127 @@ export function EDiscoveryDashboard({ onNavigate, onOpenAI }) {
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
               </svg>
-              AI Co-Pilot
+              Ask AI
             </button>
           </div>
         </div>
 
-        {/* Dashboard Grid */}
-        <div className="flex-1 overflow-y-auto p-3">
-          <div className="grid grid-cols-3 gap-3">
-            {/* Review Gap Analysis */}
-            <div className="bg-slate-900 rounded-lg p-3 border border-slate-800">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-[10px] font-medium text-slate-400">Review Gap Analysis</h3>
-                <span className="text-[9px] text-slate-500">Last 30 days</span>
+        {/* Main Content */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left: Concept Map */}
+          <div className="flex-1 p-3 flex flex-col">
+            <div className="bg-slate-900 rounded-lg border border-slate-800 flex-1 flex flex-col">
+              <div className="px-3 py-2 border-b border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-[11px] font-medium text-white">Document Concept Map</h3>
+                  <span className="px-1.5 py-0.5 bg-teal-500/20 text-teal-400 text-[9px] rounded">AI-Generated</span>
+                </div>
+                <div className="flex items-center gap-1 text-[9px] text-slate-500">
+                  <button className="px-2 py-1 bg-slate-800 rounded hover:bg-slate-700">Zoom</button>
+                  <button className="px-2 py-1 bg-slate-800 rounded hover:bg-slate-700">Filter</button>
+                </div>
               </div>
-              <div className="text-xl font-bold text-emerald-400 mb-1">$2.1M SAVED</div>
-              <div className="h-16 flex items-end gap-1">
-                {[40, 55, 45, 70, 85, 90, 75, 88, 92, 95].map((h, i) => (
-                  <div key={i} className="flex-1 bg-gradient-to-t from-teal-500 to-cyan-400 rounded-t" style={{ height: `${h}%` }} />
+              
+              {/* Concept Map Visualization */}
+              <div className="flex-1 relative p-4">
+                {/* Connection lines */}
+                <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                  <line x1="25%" y1="30%" x2="55%" y2="25%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+                  <line x1="55%" y1="25%" x2="70%" y2="55%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+                  <line x1="25%" y1="30%" x2="20%" y2="65%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+                  <line x1="45%" y1="70%" x2="20%" y2="65%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+                  <line x1="55%" y1="25%" x2="45%" y2="70%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+                </svg>
+                
+                {/* Concept clusters */}
+                {conceptClusters.map((cluster) => (
+                  <div
+                    key={cluster.id}
+                    className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
+                    style={{ left: `${cluster.x}%`, top: `${cluster.y}%` }}
+                  >
+                    <div 
+                      className={`bg-gradient-to-br ${cluster.color} rounded-full flex items-center justify-center opacity-80 group-hover:opacity-100 transition-all group-hover:scale-110`}
+                      style={{ width: `${cluster.size}px`, height: `${cluster.size}px` }}
+                    >
+                      <span className="text-[8px] font-bold text-slate-900">{cluster.docs}</span>
+                    </div>
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 whitespace-nowrap">
+                      <span className="text-[9px] text-slate-400 group-hover:text-white">{cluster.label}</span>
+                    </div>
+                  </div>
                 ))}
               </div>
-              <div className="flex justify-between mt-2 text-[9px] text-slate-500">
-                <div>
-                  <p className="text-slate-400">Precision</p>
-                  <p className="text-emerald-400 font-semibold">96%</p>
-                </div>
-                <div>
-                  <p className="text-slate-400">Recall</p>
-                  <p className="text-emerald-400 font-semibold">89%</p>
-                </div>
-              </div>
             </div>
 
-            {/* Sentiment Clusters */}
-            <div className="bg-slate-900 rounded-lg p-3 border border-slate-800">
-              <h3 className="text-[10px] font-medium text-slate-400 mb-2">Sentiment & Context Clusters</h3>
-              <div className="h-24 relative">
-                {/* Scatter plot visualization */}
-                <div className="absolute w-2 h-2 bg-emerald-400 rounded-full" style={{ top: '20%', left: '30%' }} />
-                <div className="absolute w-3 h-3 bg-emerald-400/70 rounded-full" style={{ top: '35%', left: '45%' }} />
-                <div className="absolute w-2.5 h-2.5 bg-cyan-400 rounded-full" style={{ top: '50%', left: '60%' }} />
-                <div className="absolute w-2 h-2 bg-amber-400 rounded-full" style={{ top: '25%', left: '70%' }} />
-                <div className="absolute w-3.5 h-3.5 bg-rose-400 rounded-full" style={{ top: '60%', left: '25%' }} />
-                <div className="absolute w-2 h-2 bg-violet-400 rounded-full" style={{ top: '70%', left: '50%' }} />
-                <div className="absolute w-2.5 h-2.5 bg-cyan-400/60 rounded-full" style={{ top: '45%', left: '80%' }} />
+            {/* Sentiment Timeline */}
+            <div className="mt-3 bg-slate-900 rounded-lg border border-slate-800 p-3">
+              <h3 className="text-[10px] font-medium text-slate-400 mb-2">Sentiment Timeline</h3>
+              <div className="h-12 flex items-end gap-0.5">
+                {Array.from({ length: 30 }).map((_, i) => {
+                  const height = 20 + Math.random() * 60
+                  const sentiment = Math.random()
+                  const color = sentiment > 0.7 ? 'bg-rose-400' : sentiment > 0.4 ? 'bg-amber-400' : 'bg-emerald-400'
+                  return <div key={i} className={`flex-1 ${color} rounded-t opacity-70`} style={{ height: `${height}%` }} />
+                })}
               </div>
-              <div className="flex gap-2 mt-2 text-[8px]">
-                <span className="flex items-center gap-1"><span className="w-2 h-2 bg-emerald-400 rounded-full" />Neutral</span>
-                <span className="flex items-center gap-1"><span className="w-2 h-2 bg-amber-400 rounded-full" />Urgent</span>
-                <span className="flex items-center gap-1"><span className="w-2 h-2 bg-rose-400 rounded-full" />Hot</span>
+              <div className="flex justify-between mt-1 text-[8px] text-slate-500">
+                <span>Jan 2024</span>
+                <span className="text-rose-400">Peak Activity: Mar 15</span>
+                <span>Jun 2024</span>
               </div>
             </div>
+          </div>
 
-            {/* Hot Doc Maker */}
-            <div className="bg-slate-900 rounded-lg p-3 border border-slate-800">
-              <h3 className="text-[10px] font-medium text-slate-400 mb-2">Hot Doc Quick Tag</h3>
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <button className="px-2 py-1 bg-rose-500/20 text-rose-400 text-[9px] rounded border border-rose-500/30">Hot Document</button>
-                  <button className="px-2 py-1 bg-amber-500/20 text-amber-400 text-[9px] rounded border border-amber-500/30">Key Evidence</button>
+          {/* Right: Entity Panel */}
+          <div className="w-64 border-l border-slate-800 bg-slate-900/50 flex flex-col">
+            <div className="px-3 py-2 border-b border-slate-800">
+              <h3 className="text-[11px] font-medium text-white">Key Entities Extracted</h3>
+              <p className="text-[9px] text-slate-500">AI-identified from document corpus</p>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-2 space-y-2">
+              {entities.map((entity, i) => (
+                <div key={i} className="bg-slate-800/50 rounded-lg p-2 hover:bg-slate-800 cursor-pointer transition-colors">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] font-medium text-white">{entity.name}</span>
+                    <span className={`text-[8px] px-1.5 py-0.5 rounded ${
+                      entity.type === 'Person' ? 'bg-violet-500/20 text-violet-400' :
+                      entity.type === 'Org' ? 'bg-teal-500/20 text-teal-400' :
+                      'bg-amber-500/20 text-amber-400'
+                    }`}>{entity.type}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[9px]">
+                    <span className="text-slate-500">{entity.role}</span>
+                    <span className="text-slate-400">{entity.mentions} mentions</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button className="px-2 py-1 bg-violet-500/20 text-violet-400 text-[9px] rounded border border-violet-500/30">Privileged</button>
-                  <button className="px-2 py-1 bg-slate-700 text-slate-400 text-[9px] rounded border border-slate-600">Responsive</button>
-                </div>
-              </div>
-              <div className="mt-3 pt-2 border-t border-slate-800">
-                <p className="text-[9px] text-slate-500 mb-1">Quick Actions</p>
-                <button className="text-[9px] text-teal-400 hover:text-teal-300">+ Create Custom Tag</button>
-              </div>
+              ))}
             </div>
 
-            {/* Review Progress */}
-            <div className="col-span-2 bg-slate-900 rounded-lg p-3 border border-slate-800">
-              <div className="flex items-center justify-between mb-2">
-                <h3 className="text-[10px] font-medium text-slate-400">Review Progress</h3>
-                <span className="text-[10px] text-teal-400">1,847 / 2,341 reviewed (79%)</span>
-              </div>
-              <div className="h-2 bg-slate-800 rounded-full overflow-hidden mb-3">
-                <div className="h-full bg-gradient-to-r from-teal-500 to-cyan-400 rounded-full" style={{ width: '79%' }} />
-              </div>
-              <div className="grid grid-cols-4 gap-2 text-center">
-                <div className="bg-slate-800/50 rounded p-2">
-                  <p className="text-lg font-bold text-white">48,291</p>
-                  <p className="text-[9px] text-slate-500">Total Docs</p>
+            {/* Quick Stats */}
+            <div className="p-3 border-t border-slate-800">
+              <h4 className="text-[9px] font-medium text-slate-400 mb-2">Case Summary</h4>
+              <div className="space-y-1.5">
+                <div className="flex justify-between text-[9px]">
+                  <span className="text-slate-500">Est. Relevant Docs</span>
+                  <span className="text-emerald-400 font-medium">~4,200</span>
                 </div>
-                <div className="bg-slate-800/50 rounded p-2">
-                  <p className="text-lg font-bold text-emerald-400">43,421</p>
-                  <p className="text-[9px] text-slate-500">AI Culled</p>
+                <div className="flex justify-between text-[9px]">
+                  <span className="text-slate-500">Privileged (Est.)</span>
+                  <span className="text-amber-400 font-medium">~320</span>
                 </div>
-                <div className="bg-slate-800/50 rounded p-2">
-                  <p className="text-lg font-bold text-amber-400">2,341</p>
-                  <p className="text-[9px] text-slate-500">For Review</p>
-                </div>
-                <div className="bg-slate-800/50 rounded p-2">
-                  <p className="text-lg font-bold text-rose-400">127</p>
-                  <p className="text-[9px] text-slate-500">Hot Docs</p>
+                <div className="flex justify-between text-[9px]">
+                  <span className="text-slate-500">Hot Documents</span>
+                  <span className="text-rose-400 font-medium">127</span>
                 </div>
               </div>
-            </div>
-
-            {/* AI Confidence */}
-            <div className="bg-slate-900 rounded-lg p-3 border border-slate-800">
-              <h3 className="text-[10px] font-medium text-slate-400 mb-2">Calibrated Confidence</h3>
-              <div className="space-y-2">
-                <div>
-                  <div className="flex justify-between text-[9px] mb-1">
-                    <span className="text-slate-400">High (90%+)</span>
-                    <span className="text-emerald-400">1,456</span>
-                  </div>
-                  <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-emerald-400 rounded-full" style={{ width: '78%' }} />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-[9px] mb-1">
-                    <span className="text-slate-400">Medium (70-89%)</span>
-                    <span className="text-amber-400">312</span>
-                  </div>
-                  <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-amber-400 rounded-full" style={{ width: '17%' }} />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-[9px] mb-1">
-                    <span className="text-slate-400">Low (&lt;70%)</span>
-                    <span className="text-rose-400">79</span>
-                  </div>
-                  <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                    <div className="h-full bg-rose-400 rounded-full" style={{ width: '5%' }} />
-                  </div>
-                </div>
-              </div>
+              <button 
+                onClick={() => onNavigate('protocol')}
+                className="w-full mt-3 px-3 py-2 bg-teal-500 hover:bg-teal-400 text-slate-900 text-[10px] font-medium rounded transition-colors"
+              >
+                Build Review Protocol →
+              </button>
             </div>
           </div>
         </div>
@@ -1548,40 +1556,43 @@ export function EDiscoveryDashboard({ onNavigate, onOpenAI }) {
   )
 }
 
-// Review Queue Screen
-export function EDiscoveryReviewQueue({ onNavigate, onOpenAI, onSelectDocument }) {
-  const [selectedFilter, setSelectedFilter] = useState('all')
-  
-  const documents = [
-    { id: 1, title: "RE: Q4 Revenue Discussion", type: "email", from: "J. Martinez", date: "Dec 12", confidence: 94, tags: ["Revenue", "Q4"], status: "pending", privilege: "Not Privileged", responsive: "Responsive" },
-    { id: 2, title: "Board Meeting Recording", type: "video", from: "CFO Office", date: "Dec 10", confidence: 91, tags: ["Executive", "Meeting"], status: "pending", privilege: "Privileged", responsive: "Responsive" },
-    { id: 3, title: "Slack: Finance Team Chat", type: "chat", from: "#finance-team", date: "Dec 11", confidence: 87, tags: ["Internal", "Revenue"], status: "pending", privilege: "Not Privileged", responsive: "Responsive" },
-    { id: 4, title: "Quarterly Report Draft.pdf", type: "document", from: "Controller", date: "Dec 8", confidence: 72, tags: ["Financial", "Draft"], status: "flagged", privilege: "Work Product", responsive: "Needs Review" },
-    { id: 5, title: "Zoom Call: Auditor Check-in", type: "video", from: "External Audit", date: "Dec 5", confidence: 96, tags: ["Audit", "External"], status: "reviewed", privilege: "Not Privileged", responsive: "Responsive" },
+// Screen 2: Protocol Builder - Natural Language Review Instructions
+export function EDiscoveryReviewQueue({ onNavigate, onOpenAI }) {
+  const [protocolText, setProtocolText] = useState(`Find all documents that discuss revenue recognition timing, Q4 financial results, or communications with external auditors.\n\nExclude routine operational emails unless they mention "board", "audit committee", or any executive by name.\n\nFlag as privileged any communication involving legal counsel or marked "Attorney-Client Privilege".`)
+
+  const suggestedCriteria = [
+    { id: 1, text: 'Include SEC filing references', confidence: 94 },
+    { id: 2, text: 'Flag merger discussion mentions', confidence: 89 },
+    { id: 3, text: 'Exclude marketing newsletters', confidence: 96 },
+    { id: 4, text: 'Prioritize CFO/CEO communications', confidence: 91 },
   ]
 
-  const getTypeIcon = (type) => {
-    switch(type) {
-      case 'email': return 'M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z'
-      case 'video': return 'M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z'
-      case 'chat': return 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z'
-      case 'document': return 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-      default: return 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-    }
+  const testResults = {
+    matched: 4847,
+    privileged: 234,
+    excluded: 38291,
+    flagged: 127,
+    processing: false
   }
 
   return (
     <div className="h-full flex bg-slate-950 text-white">
-      <EDiscoverySidebar activeView="review" onNavigate={onNavigate} />
+      <EDiscoverySidebar activeView="protocol" onNavigate={onNavigate} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
           <div>
-            <h1 className="text-sm font-semibold text-white">Review Queue</h1>
-            <p className="text-[10px] text-slate-400">494 documents pending review</p>
+            <h1 className="text-sm font-semibold text-white">Protocol Builder</h1>
+            <p className="text-[10px] text-slate-400">Define review criteria in natural language</p>
           </div>
           <div className="flex items-center gap-2">
+            <span className="px-2 py-1 bg-teal-500/20 text-teal-400 text-[10px] rounded flex items-center gap-1">
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Auto-saved
+            </span>
             <button 
               onClick={onOpenAI}
               className="px-3 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-[10px] font-medium text-white flex items-center gap-1.5"
@@ -1589,91 +1600,156 @@ export function EDiscoveryReviewQueue({ onNavigate, onOpenAI, onSelectDocument }
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
               </svg>
-              AI Cull
+              AI Assist
             </button>
           </div>
         </div>
 
-        {/* Filters */}
-        <div className="px-4 py-2 bg-slate-900/50 border-b border-slate-800 flex items-center gap-2">
-          <span className="text-[10px] text-slate-500">Filter:</span>
-          {['all', 'email', 'video', 'chat', 'document'].map((f) => (
-            <button
-              key={f}
-              onClick={() => setSelectedFilter(f)}
-              className={`px-2 py-1 text-[10px] rounded ${selectedFilter === f ? 'bg-teal-500/20 text-teal-400 border border-teal-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}
-            >
-              {f.charAt(0).toUpperCase() + f.slice(1)}
-            </button>
-          ))}
-          <div className="flex-1" />
-          <span className="text-[10px] text-slate-500">Sort: Confidence ↓</span>
-        </div>
-
-        {/* Document List */}
-        <div className="flex-1 overflow-y-auto">
-          {documents.map((doc) => (
-            <div 
-              key={doc.id}
-              onClick={() => onSelectDocument && onSelectDocument(doc)}
-              className={`px-4 py-2.5 border-b border-slate-800/50 hover:bg-slate-800/30 cursor-pointer flex items-center gap-3 ${doc.confidence < 75 ? 'border-l-2 border-l-amber-500' : ''}`}
-            >
-              {/* Type Icon */}
-              <div className={`w-8 h-8 rounded flex items-center justify-center ${
-                doc.type === 'video' ? 'bg-purple-500/20' : 
-                doc.type === 'chat' ? 'bg-blue-500/20' : 
-                doc.type === 'email' ? 'bg-cyan-500/20' : 'bg-slate-700'
-              }`}>
-                <svg className={`w-4 h-4 ${
-                  doc.type === 'video' ? 'text-purple-400' : 
-                  doc.type === 'chat' ? 'text-blue-400' : 
-                  doc.type === 'email' ? 'text-cyan-400' : 'text-slate-400'
-                }`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={getTypeIcon(doc.type)} />
-                </svg>
+        {/* Main Content */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Protocol Editor */}
+          <div className="flex-1 flex flex-col p-4">
+            <div className="bg-slate-900 rounded-lg border border-slate-800 flex-1 flex flex-col">
+              <div className="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+                <div>
+                  <h3 className="text-[11px] font-medium text-white">Review Instructions</h3>
+                  <p className="text-[9px] text-slate-500">Describe what documents to find, include, exclude, and flag</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button className="px-2 py-1 bg-slate-800 rounded text-[9px] text-slate-400 hover:text-white">
+                    Load Template
+                  </button>
+                  <button className="px-2 py-1 bg-slate-800 rounded text-[9px] text-slate-400 hover:text-white">
+                    History
+                  </button>
+                </div>
+              </div>
+              
+              <div className="flex-1 p-4">
+                <textarea
+                  value={protocolText}
+                  onChange={(e) => setProtocolText(e.target.value)}
+                  className="w-full h-full bg-slate-950 rounded-lg p-4 text-[12px] text-slate-200 leading-relaxed border border-slate-800 focus:border-teal-500/50 focus:outline-none resize-none font-mono"
+                  placeholder="Describe your review criteria in plain English..."
+                />
               </div>
 
-              {/* Doc Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h4 className="text-[11px] font-medium text-white truncate">{doc.title}</h4>
-                  <span className={`text-[9px] font-medium ${doc.confidence >= 90 ? 'text-emerald-400' : doc.confidence >= 75 ? 'text-cyan-400' : 'text-amber-400'}`}>
-                    {doc.confidence}%
+              {/* Action Bar */}
+              <div className="px-4 py-3 border-t border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <span className="text-[9px] text-slate-500">Words: {protocolText.split(/\s+/).length}</span>
+                  <span className="text-[9px] text-slate-500">|</span>
+                  <span className="text-[9px] text-violet-400 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+                    </svg>
+                    AI parsing active
                   </span>
                 </div>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <span className="text-[9px] text-slate-500">{doc.from} • {doc.date}</span>
-                  <div className="flex gap-1">
-                    {doc.tags.slice(0, 2).map((tag, i) => (
-                      <span key={i} className="px-1.5 py-0.5 bg-slate-800 text-slate-400 text-[8px] rounded">{tag}</span>
-                    ))}
-                  </div>
+                <div className="flex items-center gap-2">
+                  <button className="px-4 py-2 bg-slate-800 rounded text-[10px] text-slate-300 hover:bg-slate-700">
+                    Test on Subset
+                  </button>
+                  <button 
+                    onClick={() => onNavigate('review')}
+                    className="px-4 py-2 bg-teal-500 rounded text-[10px] font-medium text-slate-900"
+                  >
+                    Apply to Full Corpus →
+                  </button>
                 </div>
               </div>
+            </div>
 
-              {/* Classifications */}
-              <div className="flex gap-2 text-[9px]">
-                <span className={`px-2 py-0.5 rounded ${
-                  doc.privilege === 'Privileged' ? 'bg-rose-500/20 text-rose-400' :
-                  doc.privilege === 'Work Product' ? 'bg-amber-500/20 text-amber-400' :
-                  'bg-slate-700 text-slate-400'
-                }`}>{doc.privilege}</span>
-                <span className={`px-2 py-0.5 rounded ${
-                  doc.responsive === 'Responsive' ? 'bg-emerald-500/20 text-emerald-400' :
-                  'bg-amber-500/20 text-amber-400'
-                }`}>{doc.responsive}</span>
+            {/* Test Results Preview */}
+            <div className="mt-3 bg-slate-900 rounded-lg border border-slate-800 p-3">
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-[10px] font-medium text-white">Test Results Preview</h4>
+                <span className="text-[9px] text-slate-500">Based on 1,000 doc sample</span>
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                <div className="bg-slate-800/50 rounded p-2 text-center">
+                  <p className="text-lg font-bold text-teal-400">{testResults.matched.toLocaleString()}</p>
+                  <p className="text-[9px] text-slate-500">Est. Matches</p>
+                </div>
+                <div className="bg-slate-800/50 rounded p-2 text-center">
+                  <p className="text-lg font-bold text-amber-400">{testResults.privileged}</p>
+                  <p className="text-[9px] text-slate-500">Likely Privileged</p>
+                </div>
+                <div className="bg-slate-800/50 rounded p-2 text-center">
+                  <p className="text-lg font-bold text-slate-400">{testResults.excluded.toLocaleString()}</p>
+                  <p className="text-[9px] text-slate-500">Excluded</p>
+                </div>
+                <div className="bg-slate-800/50 rounded p-2 text-center">
+                  <p className="text-lg font-bold text-rose-400">{testResults.flagged}</p>
+                  <p className="text-[9px] text-slate-500">Hot Docs</p>
+                </div>
               </div>
             </div>
-          ))}
+          </div>
+
+          {/* AI Suggestions Panel */}
+          <div className="w-72 border-l border-slate-800 bg-slate-900/50 flex flex-col">
+            <div className="px-4 py-3 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <div className="w-5 h-5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+                  </svg>
+                </div>
+                <div>
+                  <h3 className="text-[11px] font-medium text-white">AI-Suggested Criteria</h3>
+                  <p className="text-[9px] text-slate-500">Based on case type & corpus analysis</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="flex-1 overflow-y-auto p-3 space-y-2">
+              {suggestedCriteria.map((criteria) => (
+                <div 
+                  key={criteria.id} 
+                  className="bg-slate-800/50 rounded-lg p-3 hover:bg-slate-800 cursor-pointer transition-colors border border-transparent hover:border-teal-500/30"
+                >
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <p className="text-[10px] text-slate-300 leading-relaxed">{criteria.text}</p>
+                    <button className="p-1 hover:bg-slate-700 rounded flex-shrink-0">
+                      <svg className="w-3.5 h-3.5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                      </svg>
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex-1 h-1 bg-slate-700 rounded-full overflow-hidden">
+                      <div 
+                        className="h-full bg-gradient-to-r from-teal-500 to-cyan-400 rounded-full"
+                        style={{ width: `${criteria.confidence}%` }}
+                      />
+                    </div>
+                    <span className="text-[9px] text-teal-400 font-medium">{criteria.confidence}%</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Tips */}
+            <div className="p-3 border-t border-slate-800">
+              <div className="bg-violet-500/10 rounded-lg p-3 border border-violet-500/20">
+                <p className="text-[9px] text-violet-400 font-medium mb-1">💡 Pro Tip</p>
+                <p className="text-[9px] text-slate-400 leading-relaxed">
+                  Use specific terms like "CFO", "audit committee", or date ranges to improve precision. The AI will interpret intent and expand relevant synonyms.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   )
 }
 
-// Document Review Screen with split panel
+// Screen 3: Citation-Led Document Viewer
 export function EDiscoveryDocumentReview({ document, onNavigate, onOpenAI, onBack, onComplete }) {
-  const [isPopped, setIsPopped] = useState(false)
+  const [activeTab, setActiveTab] = useState('text')
+  
   const doc = document || { 
     id: 1, 
     title: "RE: Q4 Revenue Discussion", 
@@ -1683,15 +1759,13 @@ export function EDiscoveryDocumentReview({ document, onNavigate, onOpenAI, onBac
     date: "Dec 12, 2024 3:47 PM",
     confidence: 94, 
     tags: ["Revenue", "Q4", "Executive"], 
-    privilege: "Not Privileged", 
-    responsive: "Responsive",
-    content: `Per our discussion, I've attached the revised recognition schedule for board review.
-
-The timing adjustments we discussed should address the auditor's concerns about Q4 cutoff. Please confirm before I send to the audit committee.
-
-Best regards,
-J. Martinez`
   }
+
+  const citations = [
+    { id: 1, text: '"revised recognition schedule"', page: 1, line: 3, relevance: 'High', category: 'Financial' },
+    { id: 2, text: '"Q4 cutoff"', page: 1, line: 5, relevance: 'High', category: 'Timing' },
+    { id: 3, text: '"audit committee"', page: 1, line: 6, relevance: 'Medium', category: 'Oversight' },
+  ]
 
   return (
     <div className="h-full flex bg-slate-950 text-white">
@@ -1699,133 +1773,183 @@ J. Martinez`
       
       <div className="flex-1 flex overflow-hidden">
         {/* Document Panel (Left) */}
-        <div className={`${isPopped ? 'hidden' : 'w-1/2'} flex flex-col border-r border-slate-800`}>
-          <div className="bg-slate-900 px-3 py-2 flex items-center justify-between border-b border-slate-800">
-            <div className="flex items-center gap-2">
-              <button onClick={onBack} className="p-1 hover:bg-slate-800 rounded">
-                <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <span className="text-[11px] font-medium text-white truncate">{doc.title}</span>
+        <div className="w-3/5 flex flex-col border-r border-slate-800">
+          {/* Header with tabs */}
+          <div className="bg-slate-900 px-3 py-2 border-b border-slate-800">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <button onClick={onBack} className="p-1 hover:bg-slate-800 rounded">
+                  <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <span className="text-[11px] font-medium text-white truncate">{doc.title}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[9px] rounded flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Verified
+                </span>
+              </div>
             </div>
-            <button 
-              onClick={() => setIsPopped(true)}
-              className="text-[10px] text-teal-400 hover:text-teal-300 flex items-center gap-1"
-            >
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-              </svg>
-              Pop out
-            </button>
+            
+            {/* Multimodal Tabs */}
+            <div className="flex items-center gap-1">
+              {[
+                { id: 'text', label: 'Text', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+                { id: 'native', label: 'Native', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
+                { id: 'metadata', label: 'Metadata', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
+                { id: 'family', label: 'Family', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
+              ].map((tab) => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`px-2 py-1.5 rounded flex items-center gap-1.5 text-[10px] transition-colors ${
+                    activeTab === tab.id 
+                      ? 'bg-teal-500/20 text-teal-400' 
+                      : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'
+                  }`}
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={tab.icon} />
+                  </svg>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
           </div>
           
+          {/* Document Content */}
           <div className="flex-1 overflow-y-auto p-3">
             <div className="bg-white rounded-lg p-4 text-slate-900 min-h-full text-[11px]">
               <div className="border-b border-slate-200 pb-2 mb-3">
                 <p><span className="font-medium">From:</span> {doc.from}</p>
-                <p><span className="font-medium">To:</span> <span className="bg-rose-100 px-1 rounded">{doc.to || 'CFO'}</span></p>
+                <p><span className="font-medium">To:</span> {doc.to || 'CFO'}</p>
                 <p><span className="font-medium">Date:</span> {doc.date}</p>
                 <p><span className="font-medium">Subject:</span> {doc.title}</p>
               </div>
               <div className="whitespace-pre-wrap leading-relaxed">
-                Per our discussion, I've attached the revised <span className="bg-amber-200 px-0.5 rounded">recognition schedule</span> for board review.
+                Per our discussion, I've attached the <span className="bg-amber-200 px-0.5 rounded cursor-pointer hover:bg-amber-300" title="Citation 1">revised recognition schedule</span> for board review.
                 
-                The timing adjustments we discussed should address the auditor's concerns about <span className="bg-violet-200 px-0.5 rounded">Q4 cutoff</span>. Please confirm before I send to the audit committee.
+                The timing adjustments we discussed should address the auditor's concerns about <span className="bg-violet-200 px-0.5 rounded cursor-pointer hover:bg-violet-300" title="Citation 2">Q4 cutoff</span>. Please confirm before I send to the <span className="bg-teal-200 px-0.5 rounded cursor-pointer hover:bg-teal-300" title="Citation 3">audit committee</span>.
+
+                Best regards,
+                J. Martinez
               </div>
             </div>
           </div>
 
-          {/* Evidence Legend */}
-          <div className="bg-slate-900 px-3 py-2 border-t border-slate-800">
-            <p className="text-[9px] text-slate-500 mb-1">Highlighted Evidence</p>
-            <div className="flex gap-3 text-[9px]">
-              <span className="flex items-center gap-1"><span className="w-2 h-2 bg-amber-200 rounded" />Revenue</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 bg-violet-200 rounded" />Q4 Timing</span>
-              <span className="flex items-center gap-1"><span className="w-2 h-2 bg-rose-200 rounded" />Executive</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Controls Panel (Right) */}
-        <div className="flex-1 flex flex-col">
-          <div className="bg-slate-900 px-3 py-2 flex items-center justify-between border-b border-slate-800">
-            <h2 className="text-[11px] font-semibold text-white">Review & Tag</h2>
+          {/* Quick Actions Bar */}
+          <div className="bg-slate-900 px-3 py-2 border-t border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className={`text-[9px] font-medium px-2 py-0.5 rounded ${doc.confidence >= 90 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'}`}>
-                {doc.confidence}% Confidence
-              </span>
-              <button onClick={onOpenAI} className="p-1 bg-violet-500/20 rounded hover:bg-violet-500/30">
-                <svg className="w-3.5 h-3.5 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+              <button className="px-2 py-1 bg-rose-500/20 text-rose-400 text-[9px] rounded hover:bg-rose-500/30">
+                Flag Hot
+              </button>
+              <button className="px-2 py-1 bg-amber-500/20 text-amber-400 text-[9px] rounded hover:bg-amber-500/30">
+                Needs Redaction
+              </button>
+            </div>
+            <div className="flex items-center gap-1 text-[9px] text-slate-500">
+              <span>Doc 1 of 127</span>
+              <button className="p-1 hover:bg-slate-800 rounded">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </button>
+              <button className="p-1 hover:bg-slate-800 rounded">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </button>
             </div>
           </div>
+        </div>
 
-          <div className="flex-1 overflow-y-auto p-3 space-y-4">
-            {/* AI Tags */}
-            <div>
-              <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-1.5">AI-Suggested Tags</p>
-              <div className="flex flex-wrap gap-1.5">
-                {doc.tags.map((tag, i) => (
-                  <span key={i} className="px-2 py-1 bg-teal-500/20 text-teal-400 text-[10px] rounded border border-teal-500/30">{tag}</span>
-                ))}
-                <button className="px-2 py-1 bg-slate-800 text-slate-400 text-[10px] rounded border border-slate-700">+ Add</button>
+        {/* AI Insights Panel (Right) */}
+        <div className="flex-1 flex flex-col bg-slate-900/30">
+          {/* Panel Header */}
+          <div className="px-3 py-2 border-b border-slate-800 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded flex items-center justify-center">
+                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+                </svg>
               </div>
+              <h3 className="text-[11px] font-medium text-white">AI Insights</h3>
+            </div>
+            <div className="flex items-center gap-1">
+              <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-[8px] rounded">
+                No Hallucination Detected
+              </span>
+            </div>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-3 space-y-3">
+            {/* Confidence Meter */}
+            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] text-slate-400">Relevance Confidence</span>
+                <span className="text-[11px] font-bold text-emerald-400">{doc.confidence}%</span>
+              </div>
+              <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all"
+                  style={{ width: `${doc.confidence}%` }}
+                />
+              </div>
+              <p className="text-[9px] text-slate-500 mt-1.5">Model: Claude 3.5 Sonnet • Calibrated on 10K samples</p>
             </div>
 
-            {/* Privilege */}
-            <div>
-              <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-1.5">Privilege Classification</p>
-              <div className="grid grid-cols-3 gap-1.5">
-                <button className="p-2 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400 hover:border-rose-500/50">Privileged</button>
-                <button className="p-2 bg-amber-500/20 border border-amber-500 rounded text-[10px] text-amber-400">Work Product</button>
-                <button className="p-2 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400 hover:border-emerald-500/50">Not Privileged</button>
-              </div>
-            </div>
-
-            {/* Responsiveness */}
-            <div>
-              <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-1.5">Responsiveness</p>
-              <div className="grid grid-cols-3 gap-1.5">
-                <button className="p-2 bg-emerald-500/20 border border-emerald-500 rounded text-[10px] text-emerald-400">Responsive</button>
-                <button className="p-2 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">Not Responsive</button>
-                <button className="p-2 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">Needs Review</button>
-              </div>
-            </div>
-
-            {/* Priority */}
-            <div>
-              <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-1.5">Priority</p>
-              <div className="flex gap-1.5">
-                <button className="flex-1 p-2 bg-rose-500/20 border border-rose-500 rounded text-[10px] text-rose-400">Hot Doc</button>
-                <button className="flex-1 p-2 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">Key</button>
-                <button className="flex-1 p-2 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">Normal</button>
-              </div>
-            </div>
-
-            {/* AI Justification */}
-            <div className="bg-slate-800/50 rounded-lg p-2.5 border border-slate-700">
-              <p className="text-[9px] text-violet-400 font-medium mb-1">AI Insight & Justification</p>
+            {/* AI Rationale */}
+            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+              <h4 className="text-[10px] text-violet-400 font-medium mb-2">AI Rationale</h4>
               <p className="text-[10px] text-slate-300 leading-relaxed">
-                This document discusses <span className="text-amber-400">revenue recognition timing</span> for Q4 with direct communication to executive leadership. Flagged for potential relevance to investigation scope.
+                This document discusses <span className="text-amber-400">revenue recognition timing</span> decisions involving executive leadership. Direct relevance to investigation scope regarding Q4 financial reporting practices.
               </p>
             </div>
 
-            {/* Notes */}
-            <div>
-              <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-1.5">Reviewer Notes</p>
-              <textarea 
-                className="w-full bg-slate-800 rounded px-2 py-1.5 text-[10px] text-slate-300 placeholder-slate-500 border border-slate-700 resize-none"
-                rows="2"
-                placeholder="Add notes for production..."
-              />
+            {/* Live Citations */}
+            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+              <h4 className="text-[10px] text-violet-400 font-medium mb-2">Live Citations</h4>
+              <div className="space-y-2">
+                {citations.map((cite) => (
+                  <div key={cite.id} className="flex items-start gap-2 p-2 bg-slate-900/50 rounded hover:bg-slate-900 cursor-pointer transition-colors">
+                    <div className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${
+                      cite.relevance === 'High' ? 'bg-rose-400' : 'bg-amber-400'
+                    }`} />
+                    <div className="flex-1 min-w-0">
+                      <p className="text-[10px] text-slate-200 font-mono truncate">{cite.text}</p>
+                      <p className="text-[9px] text-slate-500">Page {cite.page}, Line {cite.line} • {cite.category}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Classification Suggestion */}
+            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
+              <h4 className="text-[10px] text-violet-400 font-medium mb-2">Suggested Classification</h4>
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-slate-400">Responsive</span>
+                  <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[9px] rounded">Yes (94%)</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-slate-400">Privileged</span>
+                  <span className="px-2 py-0.5 bg-slate-700 text-slate-400 text-[9px] rounded">No (98%)</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-slate-400">Hot Document</span>
+                  <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[9px] rounded">Maybe (67%)</span>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Actions */}
-          <div className="bg-slate-900 px-3 py-2.5 border-t border-slate-800 space-y-1.5">
+          <div className="p-3 border-t border-slate-800 space-y-2">
             <button 
               onClick={onComplete}
               className="w-full py-2 bg-teal-500 rounded text-[11px] font-bold text-slate-900 flex items-center justify-center gap-1.5"
@@ -1833,11 +1957,15 @@ J. Martinez`
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
-              Complete Review
+              Accept & Next
             </button>
-            <div className="flex gap-1.5">
-              <button className="flex-1 py-1.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">Skip</button>
-              <button className="flex-1 py-1.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">Flag for QC</button>
+            <div className="flex gap-2">
+              <button className="flex-1 py-1.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">
+                Override
+              </button>
+              <button className="flex-1 py-1.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">
+                Send to QC
+              </button>
             </div>
           </div>
         </div>
@@ -1846,119 +1974,208 @@ J. Martinez`
   )
 }
 
-// Production Screen
+// Screen 4: Automated Privilege Log Workflow
 export function EDiscoveryProduction({ onNavigate, onOpenAI }) {
+  const [selectedDocs, setSelectedDocs] = useState([1, 2, 3])
+  
+  const privilegedDocs = [
+    { 
+      id: 1, 
+      bates: 'NEXUS000234', 
+      title: 'Email: Legal Strategy Discussion', 
+      date: 'Dec 10, 2024',
+      privilege: 'Attorney-Client',
+      aiDescription: 'Communication between in-house counsel and CFO regarding SEC inquiry response strategy and potential disclosure obligations.',
+      approved: true,
+      confidence: 96
+    },
+    { 
+      id: 2, 
+      bates: 'NEXUS000456', 
+      title: 'Memo: Litigation Hold Analysis', 
+      date: 'Dec 8, 2024',
+      privilege: 'Work Product',
+      aiDescription: 'Internal memorandum prepared by legal team analyzing document preservation requirements and potential litigation exposure.',
+      approved: true,
+      confidence: 94
+    },
+    { 
+      id: 3, 
+      bates: 'NEXUS000789', 
+      title: 'Draft: Board Presentation Notes', 
+      date: 'Dec 5, 2024',
+      privilege: 'Attorney-Client',
+      aiDescription: 'Draft presentation materials prepared with input from external counsel regarding regulatory compliance matters.',
+      approved: false,
+      confidence: 87
+    },
+    { 
+      id: 4, 
+      bates: 'NEXUS001012', 
+      title: 'Email: Outside Counsel Engagement', 
+      date: 'Dec 3, 2024',
+      privilege: 'Attorney-Client',
+      aiDescription: 'Engagement letter and scope discussion with external law firm for SEC investigation representation.',
+      approved: true,
+      confidence: 99
+    },
+  ]
+
   return (
     <div className="h-full flex bg-slate-950 text-white">
-      <EDiscoverySidebar activeView="production" onNavigate={onNavigate} />
+      <EDiscoverySidebar activeView="privilege" onNavigate={onNavigate} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
           <div>
-            <h1 className="text-sm font-semibold text-white">Production & Redaction</h1>
-            <p className="text-[10px] text-slate-400">127 documents ready for production</p>
+            <h1 className="text-sm font-semibold text-white">Privilege Log Generator</h1>
+            <p className="text-[10px] text-slate-400">234 documents flagged as privileged • AI descriptions ready for review</p>
           </div>
           <div className="flex items-center gap-2">
-            <button className="px-3 py-1.5 bg-emerald-500 rounded text-[10px] font-medium text-slate-900 flex items-center gap-1.5">
+            <button className="px-3 py-1.5 bg-slate-800 rounded text-[10px] text-slate-300 flex items-center gap-1.5 hover:bg-slate-700">
               <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
-              Export Production
+              Export Log
+            </button>
+            <button 
+              onClick={onOpenAI}
+              className="px-3 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-[10px] font-medium text-white flex items-center gap-1.5"
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+              </svg>
+              Regenerate All
             </button>
           </div>
         </div>
 
-        <div className="flex-1 flex overflow-hidden">
-          {/* Document Preview */}
-          <div className="w-1/2 flex flex-col border-r border-slate-800">
-            <div className="bg-slate-900/50 px-3 py-2 border-b border-slate-800 flex items-center justify-between">
-              <span className="text-[10px] text-slate-400">Document Preview</span>
-              <span className="text-[10px] text-teal-400">1 of 127</span>
-            </div>
-            <div className="flex-1 overflow-y-auto p-3">
-              <div className="bg-white rounded-lg p-4 text-slate-900 min-h-full text-[11px]">
-                <div className="border-b border-slate-200 pb-2 mb-3">
-                  <p><span className="font-medium">From:</span> J. Martinez</p>
-                  <p><span className="font-medium">To:</span> <span className="bg-black text-white px-1 rounded text-[9px]">REDACTED</span></p>
-                  <p><span className="font-medium">Date:</span> Dec 12, 2024</p>
-                </div>
-                <div className="leading-relaxed">
-                  Per our discussion, I've attached the revised recognition schedule for board review.
+        {/* Progress Banner */}
+        <div className="px-4 py-2 bg-slate-900/50 border-b border-slate-800">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] text-slate-400">Review Progress</span>
+            <span className="text-[10px] text-teal-400">198 / 234 approved (85%)</span>
+          </div>
+          <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-teal-500 to-cyan-400 rounded-full" style={{ width: '85%' }} />
+          </div>
+        </div>
+
+        {/* Batch Actions */}
+        <div className="px-4 py-2 bg-slate-800/30 border-b border-slate-800 flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <input type="checkbox" className="w-3.5 h-3.5 rounded border-slate-600 bg-slate-800 text-teal-500" checked={selectedDocs.length === privilegedDocs.length} readOnly />
+            <span className="text-[10px] text-slate-400">{selectedDocs.length} selected</span>
+          </div>
+          <div className="h-4 w-px bg-slate-700" />
+          <button className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-[9px] rounded hover:bg-emerald-500/30 flex items-center gap-1">
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+            </svg>
+            Approve Selected
+          </button>
+          <button className="px-2 py-1 bg-amber-500/20 text-amber-400 text-[9px] rounded hover:bg-amber-500/30">
+            Edit Descriptions
+          </button>
+          <button className="px-2 py-1 bg-rose-500/20 text-rose-400 text-[9px] rounded hover:bg-rose-500/30">
+            Reject Selected
+          </button>
+        </div>
+
+        {/* Document List */}
+        <div className="flex-1 overflow-y-auto">
+          {privilegedDocs.map((doc) => (
+            <div 
+              key={doc.id}
+              className={`px-4 py-3 border-b border-slate-800/50 hover:bg-slate-800/20 ${
+                !doc.approved ? 'bg-amber-500/5 border-l-2 border-l-amber-500' : ''
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                {/* Checkbox */}
+                <input 
+                  type="checkbox" 
+                  className="w-3.5 h-3.5 rounded border-slate-600 bg-slate-800 text-teal-500 mt-1" 
+                  checked={selectedDocs.includes(doc.id)}
+                  onChange={() => {
+                    if (selectedDocs.includes(doc.id)) {
+                      setSelectedDocs(selectedDocs.filter(id => id !== doc.id))
+                    } else {
+                      setSelectedDocs([...selectedDocs, doc.id])
+                    }
+                  }}
+                />
+                
+                {/* Main Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[9px] font-mono text-slate-500">{doc.bates}</span>
+                    <span className={`px-1.5 py-0.5 text-[8px] rounded ${
+                      doc.privilege === 'Attorney-Client' ? 'bg-violet-500/20 text-violet-400' :
+                      'bg-amber-500/20 text-amber-400'
+                    }`}>{doc.privilege}</span>
+                    <span className="text-[9px] text-slate-500">{doc.date}</span>
+                  </div>
                   
-                  Please contact me at <span className="bg-black text-white px-1 rounded text-[9px]">REDACTED</span> if you have questions.
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Production Controls */}
-          <div className="flex-1 flex flex-col">
-            <div className="bg-slate-900/50 px-3 py-2 border-b border-slate-800">
-              <span className="text-[10px] text-slate-400">Auto-Redaction Settings</span>
-            </div>
-            <div className="flex-1 overflow-y-auto p-3 space-y-3">
-              {/* Key Metrics */}
-              <div className="grid grid-cols-3 gap-2">
-                <div className="bg-slate-800/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold text-white">127</p>
-                  <p className="text-[9px] text-slate-500">Total Docs</p>
-                </div>
-                <div className="bg-slate-800/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold text-amber-400">43</p>
-                  <p className="text-[9px] text-slate-500">Redactions</p>
-                </div>
-                <div className="bg-slate-800/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold text-emerald-400">100%</p>
-                  <p className="text-[9px] text-slate-500">Compliant</p>
-                </div>
-              </div>
-
-              {/* Entity Extraction */}
-              <div>
-                <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-2">System Entity Extraction</p>
-                <div className="space-y-1.5">
-                  {[
-                    { label: 'Social Security Numbers', count: 12, enabled: true },
-                    { label: 'Phone Numbers', count: 28, enabled: true },
-                    { label: 'Email Addresses', count: 45, enabled: false },
-                    { label: 'Bank Accounts', count: 3, enabled: true },
-                  ].map((entity, i) => (
-                    <div key={i} className="flex items-center justify-between bg-slate-800/50 rounded px-2 py-1.5">
-                      <span className="text-[10px] text-slate-300">{entity.label}</span>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[9px] text-slate-500">{entity.count} found</span>
-                        <div className={`w-8 h-4 rounded-full p-0.5 ${entity.enabled ? 'bg-teal-500' : 'bg-slate-700'}`}>
-                          <div className={`w-3 h-3 rounded-full bg-white transition-transform ${entity.enabled ? 'translate-x-4' : ''}`} />
-                        </div>
-                      </div>
+                  <h4 className="text-[11px] font-medium text-white mb-1.5">{doc.title}</h4>
+                  
+                  {/* AI-Generated Description */}
+                  <div className="bg-slate-800/50 rounded p-2.5 border border-slate-700">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <svg className="w-3 h-3 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+                      </svg>
+                      <span className="text-[9px] text-violet-400 font-medium">AI-Drafted Description</span>
+                      <span className="text-[8px] text-slate-500">({doc.confidence}% confidence)</span>
                     </div>
-                  ))}
+                    <p className="text-[10px] text-slate-300 leading-relaxed">{doc.aiDescription}</p>
+                  </div>
                 </div>
-              </div>
 
-              {/* Production Set */}
-              <div>
-                <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-2">Production Set</p>
-                <div className="bg-slate-800/50 rounded p-2">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-[10px] text-white font-medium">NEXUS_PROD_001</span>
-                    <span className="text-[9px] text-emerald-400">Ready</span>
-                  </div>
-                  <div className="text-[9px] text-slate-400">
-                    <p>Format: PDF with load file</p>
-                    <p>Bates Range: NEXUS000001 - NEXUS000127</p>
-                  </div>
+                {/* Actions */}
+                <div className="flex flex-col items-end gap-2">
+                  {doc.approved ? (
+                    <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-[9px] rounded flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                      Approved
+                    </span>
+                  ) : (
+                    <span className="px-2 py-1 bg-amber-500/20 text-amber-400 text-[9px] rounded">
+                      Needs Review
+                    </span>
+                  )}
+                  <button className="text-[9px] text-slate-500 hover:text-slate-300">Edit</button>
                 </div>
               </div>
             </div>
+          ))}
+        </div>
 
-            <div className="bg-slate-900 px-3 py-2.5 border-t border-slate-800">
-              <button className="w-full py-2 bg-teal-500 rounded text-[11px] font-bold text-slate-900">
-                Generate Production
-              </button>
+        {/* Footer Actions */}
+        <div className="bg-slate-900 px-4 py-3 border-t border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-4 text-[10px]">
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 bg-emerald-400 rounded-full" />
+              <span className="text-slate-400">198 Approved</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 bg-amber-400 rounded-full" />
+              <span className="text-slate-400">36 Pending</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 bg-rose-400 rounded-full" />
+              <span className="text-slate-400">0 Rejected</span>
             </div>
           </div>
+          <button className="px-4 py-2 bg-teal-500 rounded text-[11px] font-bold text-slate-900 flex items-center gap-1.5">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Generate Final Log
+          </button>
         </div>
       </div>
     </div>
@@ -1967,7 +2184,7 @@ export function EDiscoveryProduction({ onNavigate, onOpenAI }) {
 
 // Main eDiscovery App Container
 export function EDiscoveryApp() {
-  const [currentView, setCurrentView] = useState('dashboard')
+  const [currentView, setCurrentView] = useState('eca')
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false)
   const [selectedDocument, setSelectedDocument] = useState(null)
 
@@ -1983,17 +2200,25 @@ export function EDiscoveryApp() {
 
   return (
     <div className="h-full relative">
-      {currentView === 'dashboard' && (
+      {currentView === 'eca' && (
         <EDiscoveryDashboard 
           onNavigate={handleNavigate} 
           onOpenAI={() => setAiDrawerOpen(true)} 
         />
       )}
-      {currentView === 'review' && (
+      {currentView === 'protocol' && (
         <EDiscoveryReviewQueue 
           onNavigate={handleNavigate} 
           onOpenAI={() => setAiDrawerOpen(true)}
-          onSelectDocument={handleSelectDocument}
+        />
+      )}
+      {currentView === 'review' && (
+        <EDiscoveryDocumentReview 
+          document={selectedDocument}
+          onNavigate={handleNavigate} 
+          onOpenAI={() => setAiDrawerOpen(true)}
+          onBack={() => setCurrentView('protocol')}
+          onComplete={() => setCurrentView('protocol')}
         />
       )}
       {currentView === 'document' && (
@@ -2005,13 +2230,7 @@ export function EDiscoveryApp() {
           onComplete={() => setCurrentView('review')}
         />
       )}
-      {currentView === 'analyze' && (
-        <EDiscoveryDashboard 
-          onNavigate={handleNavigate} 
-          onOpenAI={() => setAiDrawerOpen(true)} 
-        />
-      )}
-      {currentView === 'production' && (
+      {currentView === 'privilege' && (
         <EDiscoveryProduction 
           onNavigate={handleNavigate} 
           onOpenAI={() => setAiDrawerOpen(true)} 

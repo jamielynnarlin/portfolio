@@ -899,17 +899,17 @@ function ScreenGallery({ prototype, prototypeLink, isDark }) {
   const isEDiscovery = prototypeLink && prototypeLink.includes('ediscovery')
   
   if (isEDiscovery) {
-    // eDiscovery desktop screens
+    // eDiscovery desktop screens - 2026 accurate designs
     const ediscoveryScreens = [
       { 
         component: EDiscoveryDashboardStatic, 
-        title: 'AI Co-Pilot Dashboard',
-        description: 'Real-time metrics showing review progress, AI confidence calibration, and sentiment clusters. The Review Gap Analysis quantifies cost savings by tracking documents the AI successfully culled from manual review.'
+        title: 'Early Case Assessment',
+        description: 'Interactive concept map visualization showing document clusters by topic. AI-extracted entities panel identifies key people, organizations, and documents. Sentiment timeline reveals communication patterns over time.'
       },
       { 
         component: EDiscoveryNLCullingStatic, 
-        title: 'Natural Language Culling',
-        description: 'Replace complex Boolean queries with conversational prompts. The AI interprets intent, identifies relevant terms, and shows its reasoning before applying filters to the document set.'
+        title: 'Protocol Builder',
+        description: 'Define review criteria in natural language instead of complex Boolean queries. AI interprets intent, suggests additional criteria with confidence scores, and provides real-time test results on sample documents.'
       },
       { 
         component: EDiscoveryMultimodalStatic, 
@@ -923,13 +923,13 @@ function ScreenGallery({ prototype, prototypeLink, isDark }) {
       },
       { 
         component: EDiscoveryDefensibilityStatic, 
-        title: 'Defensibility Dashboard',
-        description: 'Court-ready metrics showing Precision, Recall, and F1 scores. The training progress visualization and Disagreement Log create the audit trail required for legal proceedings.'
+        title: 'Citation-Led Review',
+        description: 'Dual-pane document viewer with AI insights panel showing rationale, live citations, and hallucination checks. Confidence meters display relevance scores calibrated on sample data.'
       },
       { 
         component: EDiscoveryProductionStatic, 
-        title: 'Production & Redaction',
-        description: 'Auto-redaction with configurable entity extraction. Toggle which PII types to redact, preview documents with redactions applied, and generate production sets with Bates numbering.'
+        title: 'Privilege Log Generator',
+        description: 'Batch-action workflow with AI-drafted privilege descriptions. Human reviewers approve or edit each entry with confidence scores. Progress tracking ensures complete coverage before log generation.'
       }
     ]
 
@@ -3610,10 +3610,6 @@ function CaseStudy() {
                               viewport={{ once: true }}
                               transition={{ delay: i * 0.15, duration: 0.5 }}
                             >
-                              {/* Step Number */}
-                              <div className={`absolute -top-3 -left-3 w-8 h-8 bg-gradient-to-br ${colors.gradient} rounded-full flex items-center justify-center shadow-lg`}>
-                                <span className="font-bold text-sm text-white">{i + 1}</span>
-                              </div>
 
                               {/* Arrow to next - Desktop */}
                               {i < section.pillars.length - 1 && (

@@ -75,7 +75,7 @@ export const prototypes = [
     id: "ediscovery-ai",
     title: "AI-Assisted eDiscovery",
     subtitle: "Intelligent Document Review Platform",
-    description: "Explore how AI transforms document review with natural language culling, calibrated confidence scoring, and multimodal support.",
+    description: "Explore how AI transforms document review with natural language protocol building, citation-led analysis, and automated privilege logging.",
     caseStudySlug: "llm-integration-strategy",
     caseStudyTitle: "LLM Integration Strategy",
     thumbnail: import.meta.env.BASE_URL + "images/case-studies/ediscovery-hero.jpg",
@@ -83,13 +83,13 @@ export const prototypes = [
     isDesktop: true,
     isEDiscovery: true,
     prototype: {
-      title: "eDiscovery AI Co-Pilot",
-      description: "Navigate through the AI-assisted document review workflow",
+      title: "eDiscovery AI Platform",
+      description: "Navigate through the AI-assisted document review workflow with 2026-ready features",
       screens: [
-        { id: "dashboard", label: "Dashboard", description: "Overview with metrics, sentiment clusters, and review progress" },
-        { id: "review", label: "Review Queue", description: "AI-prioritized document queue with confidence scoring" },
-        { id: "document", label: "Document Review", description: "Split-panel document review with AI tagging" },
-        { id: "production", label: "Production", description: "Auto-redaction and production set management" }
+        { id: "eca", label: "Case Assessment", description: "Concept map visualization, entity extraction, and sentiment analysis" },
+        { id: "protocol", label: "Protocol Builder", description: "Natural language review instructions with AI-suggested criteria" },
+        { id: "review", label: "Document Review", description: "Citation-led viewer with AI rationale and hallucination checks" },
+        { id: "privilege", label: "Privilege Log", description: "Batch-action workflow with AI-drafted descriptions" }
       ]
     }
   }
