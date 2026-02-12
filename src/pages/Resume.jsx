@@ -180,11 +180,10 @@ function Resume() {
                     )}
                     
                     {/* Bullets */}
-                    <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1 print:text-xs">
+                    <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1 print:text-xs list-disc list-outside ml-4 marker:text-primary-500">
                       {exp.bullets.map((bullet, j) => (
-                        <li key={j} className="flex items-start gap-2">
-                          <span className="text-primary-500 mt-1.5 print:mt-1">•</span>
-                          <span>{bullet}</span>
+                        <li key={j}>
+                          {bullet}
                         </li>
                       ))}
                     </ul>
