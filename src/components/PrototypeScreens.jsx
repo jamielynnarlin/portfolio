@@ -2183,19 +2183,24 @@ export function EDiscoveryProduction({ onNavigate, onOpenAI }) {
 }
 
 // Main eDiscovery App Container
-export function EDiscoveryApp() {
-  const [currentView, setCurrentView] = useState('eca')
+export function EDiscoveryApp({ currentScreen = 0, onScreenChange }) {
+  const screenIds = ['eca', 'protocol', 'review', 'privilege']
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false)
   const [selectedDocument, setSelectedDocument] = useState(null)
 
+  // Map screen index to view name
+  const currentView = screenIds[currentScreen] || 'eca'
+
   const handleNavigate = (view) => {
-    setCurrentView(view)
+    const index = screenIds.indexOf(view)
+    if (index !== -1 && onScreenChange) {
+      onScreenChange(index)
+    }
     setSelectedDocument(null)
   }
 
   const handleSelectDocument = (doc) => {
     setSelectedDocument(doc)
-    setCurrentView('document')
   }
 
   return (
@@ -2217,17 +2222,8 @@ export function EDiscoveryApp() {
           document={selectedDocument}
           onNavigate={handleNavigate} 
           onOpenAI={() => setAiDrawerOpen(true)}
-          onBack={() => setCurrentView('protocol')}
-          onComplete={() => setCurrentView('protocol')}
-        />
-      )}
-      {currentView === 'document' && (
-        <EDiscoveryDocumentReview 
-          document={selectedDocument}
-          onNavigate={handleNavigate} 
-          onOpenAI={() => setAiDrawerOpen(true)}
-          onBack={() => setCurrentView('review')}
-          onComplete={() => setCurrentView('review')}
+          onBack={() => handleNavigate('protocol')}
+          onComplete={() => handleNavigate('protocol')}
         />
       )}
       {currentView === 'privilege' && (

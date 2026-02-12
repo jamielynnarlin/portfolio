@@ -459,18 +459,13 @@ function Home() {
       {/* Recent Blog Posts */}
       <section className="py-20 px-4 bg-gray-50 dark:bg-gray-800/50">
         <div className="max-w-7xl mx-auto">
-          <div className="flex justify-between items-end mb-12">
-            <div>
-              <h2 className="font-display text-4xl md:text-5xl text-navy-900 dark:text-white uppercase tracking-wide">
-                Insights
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Thoughts on AI, leadership, and building great products
-              </p>
-            </div>
-            <Link to="/blog" className="text-primary-600 dark:text-primary-400 hover:underline font-medium hidden md:block">
-              Read All Articles →
-            </Link>
+          <div className="mb-12">
+            <h2 className="font-display text-4xl md:text-5xl text-navy-900 dark:text-white uppercase tracking-wide">
+              Insights
+            </h2>
+            <p className="text-gray-600 dark:text-gray-400 mt-2">
+              Thoughts on AI, leadership, and building great products
+            </p>
           </div>
           <div className="max-w-2xl mx-auto">
             <BlogCard post={recentPosts[0]} />

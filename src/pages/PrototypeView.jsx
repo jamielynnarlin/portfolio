@@ -142,9 +142,26 @@ export default function PrototypeView() {
           {/* Display Frame - Phone or Desktop */}
           <div className="relative">
             {isEDiscoveryPrototype ? (
-              <DesktopFrame>
-                <EDiscoveryApp />
-              </DesktopFrame>
+              <div 
+                className="cursor-pointer group"
+                onClick={nextScreen}
+              >
+                <DesktopFrame>
+                  <EDiscoveryApp 
+                    currentScreen={currentScreen} 
+                    onScreenChange={(index) => goToScreen(index, index > currentScreen ? 'forward' : 'backward')}
+                  />
+                </DesktopFrame>
+                {/* Click to advance overlay hint */}
+                {currentScreen < 3 && (
+                  <div className="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm text-white text-xs px-3 py-2 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none flex items-center gap-2">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+                    </svg>
+                    Click anywhere to advance
+                  </div>
+                )}
+              </div>
             ) : isDocReviewPrototype ? (
               <DesktopFrame>
                 <div 
@@ -234,24 +251,24 @@ export default function PrototypeView() {
           </div>
 
           {/* Navigation Panel */}
-          <div className="lg:w-80">
+          <div className="lg:w-72">
             {/* Screen Progress */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-              <h3 className="text-white font-semibold mb-4">Screen Flow</h3>
+            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-5 border border-white/10">
+              <h3 className="text-white font-semibold mb-3 text-sm">Screen Flow</h3>
               
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {screenLabels.map((screen, index) => (
                   <button
                     key={index}
                     onClick={() => goToScreen(index, index > currentScreen ? 'forward' : 'backward')}
-                    className={`w-full text-left p-4 rounded-xl transition-all ${
+                    className={`w-full text-left p-3 rounded-lg transition-all ${
                       currentScreen === index
                         ? 'bg-gradient-to-r from-teal-500/20 to-cyan-500/20 border border-teal-500/30'
                         : 'bg-white/5 hover:bg-white/10 border border-transparent'
                     }`}
                   >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
+                    <div className="flex items-start gap-2">
+                      <div className={`w-6 h-6 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0 mt-0.5 transition-all ${
                         currentScreen === index
                           ? 'bg-teal-500 text-white'
                           : currentScreen > index
@@ -259,20 +276,20 @@ export default function PrototypeView() {
                             : 'bg-gray-700 text-gray-400'
                       }`}>
                         {currentScreen > index ? (
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                           </svg>
                         ) : (
                           index + 1
                         )}
                       </div>
-                      <div>
-                        <p className={`font-medium ${
+                      <div className="min-w-0 flex-1">
+                        <p className={`font-medium text-sm leading-tight ${
                           currentScreen === index ? 'text-white' : 'text-gray-400'
                         }`}>
                           {screen.label}
                         </p>
-                        <p className="text-xs text-gray-500 mt-0.5">
+                        <p className="text-xs text-gray-500 mt-0.5 leading-snug">
                           {screen.description}
                         </p>
                       </div>
@@ -282,32 +299,32 @@ export default function PrototypeView() {
               </div>
 
               {/* Navigation Buttons */}
-              <div className="flex gap-3 mt-6">
+              <div className="flex gap-2 mt-4">
                 <button
                   onClick={isInteractivePrototype && currentScreen === 3 ? handleCameraCancel : prevScreen}
                   disabled={currentScreen === 0}
-                  className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
+                  className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-1.5 ${
                     currentScreen === 0
                       ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
                       : 'bg-white/10 text-white hover:bg-white/20'
                   }`}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                   </svg>
-                  {isInteractivePrototype && currentScreen === 3 ? 'Cancel' : 'Back'}
+                  Back
                 </button>
                 <button
                   onClick={nextScreen}
-                  disabled={isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 2}
-                  className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
-                    (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 2)
+                  disabled={isEDiscoveryPrototype ? currentScreen >= 3 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3)}
+                  className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-1.5 ${
+                    (isEDiscoveryPrototype ? currentScreen >= 3 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3))
                       ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
                       : 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-400 hover:to-cyan-400'
                   }`}
                 >
                   Next
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                   </svg>
                 </button>
@@ -315,14 +332,14 @@ export default function PrototypeView() {
             </div>
 
             {/* Feature Highlights */}
-            <div className="mt-6 p-6 bg-gradient-to-br from-teal-500/10 to-cyan-500/10 rounded-2xl border border-teal-500/20">
-              <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
-                <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="mt-4 p-4 bg-gradient-to-br from-teal-500/10 to-cyan-500/10 rounded-xl border border-teal-500/20">
+              <h4 className="text-white font-semibold mb-2 flex items-center gap-2 text-sm">
+                <svg className="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
                 Interactive Features
               </h4>
-              <ul className="space-y-2 text-sm text-gray-400">
+              <ul className="space-y-1.5 text-xs text-gray-400">
                 {isEDiscoveryPrototype ? (
                   <>
                     <li className="flex items-start gap-2">
