@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import ProjectCard from '../components/ProjectCard'
 import BlogCard from '../components/BlogCard'
-import { projects } from '../data/projects'
+import { mvpProjects } from '../data/projects'
 import { blogPosts } from '../data/blogPosts'
 
 function Home() {
-  const featuredProjects = projects.slice(0, 3)
+  const featuredProjects = mvpProjects.slice(0, 3)
   const recentPosts = blogPosts.slice(0, 2)
 
   const skills = [
