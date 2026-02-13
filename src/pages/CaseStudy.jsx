@@ -4639,22 +4639,6 @@ function CaseStudy() {
                                 viewport={{ once: true }}
                                 transition={{ delay: 0.5 }}
                               >
-                                {/* AI Agent badge */}
-                                <motion.div 
-                                  className="absolute -left-4 top-1/2 -translate-y-1/2 -translate-x-full hidden md:flex flex-col items-center gap-1"
-                                  animate={{ x: [0, 3, 0] }}
-                                  transition={{ duration: 1.5, repeat: Infinity }}
-                                >
-                                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
-                                    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                                    </svg>
-                                  </div>
-                                  <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                                  </svg>
-                                </motion.div>
-                                
                                 <div className="bg-amber-500/20 border border-amber-500/40 rounded-lg p-4">
                                   <div className="text-xs text-amber-400 mb-3 flex items-center gap-1.5">
                                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
