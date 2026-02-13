@@ -23,9 +23,13 @@ function App() {
           <Route path="/projects/:slug" element={<CaseStudy />} />
           <Route path="/prototypes" element={<Prototypes />} />
           <Route path="/prototypes/:id" element={<PrototypeView />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:slug" element={<BlogPost />} />
-          <Route path="/about" element={<About />} />
+          {import.meta.env.DEV && (
+            <>
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:slug" element={<BlogPost />} />
+              <Route path="/about" element={<About />} />
+            </>
+          )}
           <Route path="/contact" element={<Contact />} />
           <Route path="/resume" element={<Resume />} />
         </Routes>
