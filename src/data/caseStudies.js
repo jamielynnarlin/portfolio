@@ -933,7 +933,7 @@ export const caseStudies = {
         ],
         codeReviewIntro: {
           title: "LLM Response Handling in Practice",
-          description: "This sample shows how the AI summary and citation components were built to support trust and verification. The code demonstrates the pattern - actual implementation details vary by project."
+          description: "This is a fictional code example created for demonstration purposes only - not actual production code. It illustrates the design patterns we used for AI summaries and citations to support trust and verification."
         },
         showCodeReviewViewer: true
       },
