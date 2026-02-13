@@ -243,40 +243,27 @@ export default function PrototypeView() {
             <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
               <h3 className="text-white font-semibold mb-5">Screen Flow</h3>
               
-              {/* Horizontal step indicators */}
-              <div className="flex items-center justify-between gap-2 mb-5">
+              {/* Screen list */}
+              <div className="space-y-2 mb-5">
                 {screenLabels.map((screen, index) => (
                   <button
                     key={index}
                     onClick={() => goToScreen(index, index > currentScreen ? 'forward' : 'backward')}
-                    className="flex flex-col items-center group"
+                    className={`w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left ${
+                      currentScreen === index
+                        ? 'bg-gradient-to-r from-teal-500/10 to-cyan-500/10 border border-teal-500/20'
+                        : 'hover:bg-white/5'
+                    }`}
                   >
-                    <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all ${currentScreen === index
-                        ? 'bg-teal-500 text-white ring-2 ring-teal-400/50'
-                        : currentScreen > index
-                          ? 'bg-teal-500/60 text-white'
-                          : 'bg-gray-700 text-gray-400 group-hover:bg-gray-600'
-                    }`}>
-                      {currentScreen > index ? (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                        </svg>
-                      ) : (
-                        index + 1
-                      )}
+                    <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm bg-teal-500/20 text-teal-400 shrink-0">
+                      {index + 1}
+                    </div>
+                    <div>
+                      <p className="text-white font-semibold text-sm">{screen.label}</p>
+                      <p className="text-xs text-gray-400">{screen.description}</p>
                     </div>
                   </button>
                 ))}
-              </div>
-
-              {/* Current screen details */}
-              <div className="bg-gradient-to-r from-teal-500/10 to-cyan-500/10 rounded-xl p-4 border border-teal-500/20">
-                <p className="text-white font-semibold mb-2">
-                  {screenLabels[currentScreen]?.label}
-                </p>
-                <p className="text-sm text-gray-400 leading-relaxed">
-                  {screenLabels[currentScreen]?.description}
-                </p>
               </div>
 
               {/* Navigation Buttons */}
