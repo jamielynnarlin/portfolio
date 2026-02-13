@@ -18,8 +18,12 @@ function Footer() {
             <h3 className="font-display text-lg text-navy-900 dark:text-white mb-4 uppercase tracking-wide">Quick Links</h3>
             <ul className="space-y-2">
               <li><Link to="/projects" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Projects</Link></li>
-              <li><Link to="/blog" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Insights</Link></li>
-              <li><Link to="/about" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">About Me</Link></li>
+              {import.meta.env.DEV && (
+                <>
+                  <li><Link to="/blog" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Insights</Link></li>
+                  <li><Link to="/about" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">About Me</Link></li>
+                </>
+              )}
               <li><Link to="/contact" className="text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Contact</Link></li>
             </ul>
           </div>
