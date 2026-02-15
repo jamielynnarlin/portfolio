@@ -255,9 +255,9 @@ export default function PrototypeView() {
                         : 'hover:bg-white/5'
                     }`}
                   >
-                    <div className="w-8 h-8 min-w-[2rem] min-h-[2rem] rounded-full flex items-center justify-center font-bold text-sm bg-teal-500/20 text-teal-400 shrink-0">
+                    <span className="w-8 h-8 aspect-square rounded-full flex items-center justify-center font-bold text-sm bg-teal-500/20 text-teal-400 shrink-0 flex-none">
                       {index + 1}
-                    </div>
+                    </span>
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-semibold text-sm">{screen.label}</p>
                       <p className="text-xs text-gray-400 line-clamp-2">{screen.description}</p>
