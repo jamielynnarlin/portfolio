@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { DashboardScreen } from './PrototypeScreens'
 import { NLPDocumentSearchScreen } from './StaticScreens'
 
@@ -49,12 +49,37 @@ function MonitorMockup({ children }) {
 }
 
 function ProjectCard({ project }) {
+  const navigate = useNavigate()
   const isAIPowered = project.title === "AI Powered Development Workflow"
   const isDesignOps = project.title === "DesignOps Transformation"
   const hasCustomScreen = isAIPowered || isDesignOps
 
+  const handleCardClick = () => {
+    if (project.caseStudyUrl) {
+      navigate(project.caseStudyUrl)
+    }
+  }
+
+  const handleCardKeyDown = (event) => {
+    if (!project.caseStudyUrl) {
+      return
+    }
+
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault()
+      navigate(project.caseStudyUrl)
+    }
+  }
+
   return (
-    <div className="card group">
+    <div
+      className={`card group ${project.caseStudyUrl ? 'cursor-pointer' : ''}`}
+      onClick={handleCardClick}
+      onKeyDown={handleCardKeyDown}
+      role={project.caseStudyUrl ? 'link' : undefined}
+      tabIndex={project.caseStudyUrl ? 0 : undefined}
+      aria-label={project.caseStudyUrl ? `${project.title} case study` : undefined}
+    >
       <div className="aspect-video flex items-center justify-center overflow-hidden relative">
         {project.image ? (
           <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
@@ -88,12 +113,22 @@ function ProjectCard({ project }) {
         <p className="text-gray-600 dark:text-gray-400 mb-4">{project.description}</p>
         <div className="flex space-x-3">
           {project.caseStudyUrl && (
-            <Link to={project.caseStudyUrl} className="text-primary-600 dark:text-primary-400 hover:underline font-medium">
+            <Link
+              to={project.caseStudyUrl}
+              className="text-primary-600 dark:text-primary-400 hover:underline font-medium"
+              onClick={(event) => event.stopPropagation()}
+            >
               View Case Study →
             </Link>
           )}
           {project.liveUrl && (
-            <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="text-gray-600 dark:text-gray-400 hover:underline">
+            <a
+              href={project.liveUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-gray-600 dark:text-gray-400 hover:underline"
+              onClick={(event) => event.stopPropagation()}
+            >
               View Live
             </a>
           )}
