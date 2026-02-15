@@ -1,9 +1,179 @@
 import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, useInView } from 'framer-motion'
+import { useRef } from 'react'
 import ProjectCard from '../components/ProjectCard'
 import BlogCard from '../components/BlogCard'
 import { mvpProjects } from '../data/projects'
 import { blogPosts } from '../data/blogPosts'
+
+// Animated Icon Components
+const AIIcon = ({ inView }) => {
+  const draw = {
+    hidden: { pathLength: 0, opacity: 0 },
+    visible: { pathLength: 1, opacity: 1, transition: { duration: 0.8, ease: "easeOut" } }
+  }
+  const assemble = {
+    hidden: { opacity: 0, y: -10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+  }
+  const pulse = {
+    hidden: { scale: 0, opacity: 0 },
+    visible: { scale: 1, opacity: 1, transition: { duration: 0.4, delay: 0.6, ease: "easeOut" } }
+  }
+  const legs = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4, delay: 0.5 } }
+  }
+
+  return (
+    <motion.svg className="w-12 h-12" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
+      {/* Monitor frame - draws in */}
+      <motion.rect 
+        x="8" y="8" width="32" height="24" rx="2"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={draw}
+      />
+      {/* AI circle - pulses in */}
+      <motion.circle 
+        cx="24" cy="20" r="6"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={pulse}
+      />
+      {/* Connection lines - draw outward */}
+      <motion.path 
+        d="M18 20h-4M34 20h-4M24 14v-4M24 26v4"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={{ hidden: { pathLength: 0, opacity: 0 }, visible: { pathLength: 1, opacity: 1, transition: { duration: 0.5, delay: 0.7 } } }}
+      />
+      {/* Stand - slides up */}
+      <motion.path 
+        d="M16 36h16M20 36v4M28 36v4"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={legs}
+      />
+    </motion.svg>
+  )
+}
+
+const DesignOpsIcon = ({ inView }) => {
+  const lineVariants = (delay) => ({
+    hidden: { pathLength: 0, opacity: 0 },
+    visible: { pathLength: 1, opacity: 1, transition: { duration: 0.6, delay, ease: "easeOut" } }
+  })
+  const nodeVariants = (delay) => ({
+    hidden: { scale: 0, opacity: 0 },
+    visible: { scale: 1, opacity: 1, transition: { duration: 0.3, delay, type: "spring", stiffness: 200 } }
+  })
+
+  return (
+    <motion.svg className="w-12 h-12" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
+      {/* Horizontal lines - draw left to right with stagger */}
+      <motion.path 
+        d="M8 12h32"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={lineVariants(0)}
+      />
+      <motion.path 
+        d="M8 24h32"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={lineVariants(0.15)}
+      />
+      <motion.path 
+        d="M8 36h32"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={lineVariants(0.3)}
+      />
+      {/* Nodes - pop in after lines */}
+      <motion.circle 
+        cx="16" cy="12" r="3"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={nodeVariants(0.5)}
+      />
+      <motion.circle 
+        cx="32" cy="24" r="3"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={nodeVariants(0.6)}
+      />
+      <motion.circle 
+        cx="20" cy="36" r="3"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={nodeVariants(0.7)}
+      />
+    </motion.svg>
+  )
+}
+
+const UXArchitectureIcon = ({ inView }) => {
+  const boxVariants = (delay, fromX, fromY) => ({
+    hidden: { opacity: 0, x: fromX, y: fromY, scale: 0.8 },
+    visible: { opacity: 1, x: 0, y: 0, scale: 1, transition: { duration: 0.5, delay, ease: "easeOut" } }
+  })
+  const connectionVariants = {
+    hidden: { pathLength: 0, opacity: 0 },
+    visible: { pathLength: 1, opacity: 1, transition: { duration: 0.4, delay: 0.6 } }
+  }
+
+  return (
+    <motion.svg className="w-12 h-12" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
+      {/* Four boxes - converge from corners */}
+      <motion.rect 
+        x="6" y="6" width="16" height="12" rx="2"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={boxVariants(0, -8, -8)}
+      />
+      <motion.rect 
+        x="26" y="6" width="16" height="12" rx="2"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={boxVariants(0.1, 8, -8)}
+      />
+      <motion.rect 
+        x="6" y="30" width="16" height="12" rx="2"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={boxVariants(0.2, -8, 8)}
+      />
+      <motion.rect 
+        x="26" y="30" width="16" height="12" rx="2"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={boxVariants(0.3, 8, 8)}
+      />
+      {/* Connection lines - draw after boxes settle */}
+      <motion.path 
+        d="M14 18v12M34 18v12M22 12h4M22 36h4"
+        initial="hidden"
+        animate={inView ? "visible" : "hidden"}
+        variants={connectionVariants}
+      />
+    </motion.svg>
+  )
+}
+
+// Wrapper component to handle inView detection per icon
+const AnimatedSkillIcon = ({ type }) => {
+  const ref = useRef(null)
+  const inView = useInView(ref, { once: true, margin: "-50px" })
+  
+  return (
+    <div ref={ref}>
+      {type === 'ai' && <AIIcon inView={inView} />}
+      {type === 'designops' && <DesignOpsIcon inView={inView} />}
+      {type === 'ux' && <UXArchitectureIcon inView={inView} />}
+    </div>
+  )
+}
 
 function Home() {
   const featuredProjects = mvpProjects.slice(0, 3)
@@ -11,39 +181,17 @@ function Home() {
 
   const skills = [
     {
-      icon: (
-        <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <rect x="8" y="8" width="32" height="24" rx="2" />
-          <circle cx="24" cy="20" r="6" />
-          <path d="M18 20h-4M34 20h-4M24 14v-4M24 26v4" />
-          <path d="M16 36h16M20 36v4M28 36v4" />
-        </svg>
-      ),
+      iconType: 'ai',
       title: "AI for SDLC",
       description: "Implementing AI-powered workflows and agentic systems to accelerate software delivery and enhance team productivity."
     },
     {
-      icon: (
-        <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <path d="M8 12h32M8 24h32M8 36h32" />
-          <circle cx="16" cy="12" r="3" />
-          <circle cx="32" cy="24" r="3" />
-          <circle cx="20" cy="36" r="3" />
-        </svg>
-      ),
+      iconType: 'designops',
       title: "DesignOps",
       description: "Building scalable design operations that bridge the gap between creative vision and efficient delivery at enterprise scale."
     },
     {
-      icon: (
-        <svg className="w-12 h-12" viewBox="0 0 48 48" fill="none" stroke="currentColor" strokeWidth="1.5">
-          <rect x="6" y="6" width="16" height="12" rx="2" />
-          <rect x="26" y="6" width="16" height="12" rx="2" />
-          <rect x="6" y="30" width="16" height="12" rx="2" />
-          <rect x="26" y="30" width="16" height="12" rx="2" />
-          <path d="M14 18v12M34 18v12M22 12h4M22 36h4" />
-        </svg>
-      ),
+      iconType: 'ux',
       title: "UX Architecture",
       description: "Crafting user-centered experiences through research, strategy, and cross-functional collaboration that drives business outcomes."
     },
@@ -331,7 +479,7 @@ function Home() {
             {skills.map((skill, index) => (
               <div key={index} className="text-center">
                 <div className="text-navy-800 dark:text-primary-400 mb-4 flex justify-center">
-                  {skill.icon}
+                  <AnimatedSkillIcon type={skill.iconType} />
                 </div>
                 <h3 className="font-display text-2xl text-navy-900 dark:text-white mb-3 uppercase tracking-wide">
                   {skill.title}
