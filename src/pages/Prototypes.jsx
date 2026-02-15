@@ -161,7 +161,7 @@ function Prototypes() {
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all ${
+                      <span className={`w-8 h-8 aspect-square rounded-full flex items-center justify-center font-bold text-sm transition-all shrink-0 flex-none ${
                         currentScreen === index
                           ? 'bg-teal-500 text-white'
                           : currentScreen > index
@@ -175,8 +175,8 @@ function Prototypes() {
                         ) : (
                           index + 1
                         )}
-                      </div>
-                      <div>
+                      </span>
+                      <div className="flex-1 min-w-0">
                         <p className={`font-medium ${
                           currentScreen === index ? 'text-white' : 'text-gray-400'
                         }`}>
