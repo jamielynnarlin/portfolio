@@ -249,18 +249,18 @@ export default function PrototypeView() {
                   <button
                     key={index}
                     onClick={() => goToScreen(index, index > currentScreen ? 'forward' : 'backward')}
-                    className={`w-full flex items-start gap-3 p-3 rounded-xl transition-all text-left ${
+                    className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left ${
                       currentScreen === index
                         ? 'bg-gradient-to-r from-teal-500/10 to-cyan-500/10 border border-teal-500/20'
                         : 'hover:bg-white/5'
                     }`}
                   >
-                    <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm bg-teal-500/20 text-teal-400 shrink-0">
+                    <div className="w-8 h-8 min-w-[2rem] min-h-[2rem] rounded-full flex items-center justify-center font-bold text-sm bg-teal-500/20 text-teal-400 shrink-0">
                       {index + 1}
                     </div>
-                    <div>
+                    <div className="flex-1 min-w-0">
                       <p className="text-white font-semibold text-sm">{screen.label}</p>
-                      <p className="text-xs text-gray-400">{screen.description}</p>
+                      <p className="text-xs text-gray-400 line-clamp-2">{screen.description}</p>
                     </div>
                   </button>
                 ))}
