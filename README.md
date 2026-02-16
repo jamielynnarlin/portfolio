@@ -4,7 +4,7 @@
 
 **Delivery Lead • UX Professional • AI-Powered Product Development**
 
-[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Site-0ea5e9?style=for-the-badge)](https://jamielynnarlin.github.io/portfolio/)
+[![Live Demo](https://img.shields.io/badge/🌐_Live_Demo-Visit_Site-0ea5e9?style=for-the-badge)](https://jamie-arlin-portfolio-npilnrnspa-uc.a.run.app)
 [![Built with React](https://img.shields.io/badge/React-18.2-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
 [![Styled with Tailwind](https://img.shields.io/badge/Tailwind_CSS-3.3-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Powered by Vite](https://img.shields.io/badge/Vite-5.0-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
@@ -57,7 +57,7 @@ Open **[http://localhost:5173](http://localhost:5173)** to view in browser.
 | **Styling** | Tailwind CSS 3.3 |
 | **Routing** | React Router 6 |
 | **Animations** | CSS Keyframes + Intersection Observer |
-| **Deployment** | GitHub Pages |
+| **Deployment** | Google Cloud Run + GitHub Actions |
 
 ---
 
@@ -124,17 +124,22 @@ Smooth fade-in and slide animations triggered on scroll using Intersection Obser
 | `npm run dev` | Start development server |
 | `npm run build` | Build for production |
 | `npm run preview` | Preview production build |
-| `npm run deploy` | Deploy to GitHub Pages |
+| `npm run deploy` | Legacy GitHub Pages deploy (optional) |
 
 ---
 
 ## 🚢 Deployment
 
-This site is automatically deployed to GitHub Pages. To deploy manually:
+This site is automatically deployed to **Google Cloud Run** via GitHub Actions on every push to `main`.
 
-```bash
-npm run deploy
-```
+- Workflow: `.github/workflows/deploy-cloudrun.yml`
+- Service: `jamie-arlin-portfolio`
+- Region: `us-central1`
+- Live URL: [https://jamie-arlin-portfolio-npilnrnspa-uc.a.run.app](https://jamie-arlin-portfolio-npilnrnspa-uc.a.run.app)
+
+You can monitor deployment runs here:
+
+- GitHub Actions: [https://github.com/jamielynnarlin/portfolio/actions](https://github.com/jamielynnarlin/portfolio/actions)
 
 ---
 
