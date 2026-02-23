@@ -615,8 +615,10 @@ function Home() {
               Thoughts on AI, leadership, and building great products
             </p>
           </div>
-          <div className="max-w-2xl mx-auto">
-            <BlogCard post={recentPosts[0]} />
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            {recentPosts.map(post => (
+              <BlogCard key={post.id} post={post} />
+            ))}
           </div>
         </div>
       </section>

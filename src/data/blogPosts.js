@@ -1,5 +1,15 @@
 export const blogPosts = [
   {
+    id: 4,
+    slug: "built-portfolio-with-ai",
+    title: "I Built My Portfolio Website With AI - Here's What I Learned About Prompting, Delivery, and Owning the Full Stack",
+    excerpt: "How I went from Squarespace to a self-built, self-deployed React application using GitHub Copilot as my AI accelerator - and what the Director / Verifier pattern taught me about owning every decision.",
+    externalUrl: "https://www.linkedin.com/pulse/i-built-my-portfolio-website-ai-heres-what-learned-prompting-arlin-cdrvc/",
+    date: "2026-02-20",
+    readTime: 10,
+    tags: ["AI", "Development", "Portfolio"],
+  },
+  {
     id: 1,
     slug: "building-puppy-tracker-ai",
     title: "Building a Puppy Tracker with AI",
