@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useSpring, useMotionValue, useTransform, useScroll, useInView } from 'framer-motion'
 import { caseStudies } from '../data/caseStudies'
 import { 
   SmallPhoneFrame,
@@ -22,13 +22,15 @@ import {
   DocumentReviewQueueScreen,
   DocumentReviewConversationScreen,
   DocumentTaggingDecisionScreen,
-  EDiscoveryDashboardStatic,
-  EDiscoveryNLCullingStatic,
-  EDiscoveryMultimodalStatic,
-  EDiscoveryDefensibilityStatic,
-  EDiscoveryProductionStatic,
-  EDiscoveryHITLStatic
 } from '../components/StaticScreens'
+import {
+  EDiscoveryDashboard,
+  EDiscoveryReviewQueue,
+  EDiscoveryReviewParams,
+  EDiscoverySubsetResults,
+  EDiscoveryCorpusResults,
+  SentimentBrush,
+} from '../components/PrototypeScreens'
 import { DocumentationViewer } from '../components/DocumentationViewer'
 import { CodeReviewViewer } from '../components/CodeReviewViewer'
 import { WorkflowDiagram } from '../components/WorkflowDiagram'
@@ -97,6 +99,255 @@ const UsersIcon = ({ className }) => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
   </svg>
 )
+
+// Noise texture as inline SVG data URI
+const noiseDataUri = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E")`
+
+// Premium Glassmorphism Pain Point Card with 3D tilt, spotlight border, and center-flip
+function PainPointCard({ story, index, style, icon, isDark }) {
+  const [isFlipped, setIsFlipped] = useState(false)
+  const cardRef = useRef(null)
+  
+  // Extract the primary color from the gradient for the spotlight
+  const glowColorMap = {
+    'from-rose-500': 'rgba(244,63,94,0.4)',
+    'from-emerald-500': 'rgba(16,185,129,0.4)',
+    'from-amber-500': 'rgba(245,158,11,0.4)',
+    'from-sky-500': 'rgba(14,165,233,0.4)',
+    'from-teal-500': 'rgba(20,184,166,0.4)',
+    'from-violet-500': 'rgba(139,92,246,0.4)'
+  }
+  const glowKey = Object.keys(glowColorMap).find(k => style.gradient.includes(k))
+  const glowColor = glowColorMap[glowKey] || 'rgba(139,92,246,0.4)'
+  const glowColorSubtle = glowColor.replace('0.4', '0.08')
+  
+  // Mouse position for spotlight + tilt
+  const mouseX = useMotionValue(0.5)
+  const mouseY = useMotionValue(0.5)
+  
+  // Smooth spring values for tilt
+  const springConfig = { stiffness: 150, damping: 20, mass: 0.5 }
+  const rotateX = useSpring(useTransform(mouseY, [0, 1], [8, -8]), springConfig)
+  const rotateYTilt = useSpring(useTransform(mouseX, [0, 1], [-8, 8]), springConfig)
+  
+  // Spotlight position
+  const spotlightX = useSpring(useTransform(mouseX, [0, 1], [0, 100]), springConfig)
+  const spotlightY = useSpring(useTransform(mouseY, [0, 1], [0, 100]), springConfig)
+  
+  // Pre-computed motion values for spotlight effects (hooks must be at top level)
+  const spotlightBorderBg = useTransform(
+    [spotlightX, spotlightY],
+    ([x, y]) => `radial-gradient(circle at ${x}% ${y}%, ${glowColor}, transparent 60%)`
+  )
+  const spotlightBorderOpacity = useTransform(mouseX, (v) => (v === 0.5 ? 0 : 1))
+  const spotlightInnerBg = useTransform(
+    [spotlightX, spotlightY],
+    ([x, y]) => `radial-gradient(400px circle at ${x}% ${y}%, ${glowColorSubtle}, transparent 60%)`
+  )
+  
+  const handleMouseMove = useCallback((e) => {
+    if (!cardRef.current || isFlipped) return
+    const rect = cardRef.current.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width
+    const y = (e.clientY - rect.top) / rect.height
+    mouseX.set(x)
+    mouseY.set(y)
+  }, [isFlipped, mouseX, mouseY])
+  
+  const handleMouseLeave = useCallback(() => {
+    mouseX.set(0.5)
+    mouseY.set(0.5)
+  }, [mouseX, mouseY])
+
+  const flipSpring = { type: 'spring', stiffness: 300, damping: 30 }
+
+  return (
+    <motion.div
+      ref={cardRef}
+      className="cursor-pointer"
+      style={{ perspective: '1200px' }}
+      initial={{ opacity: 0, y: 30, scale: 0.95 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.08, duration: 0.5, ease: 'easeOut' }}
+      onClick={() => setIsFlipped(!isFlipped)}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+    >
+      <motion.div
+        className="relative w-full h-[320px] md:h-[300px]"
+        animate={{ rotateY: isFlipped ? 180 : 0 }}
+        transition={flipSpring}
+        style={{
+          transformStyle: 'preserve-3d',
+          rotateX: isFlipped ? 0 : rotateX,
+          rotateY: isFlipped ? 180 : rotateYTilt,
+        }}
+      >
+        {/* ---- FRONT FACE ---- */}
+        <motion.div
+          className="absolute inset-0 rounded-2xl overflow-hidden"
+          style={{ backfaceVisibility: 'hidden' }}
+        >
+          {/* Spotlight border glow */}
+          <motion.div
+            className="absolute -inset-[1px] rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+            style={{
+              background: spotlightBorderBg,
+              opacity: spotlightBorderOpacity,
+            }}
+          />
+          
+          {/* Living border */}
+          <div
+            className="absolute inset-0 rounded-2xl pointer-events-none"
+            style={{
+              padding: '1px',
+              background: `linear-gradient(var(--border-angle, 0deg), ${glowColor}, transparent 40%, ${glowColor})`,
+              mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              maskComposite: 'exclude',
+              WebkitMaskComposite: 'xor',
+              animation: 'borderRotate 4s linear infinite',
+            }}
+          />
+          
+          {/* Card surface - elevated from background */}
+          <div className={`relative h-full rounded-2xl ${isDark ? 'bg-slate-800/60 shadow-xl shadow-black/30' : 'bg-white/80 dark:bg-slate-800/60 shadow-xl shadow-black/10 dark:shadow-black/30'} backdrop-blur-xl border border-white/[0.08] overflow-hidden`}>
+            {/* Noise overlay */}
+            <div
+              className="absolute inset-0 rounded-2xl pointer-events-none"
+              style={{ backgroundImage: noiseDataUri, backgroundRepeat: 'repeat', backgroundSize: '128px 128px', opacity: 0.04 }}
+            />
+            
+            {/* Spotlight follow */}
+            <motion.div
+              className="absolute inset-0 pointer-events-none rounded-2xl"
+              style={{
+                background: spotlightInnerBg,
+              }}
+            />
+            
+            {/* Top accent line */}
+            <div className={`h-[2px] w-full bg-gradient-to-r ${style.gradient}`} />
+            
+            <div className="relative p-6 flex flex-col h-[calc(100%-2px)]">
+              {/* Icon + Category */}
+              <div className="flex items-center justify-between mb-5">
+                <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${style.gradient} flex items-center justify-center text-white shadow-lg shadow-black/20`}>
+                  {icon}
+                </div>
+                <span className={`text-[10px] font-bold uppercase tracking-wider px-3 py-1.5 rounded-full border ${isDark ? `${style.tag} border-white/10` : `${style.tag} border-white/20 dark:border-white/10`}`}>
+                  {story.category}
+                </span>
+              </div>
+              
+              {/* Role */}
+              <h4 className={`text-lg font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>{story.role}</h4>
+              
+              {/* Pain point teaser */}
+              <p className={`text-sm leading-relaxed line-clamp-3 ${isDark ? 'text-slate-400' : 'text-gray-500 dark:text-slate-400'}`}>
+                "{story.painPoint.split('.')[0]}."
+              </p>
+              
+              {/* Bottom flip hint */}
+              <div className="mt-auto pt-4">
+                <div className={`flex items-center gap-2 ${isDark ? 'text-slate-600' : 'text-gray-300 dark:text-slate-600'}`}>
+                  <div className={`h-px flex-1 bg-gradient-to-r from-transparent ${isDark ? 'via-slate-600' : 'via-gray-200 dark:via-slate-600'} to-transparent`} />
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  <div className={`h-px flex-1 bg-gradient-to-r from-transparent ${isDark ? 'via-slate-600' : 'via-gray-200 dark:via-slate-600'} to-transparent`} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+        
+        {/* ---- BACK FACE ---- */}
+        <div
+          className="absolute inset-0 rounded-2xl overflow-hidden"
+          style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+        >
+          {/* Living border for back */}
+          <div
+            className="absolute inset-0 rounded-2xl pointer-events-none"
+            style={{
+              padding: '1px',
+              background: `linear-gradient(var(--border-angle, 0deg), ${glowColor}, transparent 40%, ${glowColor})`,
+              mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+              maskComposite: 'exclude',
+              WebkitMaskComposite: 'xor',
+              animation: 'borderRotate 4s linear infinite',
+            }}
+          />
+          
+          {/* Card surface - back face slightly different shade for perception of depth */}
+          <div className={`relative h-full rounded-2xl ${isDark ? 'bg-slate-800/70 shadow-2xl shadow-black/40' : 'bg-white/90 dark:bg-slate-800/70 shadow-2xl shadow-black/15 dark:shadow-black/40'} backdrop-blur-xl border border-white/[0.08] overflow-hidden`}>
+            {/* Noise overlay */}
+            <div
+              className="absolute inset-0 rounded-2xl pointer-events-none"
+              style={{ backgroundImage: noiseDataUri, backgroundRepeat: 'repeat', backgroundSize: '128px 128px', opacity: 0.04 }}
+            />
+            
+            {/* Top accent line - full opacity on back */}
+            <div className={`h-[2px] w-full bg-gradient-to-r ${style.gradient}`} />
+            
+            <div className="relative p-5 flex flex-col h-[calc(100%-2px)]">
+              {/* Pain point quote - compact */}
+              <div className="mb-4">
+                <div className="flex items-start gap-2.5">
+                  <svg className={`w-4 h-4 mt-0.5 shrink-0 ${style.icon} opacity-60`} fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983z" />
+                  </svg>
+                  <div>
+                    <span className={`text-[10px] font-bold uppercase tracking-wider mb-1 block ${isDark ? 'text-slate-500' : 'text-gray-400 dark:text-slate-500'}`}>{story.role}</span>
+                    <p className={`text-[13px] leading-relaxed italic ${isDark ? 'text-slate-300' : 'text-gray-600 dark:text-slate-300'}`}>
+                      "{story.painPoint}"
+                    </p>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Gradient divider with arrow */}
+              <div className="flex items-center gap-2 mb-3">
+                <div className={`h-px flex-1 bg-gradient-to-r from-transparent ${isDark ? `via-white/10` : 'via-gray-200 dark:via-white/10'} to-transparent`} />
+                <div className={`w-5 h-5 rounded-full bg-gradient-to-br ${style.gradient} flex items-center justify-center shadow-sm`}>
+                  <svg className="w-2.5 h-2.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                </div>
+                <div className={`h-px flex-1 bg-gradient-to-r from-transparent ${isDark ? `via-white/10` : 'via-gray-200 dark:via-white/10'} to-transparent`} />
+              </div>
+              
+              {/* Design Response - gradient pill treatment */}
+              <div className={`flex-1 rounded-xl p-4 border ${isDark ? 'bg-gradient-to-br from-white/[0.04] to-white/[0.02] border-white/[0.06]' : 'bg-gradient-to-br from-gray-50 to-white border-gray-200/50 dark:from-white/[0.04] dark:to-white/[0.02] dark:border-white/[0.06]'}`}>
+                <div className="flex items-start gap-2.5">
+                  <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${style.gradient} flex items-center justify-center shrink-0 mt-0.5 shadow-md`}>
+                    <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <p className={`text-[13px] font-medium leading-relaxed ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                    {story.designResponse}
+                  </p>
+                </div>
+              </div>
+              
+              {/* Flip back hint */}
+              <div className="mt-3 flex justify-end">
+                <div className={`flex items-center gap-1 ${isDark ? 'text-slate-600' : 'text-gray-300 dark:text-slate-600'}`}>
+                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
 
 // Interactive Feature Pills Component for Screen Gallery
 function FeaturePills({ bullets, index }) {
@@ -751,12 +1002,12 @@ function BeforeAfterComparison({ beforeAfter }) {
 }
 
 // Combined Review Section - Before/After with Concern Mapping
-function CombinedReviewSection({ data }) {
+function CombinedReviewSection({ data, isDark }) {
   const [hoveredRow, setHoveredRow] = useState(null)
-  
   return (
     <div className="mt-8 space-y-10">
       {/* Before/After Cards */}
+      {data.beforeAfter && (
       <div className="grid md:grid-cols-2 gap-6">
         {/* Before - Manual Review */}
         <motion.div
@@ -828,159 +1079,812 @@ function CombinedReviewSection({ data }) {
           </div>
         </motion.div>
       </div>
+      )}
 
-      {/* Concern to Feature Mapping */}
+      {/* Concern → Feature → Outcome Mapping - Visual Flow */}
       <motion.div
-        className="bg-gradient-to-br from-slate-900/90 to-slate-800/90 backdrop-blur rounded-2xl border border-slate-600/50 overflow-hidden"
+        className="rounded-2xl"
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        <div className="px-6 py-4 border-b border-slate-600/50 bg-slate-800/60">
-          <h4 className="text-base font-semibold text-white">How We Earned Trust</h4>
-          <p className="text-sm text-slate-300 mt-1">Each concern became a design requirement</p>
+        {/* Column Headers */}
+        <div className="grid grid-cols-3 gap-4 md:gap-6 mb-4 px-2">
+          <div className="flex items-center gap-2">
+            <svg className={`w-4 h-4 ${isDark ? 'text-rose-400' : 'text-rose-500 dark:text-rose-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
+            <span className={`text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-rose-300' : 'text-rose-600 dark:text-rose-300'}`}>Attorney Fear</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <svg className={`w-4 h-4 ${isDark ? 'text-teal-400' : 'text-teal-600 dark:text-teal-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" />
+            </svg>
+            <span className={`text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-teal-300' : 'text-teal-700 dark:text-teal-300'}`}>Design Requirement</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <svg className={`w-4 h-4 ${isDark ? 'text-emerald-400' : 'text-emerald-600 dark:text-emerald-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className={`text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-emerald-300' : 'text-emerald-700 dark:text-emerald-300'}`}>Outcome</span>
+          </div>
         </div>
-        <div className="divide-y divide-slate-600/30">
-          {data.concernMapping.map((row, i) => (
-            <motion.div
-              key={i}
-              className={`grid grid-cols-1 md:grid-cols-[1fr,auto,1fr,auto,1fr] gap-3 md:gap-4 items-center px-6 py-4 transition-colors duration-200 ${
-                hoveredRow === i ? 'bg-slate-700/40' : ''
-              }`}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: 0.3 + 0.05 * i }}
-              onMouseEnter={() => setHoveredRow(i)}
-              onMouseLeave={() => setHoveredRow(null)}
-            >
-              {/* Concern */}
-              <div className="text-left">
-                <span className="text-sm text-amber-200 font-medium">{row.concern}</span>
-              </div>
-              
-              {/* Arrow 1 */}
-              <div className="hidden md:flex items-center justify-center text-slate-500">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </div>
-              
-              {/* Feature */}
-              <div className="text-left pl-4 md:pl-0">
-                <span className="text-sm text-teal-200 font-medium">{row.feature}</span>
-              </div>
-              
-              {/* Arrow 2 */}
-              <div className="hidden md:flex items-center justify-center text-slate-500">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-              </div>
-              
-              {/* Outcome */}
-              <div className="text-left pl-4 md:pl-0">
-                <span className="text-sm text-emerald-200 font-medium">{row.outcome}</span>
-              </div>
-            </motion.div>
-          ))}
+        
+        {/* Mapping Rows */}
+        <div className="space-y-3">
+          {data.concernMapping.map((row, i) => {
+            const rowColors = isDark ? [
+              { concern: 'from-rose-500/20 to-rose-500/5 border-rose-500/30', active: 'from-rose-500/40 to-rose-500/15 border-rose-400/60', text: 'text-rose-100' },
+              { concern: 'from-amber-500/20 to-amber-500/5 border-amber-500/30', active: 'from-amber-500/40 to-amber-500/15 border-amber-400/60', text: 'text-amber-100' },
+              { concern: 'from-orange-500/20 to-orange-500/5 border-orange-500/30', active: 'from-orange-500/40 to-orange-500/15 border-orange-400/60', text: 'text-orange-100' },
+              { concern: 'from-red-500/20 to-red-500/5 border-red-500/30', active: 'from-red-500/40 to-red-500/15 border-red-400/60', text: 'text-red-100' },
+              { concern: 'from-pink-500/20 to-pink-500/5 border-pink-500/30', active: 'from-pink-500/40 to-pink-500/15 border-pink-400/60', text: 'text-pink-100' },
+            ] : [
+              { concern: 'from-rose-100 to-rose-50 border-rose-300', active: 'from-rose-200 to-rose-100 border-rose-400', text: 'text-rose-800' },
+              { concern: 'from-amber-100 to-amber-50 border-amber-300', active: 'from-amber-200 to-amber-100 border-amber-400', text: 'text-amber-800' },
+              { concern: 'from-orange-100 to-orange-50 border-orange-300', active: 'from-orange-200 to-orange-100 border-orange-400', text: 'text-orange-800' },
+              { concern: 'from-red-100 to-red-50 border-red-300', active: 'from-red-200 to-red-100 border-red-400', text: 'text-red-800' },
+              { concern: 'from-pink-100 to-pink-50 border-pink-300', active: 'from-pink-200 to-pink-100 border-pink-400', text: 'text-pink-800' },
+            ]
+            const color = rowColors[i % rowColors.length]
+            const isActive = hoveredRow === i
+            const isDimmed = hoveredRow !== null && hoveredRow !== i
+            
+            return (
+              <motion.div
+                key={i}
+                className={`grid grid-cols-3 gap-2 md:gap-3 items-stretch cursor-pointer transition-all duration-300 ${isDimmed ? 'opacity-30 scale-[0.98]' : 'opacity-100 scale-100'} ${isActive ? 'scale-[1.02]' : ''}`}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: 0.1 + 0.08 * i }}
+                onMouseEnter={() => setHoveredRow(i)}
+                onMouseLeave={() => setHoveredRow(null)}
+              >
+                {/* Concern Node */}
+                <div className={`rounded-xl bg-gradient-to-r ${isActive ? color.active : color.concern} border px-3 py-3 md:px-4 md:py-3.5 flex items-center transition-all duration-300 ${isActive ? 'shadow-lg' : ''}`}>
+                  <span className={`text-[13px] font-semibold ${color.text} leading-tight`}>{row.concern}</span>
+                </div>
+                
+                {/* Feature Node */}
+                <div className={`rounded-xl border px-3 py-3 md:px-4 md:py-3.5 flex items-center transition-all duration-300 ${
+                  isDark 
+                    ? (isActive ? 'bg-gradient-to-r from-teal-500/40 to-teal-500/15 border-teal-400/60 shadow-lg' : 'bg-gradient-to-r from-teal-500/20 to-teal-500/5 border-teal-500/30')
+                    : (isActive ? 'bg-gradient-to-r from-teal-200 to-teal-100 border-teal-400 shadow-lg' : 'bg-gradient-to-r from-teal-100 to-teal-50 border-teal-300')
+                }`}>
+                  <span className={`text-[13px] font-semibold leading-tight ${isDark ? 'text-teal-100' : 'text-teal-800'}`}>{row.feature}</span>
+                </div>
+                
+                {/* Outcome Node */}
+                <div className={`rounded-xl border px-3 py-3 md:px-4 md:py-3.5 flex items-center transition-all duration-300 ${
+                  isDark 
+                    ? (isActive ? 'bg-gradient-to-r from-emerald-500/40 to-emerald-500/15 border-emerald-400/60 shadow-lg' : 'bg-gradient-to-r from-emerald-500/20 to-emerald-500/5 border-emerald-500/30')
+                    : (isActive ? 'bg-gradient-to-r from-emerald-200 to-emerald-100 border-emerald-400 shadow-lg' : 'bg-gradient-to-r from-emerald-100 to-emerald-50 border-emerald-300')
+                }`}>
+                  <span className={`text-[13px] font-semibold leading-tight ${isDark ? 'text-emerald-100' : 'text-emerald-800'}`}>{row.outcome}</span>
+                </div>
+              </motion.div>
+            )
+          })}
         </div>
       </motion.div>
     </div>
   )
 }
 
+// Scaled wrapper for rendering full-size prototype screens inside thumbnail frames
+function ScaledPrototypeScreen({ children }) {
+  return (
+    <div className="relative w-full overflow-hidden pointer-events-none select-none" style={{ height: '280px' }}>
+      <div style={{ 
+        transform: 'scale(0.35)', 
+        transformOrigin: 'top left', 
+        width: '285.7%', 
+        height: '285.7%',
+        position: 'absolute',
+        top: 0,
+        left: 0
+      }}>
+        {children}
+      </div>
+    </div>
+  )
+}
+
+// Citation-Led Review Screen - full-size component matching prototype design language
+function EDiscoveryCitationReview() {
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      {/* Sidebar */}
+      <div className="w-14 bg-slate-900 border-r border-slate-800 flex flex-col items-center py-3">
+        <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg flex items-center justify-center mb-4">
+          <svg className="w-5 h-5 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+          </svg>
+        </div>
+        <div className="flex-1 flex flex-col gap-1">
+          {['eca', 'protocol', 'subset', 'results'].map((id, i) => (
+            <div key={id} className={`w-10 h-10 rounded-lg flex items-center justify-center ${i === 3 ? 'bg-teal-500/20 text-teal-400' : 'text-slate-600'}`}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={
+                  i === 0 ? 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' :
+                  i === 1 ? 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' :
+                  i === 2 ? 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4' :
+                  'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
+                } />
+              </svg>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex-1 flex overflow-hidden">
+        {/* Document Panel */}
+        <div className="w-3/5 flex flex-col border-r border-slate-800">
+          {/* Header */}
+          <div className="bg-slate-900 px-4 py-2.5 border-b border-slate-800">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-white">RE: Q4 Revenue Discussion</span>
+                <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] rounded-full font-medium">Verified</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] text-slate-500">NEXUS000234</span>
+                <span className="text-[10px] text-slate-500">Doc 47 of 312</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              {['Text', 'Native', 'Metadata', 'Family'].map((tab, i) => (
+                <button
+                  key={tab}
+                  className={`px-3 py-1 rounded-md text-xs font-medium transition-colors ${
+                    i === 0 ? 'bg-teal-500/20 text-teal-400' : 'text-slate-500 hover:text-slate-300'
+                  }`}
+                >
+                  {tab}
+                </button>
+              ))}
+            </div>
+          </div>
+          
+          {/* Document Content */}
+          <div className="flex-1 overflow-y-auto p-4">
+            <div className="bg-white rounded-xl p-5 text-slate-900 text-sm leading-relaxed shadow-lg">
+              <div className="border-b border-slate-200 pb-3 mb-4 text-xs space-y-0.5">
+                <p><span className="font-semibold text-slate-700">From:</span> <span className="text-slate-600">J. Martinez &lt;jmartinez@acme.com&gt;</span></p>
+                <p><span className="font-semibold text-slate-700">To:</span> <span className="text-slate-600">CFO, Controller</span></p>
+                <p><span className="font-semibold text-slate-700">Date:</span> <span className="text-slate-600">December 12, 2024 at 3:47 PM</span></p>
+                <p><span className="font-semibold text-slate-700">Subject:</span> <span className="text-slate-600">RE: Q4 Revenue Recognition - Updated Schedule</span></p>
+              </div>
+              <div className="space-y-3">
+                <p>Per our discussion yesterday, I've attached the <span className="bg-amber-200/80 px-1 py-0.5 rounded cursor-pointer hover:bg-amber-300/80 transition-colors">revised revenue recognition schedule</span> incorporating the adjustments we discussed with the board.</p>
+                <p>The <span className="bg-violet-200/80 px-1 py-0.5 rounded cursor-pointer hover:bg-violet-300/80 transition-colors">timing adjustments to the Q4 cutoff</span> should address the concerns raised during last week's audit review. I've cross-referenced with the prior year treatment and believe we have defensible support.</p>
+                <p>Please confirm before I circulate to the <span className="bg-teal-200/80 px-1 py-0.5 rounded cursor-pointer hover:bg-teal-300/80 transition-colors">audit committee</span> for their December 18th meeting. If you have any questions about the methodology changes, happy to walk through the details.</p>
+                <p className="text-slate-500 text-xs mt-4">Best regards,<br />Jennifer Martinez<br />Senior Financial Analyst</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* AI Insights Panel */}
+        <div className="flex-1 flex flex-col bg-slate-900/30">
+          <div className="px-4 py-2.5 border-b border-slate-800 flex items-center gap-2">
+            <svg className="w-4 h-4 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+            </svg>
+            <span className="text-xs font-semibold text-white">AI Insights</span>
+            <span className="ml-auto px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] rounded-full font-medium flex items-center gap-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+              No Hallucination
+            </span>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-3 space-y-3">
+            {/* Confidence Meter */}
+            <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[10px] text-slate-400 uppercase tracking-wider font-medium">Relevance Score</span>
+                <span className="text-lg font-bold text-emerald-400">94%</span>
+              </div>
+              <div className="h-2 bg-slate-700 rounded-full">
+                <div className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full" style={{ width: '94%' }} />
+              </div>
+            </div>
+
+            {/* AI Rationale */}
+            <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700">
+              <span className="text-[10px] text-violet-400 font-semibold uppercase tracking-wider">AI Rationale</span>
+              <p className="text-xs text-slate-300 mt-2 leading-relaxed">
+                Discusses <span className="text-amber-400 font-medium">revenue recognition timing</span> adjustments with executive leadership. Direct reference to <span className="text-violet-400 font-medium">audit committee review</span>. High relevance to investigation scope regarding financial reporting practices.
+              </p>
+            </div>
+
+            {/* Live Citations */}
+            <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700">
+              <span className="text-[10px] text-violet-400 font-semibold uppercase tracking-wider">Live Citations</span>
+              <div className="mt-2 space-y-1.5">
+                {[
+                  { text: '"revised revenue recognition schedule"', color: 'bg-amber-400' },
+                  { text: '"timing adjustments to the Q4 cutoff"', color: 'bg-violet-400' },
+                  { text: '"audit committee"', color: 'bg-teal-400' }
+                ].map((cite, i) => (
+                  <div key={i} className="flex items-center gap-2 p-2 bg-slate-900/50 rounded-lg text-xs">
+                    <span className={`w-2 h-2 rounded-full ${cite.color} shrink-0`} />
+                    <span className="text-slate-300 font-mono text-[10px] truncate">{cite.text}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Classification */}
+            <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-700">
+              <span className="text-[10px] text-violet-400 font-semibold uppercase tracking-wider">Suggested Classification</span>
+              <div className="mt-2 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-400">Responsive</span>
+                  <span className="text-emerald-400 font-medium">Yes (94%)</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-400">Privileged</span>
+                  <span className="text-slate-500">No (98%)</span>
+                </div>
+                <div className="flex items-center justify-between text-xs">
+                  <span className="text-slate-400">Hot Document</span>
+                  <span className="text-amber-400 font-medium">Review (72%)</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="p-3 border-t border-slate-800 flex gap-2">
+            <button className="flex-1 py-2 bg-teal-500 rounded-lg text-xs font-bold text-slate-900 hover:bg-teal-400 transition-colors">Accept & Next</button>
+            <button className="py-2 px-3 bg-slate-700 rounded-lg text-xs font-medium text-slate-300 hover:bg-slate-600 transition-colors">Override</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Privilege Log Generator - full-size component matching prototype design language
+function EDiscoveryPrivilegeLog() {
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      {/* Sidebar */}
+      <div className="w-14 bg-slate-900 border-r border-slate-800 flex flex-col items-center py-3">
+        <div className="w-8 h-8 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-lg flex items-center justify-center mb-4">
+          <svg className="w-5 h-5 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+          </svg>
+        </div>
+        <div className="flex-1 flex flex-col gap-1">
+          {['eca', 'protocol', 'subset', 'results'].map((id, i) => (
+            <div key={id} className="w-10 h-10 rounded-lg flex items-center justify-center text-slate-600">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={
+                  i === 0 ? 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' :
+                  i === 1 ? 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' :
+                  i === 2 ? 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4' :
+                  'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
+                } />
+              </svg>
+            </div>
+          ))}
+        </div>
+      </div>
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
+          <div>
+            <h1 className="text-sm font-semibold text-white">Privilege Log Generator</h1>
+            <p className="text-[10px] text-slate-400">234 documents - AI descriptions ready</p>
+          </div>
+          <button className="px-3 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-lg text-xs font-medium text-white">
+            Regenerate All
+          </button>
+        </div>
+
+        {/* Progress */}
+        <div className="px-4 py-2.5 bg-slate-900/50 border-b border-slate-800">
+          <div className="flex items-center justify-between mb-1">
+            <span className="text-[10px] text-slate-400">Review Progress</span>
+            <span className="text-[10px] text-teal-400 font-medium">198/234 (85%)</span>
+          </div>
+          <div className="h-1.5 bg-slate-800 rounded-full">
+            <div className="h-full bg-gradient-to-r from-teal-500 to-cyan-400 rounded-full transition-all" style={{ width: '85%' }} />
+          </div>
+        </div>
+
+        {/* Batch Actions */}
+        <div className="px-4 py-2 bg-slate-800/30 border-b border-slate-800 flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            <input type="checkbox" className="w-3.5 h-3.5 rounded border-slate-600 bg-slate-800" readOnly />
+            <span className="text-xs text-slate-400">3 selected</span>
+          </div>
+          <button className="px-2.5 py-1 bg-emerald-500/20 text-emerald-400 text-xs rounded-md font-medium flex items-center gap-1">
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+            Approve
+          </button>
+          <button className="px-2.5 py-1 bg-amber-500/20 text-amber-400 text-xs rounded-md font-medium">Edit</button>
+        </div>
+
+        {/* Document List */}
+        <div className="flex-1 overflow-y-auto">
+          {[
+            { bates: 'NEXUS000234', title: 'Email: Legal Strategy', type: 'Attorney-Client', conf: 96, approved: true },
+            { bates: 'NEXUS000456', title: 'Memo: Lit Hold Analysis', type: 'Work Product', conf: 94, approved: true },
+            { bates: 'NEXUS000789', title: 'Draft: Board Notes', type: 'Attorney-Client', conf: 87, approved: false },
+          ].map((doc, i) => (
+            <div key={i} className={`px-4 py-3 border-b border-slate-800/50 ${!doc.approved ? 'bg-amber-500/5 border-l-2 border-l-amber-500' : ''}`}>
+              <div className="flex items-start gap-3">
+                <input type="checkbox" className="w-3.5 h-3.5 rounded border-slate-600 bg-slate-800 mt-1" defaultChecked={doc.approved} />
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 mb-1">
+                    <span className="text-[10px] font-mono text-slate-500">{doc.bates}</span>
+                    <span className={`px-2 py-0.5 text-[10px] rounded-full font-medium ${
+                      doc.type === 'Attorney-Client' ? 'bg-violet-500/20 text-violet-400' : 'bg-amber-500/20 text-amber-400'
+                    }`}>{doc.type}</span>
+                  </div>
+                  <h4 className="text-xs font-medium text-white mb-2">{doc.title}</h4>
+                  <div className="bg-slate-800/50 rounded-lg p-2.5 border border-slate-700">
+                    <div className="flex items-center gap-1 mb-1">
+                      <svg className="w-3 h-3 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+                      </svg>
+                      <span className="text-[10px] text-violet-400 font-medium">AI-Drafted ({doc.conf}%)</span>
+                    </div>
+                    <p className="text-xs text-slate-300 leading-relaxed">
+                      Communication between counsel and executives regarding compliance matters.
+                    </p>
+                  </div>
+                </div>
+                <span className={`px-2 py-1 text-[10px] rounded-md font-medium shrink-0 ${
+                  doc.approved ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-400'
+                }`}>
+                  {doc.approved ? 'Approved' : 'Review'}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Footer */}
+        <div className="bg-slate-900 px-4 py-2.5 border-t border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-3 text-xs">
+            <span className="flex items-center gap-1.5"><span className="w-2 h-2 bg-emerald-400 rounded-full" />198 Approved</span>
+            <span className="flex items-center gap-1.5"><span className="w-2 h-2 bg-amber-400 rounded-full" />36 Pending</span>
+          </div>
+          <button className="px-4 py-2 bg-teal-500 rounded-lg text-xs font-bold text-slate-900 hover:bg-teal-400 transition-colors">
+            Generate Log
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Feature Spotlight: Interactive Concept Map with Cross-Filtering
+function CrossFilteringSpotlight() {
+  const [brushRange, setBrushRange] = useState(null)
+
+  const allClusters = useMemo(() => [
+    { id: 1, label: 'Financial Disclosures', docs: 1234, x: 25, y: 28, color: 'from-teal-400 to-cyan-400', size: 56, activeRange: [0, 20] },
+    { id: 2, label: 'Executive Comms', docs: 892, x: 62, y: 22, color: 'from-violet-400 to-indigo-400', size: 44, activeRange: [5, 25] },
+    { id: 3, label: 'Audit Reports', docs: 456, x: 74, y: 58, color: 'from-amber-400 to-orange-400', size: 34, activeRange: [10, 29] },
+    { id: 4, label: 'Legal Holds', docs: 234, x: 18, y: 68, color: 'from-rose-400 to-pink-400', size: 28, activeRange: [0, 12] },
+    { id: 5, label: 'Board Minutes', docs: 189, x: 48, y: 72, color: 'from-emerald-400 to-green-400', size: 24, activeRange: [8, 18] },
+  ], [])
+
+  const overlaps = useCallback((itemRange, brush) => {
+    if (!brush) return true
+    return itemRange[0] <= brush.end && itemRange[1] >= brush.start
+  }, [])
+
+  const visibleClusters = useMemo(
+    () => allClusters.filter(c => overlaps(c.activeRange, brushRange)),
+    [allClusters, brushRange, overlaps]
+  )
+
+  return (
+    <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+      <div className="px-4 py-2.5 border-b border-slate-800 flex items-center gap-2">
+        <span className="text-[11px] font-medium text-white">Document Concept Map</span>
+        <span className="px-1.5 py-0.5 bg-violet-500/20 text-violet-400 text-[8px] rounded-full font-medium">AI-Generated</span>
+      </div>
+      <div className="relative p-4" style={{ height: '240px' }}>
+        <svg className="absolute inset-0 w-full h-full pointer-events-none">
+          <line x1="25%" y1="28%" x2="62%" y2="22%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+          <line x1="62%" y1="22%" x2="74%" y2="58%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+          <line x1="25%" y1="28%" x2="18%" y2="68%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+          <line x1="48%" y1="72%" x2="18%" y2="68%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+          <line x1="62%" y1="22%" x2="48%" y2="72%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+        </svg>
+        <AnimatePresence>
+        {visibleClusters.map((cluster) => (
+          <motion.div
+            key={cluster.id}
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            transition={{ duration: 0.3 }}
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 group cursor-default"
+            style={{ left: `${cluster.x}%`, top: `${cluster.y}%` }}
+          >
+            <div
+              className={`bg-gradient-to-br ${cluster.color} rounded-full flex items-center justify-center opacity-80 group-hover:opacity-100 transition-all group-hover:scale-110`}
+              style={{ width: `${cluster.size}px`, height: `${cluster.size}px` }}
+            >
+              <span className="text-[9px] font-bold text-slate-900">{cluster.docs}</span>
+            </div>
+            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 whitespace-nowrap">
+              <span className="text-[9px] text-slate-400 group-hover:text-white transition-colors">{cluster.label}</span>
+            </div>
+          </motion.div>
+        ))}
+        </AnimatePresence>
+        {brushRange && visibleClusters.length < allClusters.length && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="absolute bottom-2 right-3 text-[9px] text-teal-400 bg-teal-500/10 px-2 py-1 rounded border border-teal-500/20"
+          >
+            {visibleClusters.length} of {allClusters.length} clusters in range
+          </motion.div>
+        )}
+      </div>
+      <div className="px-4 pb-4">
+        <SentimentBrush onBrushChange={setBrushRange} />
+      </div>
+    </div>
+  )
+}
+
+// Feature Spotlight: Semantic Expansion in Protocol Builder
+function SemanticExpansionSpotlight() {
+  const expansions = [
+    { keyword: 'revenue', count: 12, terms: ['Earnings', 'GAAP', 'Q4 Reports', 'Revenue Recognition'] },
+    { keyword: 'audit', count: 8, terms: ['Audit Committee', 'External Auditor', 'SOX Compliance'] },
+    { keyword: 'privilege', count: 6, terms: ['Attorney-Client', 'Work Product', 'Legal Hold'] },
+  ]
+
+  return (
+    <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+      <div className="px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+        <span className="text-[11px] font-medium text-white">Review Instructions</span>
+        <span className="text-[9px] text-violet-400 flex items-center gap-1">
+          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+          </svg>
+          AI parsing active
+        </span>
+      </div>
+      <div className="p-4">
+        {/* Semantic expansion pills */}
+        <div className="mb-3 flex flex-wrap gap-1.5">
+          {expansions.map((exp, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 + i * 0.12 }}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-violet-500/10 border border-violet-500/20 rounded-full"
+            >
+              <svg className="w-2.5 h-2.5 text-violet-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+              </svg>
+              <span className="text-[9px] text-violet-300 font-medium">"{exp.keyword}"</span>
+              <span className="text-[9px] text-violet-400">+ {exp.count} related</span>
+              <span className="text-[8px] text-slate-500">({exp.terms.slice(0, 2).join(', ')}...)</span>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Conflict warning */}
+        <motion.div
+          initial={{ opacity: 0, y: -4 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5 }}
+          className="mb-3 px-3 py-2 rounded-lg border bg-blue-500/10 border-blue-500/20 text-blue-400 text-[10px] flex items-center gap-2"
+        >
+          <svg className="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+          </svg>
+          "Find all" is broad - "exclude routine" may discard relevant documents
+        </motion.div>
+
+        {/* Protocol text with highlighted keywords */}
+        <div className="bg-slate-900 rounded-lg p-4 border border-slate-800 font-mono text-[11px] text-slate-300 leading-relaxed">
+          <p>Find all documents that discuss <span className="text-teal-400 bg-teal-500/10 px-0.5 rounded">revenue</span> recognition timing, Q4 financial results, or communications with external <span className="text-teal-400 bg-teal-500/10 px-0.5 rounded">audit</span>ors.</p>
+          <p className="mt-3">Exclude routine operational emails unless they mention "board", "<span className="text-teal-400 bg-teal-500/10 px-0.5 rounded">audit</span> committee", or any executive by name.</p>
+          <p className="mt-3">Flag as <span className="text-teal-400 bg-teal-500/10 px-0.5 rounded">privilege</span>d any communication involving legal counsel or marked "Attorney-Client Privilege".</p>
+        </div>
+
+        {/* Bottom stats */}
+        <div className="mt-3 flex items-center justify-between text-[9px] text-slate-500">
+          <div className="flex items-center gap-3">
+            <span>Words: 47</span>
+            <span className="text-slate-700">|</span>
+            <span className="text-violet-400">3 semantic expansions active</span>
+          </div>
+          <span className="px-2 py-0.5 bg-teal-500/20 text-teal-400 rounded text-[8px]">Est. 4,200 docs</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Feature Spotlight: Subset Validation Metrics
+function SubsetValidationSpotlight() {
+  const metrics = [
+    { label: 'Precision', value: '94.2%', width: 94.2, color: 'from-teal-500 to-cyan-400' },
+    { label: 'Recall', value: '91.8%', width: 91.8, color: 'from-violet-500 to-indigo-400' },
+    { label: 'F1 Score', value: '0.93', width: 93, color: 'from-amber-500 to-orange-400' },
+  ]
+
+  const sampleDocs = [
+    { title: 'Q4 Revenue Board Brief', score: 98, tags: ['Revenue', 'Board'], hot: true },
+    { title: 'Audit Committee Meeting Notes', score: 94, tags: ['Audit', 'Privilege'], privileged: true },
+    { title: 'Executive Travel Reimbursement', score: 12, tags: ['Excluded'], excluded: true },
+  ]
+
+  return (
+    <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+      <div className="px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+        <span className="text-[11px] font-medium text-white">Subset Test Results</span>
+        <span className="text-[9px] text-slate-400">1,000-doc stratified sample</span>
+      </div>
+      <div className="p-4 space-y-4">
+        <div className="grid grid-cols-3 gap-3">
+          {metrics.map((m, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 + i * 0.1 }}
+              className="bg-slate-900 rounded-lg p-3 border border-slate-800 text-center"
+            >
+              <p className="text-lg font-bold text-white mb-0.5">{m.value}</p>
+              <p className="text-[9px] text-slate-500 mb-2">{m.label}</p>
+              <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  whileInView={{ width: `${m.width}%` }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.3 + i * 0.1 }}
+                  className={`h-full rounded-full bg-gradient-to-r ${m.color}`}
+                />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="space-y-1.5">
+          {sampleDocs.map((doc, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -10 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.5 + i * 0.08 }}
+              className={`flex items-center justify-between px-3 py-2 rounded-lg border ${
+                doc.excluded ? 'bg-slate-900/50 border-slate-800/50' : 'bg-slate-900 border-slate-800'
+              }`}
+            >
+              <div className="flex items-center gap-2 min-w-0">
+                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                  doc.hot ? 'bg-rose-400' : doc.excluded ? 'bg-slate-600' : 'bg-emerald-400'
+                }`} />
+                <span className={`text-[10px] truncate ${doc.excluded ? 'text-slate-600' : 'text-slate-300'}`}>{doc.title}</span>
+              </div>
+              <div className="flex items-center gap-1.5 flex-shrink-0 ml-2">
+                {doc.tags.map((tag, j) => (
+                  <span key={j} className={`px-1.5 py-0.5 rounded text-[7px] font-medium ${
+                    doc.excluded ? 'bg-slate-800 text-slate-600' : 'bg-teal-500/20 text-teal-400'
+                  }`}>{tag}</span>
+                ))}
+                <span className={`text-[10px] font-medium ml-1 ${
+                  doc.score > 90 ? 'text-emerald-400' : doc.score > 50 ? 'text-amber-400' : 'text-slate-600'
+                }`}>{doc.score}%</span>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="flex items-center justify-between pt-1">
+          <div className="flex items-center gap-3 text-[9px]">
+            <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />94 Relevant</span>
+            <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-amber-400 rounded-full" />8 Privileged</span>
+            <span className="flex items-center gap-1"><span className="w-1.5 h-1.5 bg-rose-400 rounded-full" />4 Hot</span>
+          </div>
+          <div className="h-1.5 w-24 bg-slate-800 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              whileInView={{ width: '93%' }}
+              viewport={{ once: true }}
+              transition={{ duration: 1, delay: 0.6 }}
+              className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Feature Spotlight: Defensibility Audit Trail
+function DefensibilityAuditSpotlight() {
+  const [expandedIdx, setExpandedIdx] = useState(0)
+
+  const exceptions = [
+    { type: 'Encrypted PDF', count: 47, icon: '🔒', action: 'Password requested from custodian - 41 resolved, 6 pending', severity: 'warning' },
+    { type: 'Password-Protected ZIP', count: 23, icon: '📦', action: 'Submitted to forensics team - all resolved', severity: 'warning' },
+    { type: 'Corrupted PST', count: 8, icon: '⚠️', action: 'Recovery attempted - 6 of 8 restored, 2 logged as unrecoverable', severity: 'error' },
+  ]
+
+  return (
+    <div className="bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+      <div className="px-4 py-2.5 border-b border-slate-800 flex items-center justify-between">
+        <span className="text-[11px] font-medium text-white">Ingestion Health & Audit Trail</span>
+        <span className="flex items-center gap-1 px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded text-[8px]">
+          <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full" />
+          Defensible
+        </span>
+      </div>
+      <div className="p-4">
+        <div className="grid grid-cols-3 gap-3 mb-4">
+          {[
+            { label: 'Documents Ingested', value: '48,291', status: 'success' },
+            { label: 'Processing Exceptions', value: '127', status: 'warning' },
+            { label: 'Excluded from Review', value: '0', status: 'success' },
+          ].map((stat, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 8 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.08 }}
+              className="bg-slate-900 rounded-lg p-2.5 border border-slate-800"
+            >
+              <p className={`text-base font-bold ${stat.status === 'warning' ? 'text-amber-400' : 'text-emerald-400'}`}>{stat.value}</p>
+              <p className="text-[8px] text-slate-500 mt-0.5">{stat.label}</p>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="space-y-2">
+          {exceptions.map((exc, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, height: 0 }}
+              whileInView={{ opacity: 1, height: 'auto' }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 + i * 0.1 }}
+              className={`rounded-lg border overflow-hidden transition-colors cursor-pointer ${
+                exc.severity === 'error'
+                  ? 'bg-rose-500/10 border-rose-500/20'
+                  : 'bg-amber-500/10 border-amber-500/20'
+              }`}
+              onClick={() => setExpandedIdx(expandedIdx === i ? -1 : i)}
+            >
+              <div className="px-3 py-2.5 flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-[10px] font-medium text-white">
+                  <span>{exc.icon}</span> {exc.type}
+                </span>
+                <div className="flex items-center gap-2">
+                  <span className={`text-[10px] ${exc.severity === 'error' ? 'text-rose-400' : 'text-amber-400'}`}>{exc.count} files</span>
+                  <svg className={`w-3 h-3 text-slate-500 transition-transform ${expandedIdx === i ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+              {expandedIdx === i && (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="px-3 pb-2.5 text-[9px] text-slate-400 border-t border-slate-800/50 pt-2"
+                >
+                  <p><span className="text-slate-500">Remediation:</span> {exc.action}</p>
+                </motion.div>
+              )}
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-3 px-3 py-2 bg-slate-900 rounded-lg border border-slate-800 text-[9px] text-slate-500 flex items-center gap-2">
+          <svg className="w-3 h-3 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+          All exceptions documented with chain-of-custody audit trail
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // Static Screen Gallery Component - Shows screens with link to interactive prototype
 function ScreenGallery({ prototype, prototypeLink, isDark }) {
-  const [expandedScreen, setExpandedScreen] = useState(null)
-  
   // Check if this is an eDiscovery prototype (has steps/bullets with ediscovery link)
   const isEDiscovery = prototypeLink && prototypeLink.includes('ediscovery')
+  const [expandedScreen, setExpandedScreen] = useState(null)
   
   if (isEDiscovery) {
-    // eDiscovery desktop screens - 2026 accurate designs
-    const ediscoveryScreens = [
+    const noop = () => {}
+
+    const heroScreens = [
       { 
-        component: EDiscoveryDashboardStatic, 
-        title: 'Early Case Assessment',
-        description: 'Interactive concept map visualization showing document clusters by topic. AI-extracted entities panel identifies key people, organizations, and documents. Sentiment timeline reveals communication patterns over time.'
+        component: () => <ScaledPrototypeScreen><EDiscoveryDashboard onNavigate={noop} onOpenAI={noop} /></ScaledPrototypeScreen>,
+        interactive: () => <EDiscoveryDashboard onNavigate={noop} onOpenAI={noop} />,
+        title: 'Case Assessment',
+        description: 'AI-powered early case assessment dashboard with interactive concept clustering, sentiment timeline, entity extraction, and modular collapsible panels for progressive disclosure.'
       },
       { 
-        component: EDiscoveryNLCullingStatic, 
+        component: () => <ScaledPrototypeScreen><EDiscoveryReviewQueue onNavigate={noop} onOpenAI={noop} /></ScaledPrototypeScreen>,
+        interactive: () => <EDiscoveryReviewQueue onNavigate={noop} onOpenAI={noop} />,
         title: 'Protocol Builder',
-        description: 'Define review criteria in natural language instead of complex Boolean queries. AI interprets intent, suggests additional criteria with confidence scores, and provides real-time test results on sample documents.'
+        description: 'Natural language review protocol editor with AI-driven semantic expansion, real-time conflict detection, sliding ECA context drawer, and statistical subset testing workflow.'
       },
       { 
-        component: EDiscoveryMultimodalStatic, 
-        title: 'Multimodal Review',
-        description: 'Video and audio review with synchronized transcripts and sentiment heat maps. AI annotations highlight high-tension moments, allowing reviewers to jump directly to potentially significant exchanges.'
+        component: () => <ScaledPrototypeScreen><EDiscoveryReviewParams onNavigate={noop} onOpenAI={noop} /></ScaledPrototypeScreen>,
+        interactive: () => <EDiscoveryReviewParams onNavigate={noop} onOpenAI={noop} />,
+        title: 'Review Parameters',
+        description: 'Configure confidence thresholds, batch sizing, prioritization strategy, deduplication rules, AI autonomy levels, and expertise-based reviewer routing before running the review.'
       },
-      { 
-        component: EDiscoveryHITLStatic, 
-        title: 'Human-in-the-Loop Training',
-        description: 'Reviewers teach the AI by correcting its first 500 samples. Each decision improves model accuracy while building the trust required for court defensibility.'
+    ]
+
+    const featureSpotlights = [
+      {
+        title: 'AI-Generated Topic Clustering with Cross-Filtering',
+        category: 'Data Visualization',
+        description: 'Machine learning clusters 48,000+ documents into visual topic groups. The sentiment timeline acts as a temporal filter. Brush any date range and the concept map instantly updates to show only active clusters.',
+        rationale: [
+          'Visual clustering reveals corpus structure at a glance',
+          'Brush filtering is faster than date pickers for exploration',
+          'Cross-filtering panels eliminates context-switching',
+        ],
+        visual: <CrossFilteringSpotlight />,
       },
-      { 
-        component: EDiscoveryDefensibilityStatic, 
-        title: 'Citation-Led Review',
-        description: 'Dual-pane document viewer with AI insights panel showing rationale, live citations, and hallucination checks. Confidence meters display relevance scores calibrated on sample data.'
+      {
+        title: 'Natural Language Protocol with Semantic Expansion',
+        category: 'AI-Assisted Authoring',
+        description: 'Review protocols are written in plain English instead of Boolean queries. The AI detects key legal concepts and expands them with related terms automatically. Conflict detection warns when criteria contradict each other.',
+        rationale: [
+          'Plain-language protocols are more defensible in court',
+          'Semantic expansion closes coverage gaps automatically',
+          'Conflict detection catches contradictions before scale',
+        ],
+        visual: <SemanticExpansionSpotlight />,
       },
-      { 
-        component: EDiscoveryProductionStatic, 
-        title: 'Privilege Log Generator',
-        description: 'Batch-action workflow with AI-drafted privilege descriptions. Human reviewers approve or edit each entry with confidence scores. Progress tracking ensures complete coverage before log generation.'
-      }
+      {
+        title: 'Statistical Validation Before Scale',
+        category: 'Quality Assurance',
+        description: 'Before applying criteria to the full 48,291-document corpus, the system tests against a stratified 1,000-document sample. Precision, recall, and F1 scores provide measurable confidence before committing to hours of processing.',
+        rationale: [
+          'Precision and recall are the standard TAR validation metrics',
+          'Small-sample testing catches errors before full reprocessing',
+          'False negatives carry different legal weight than false positives',
+        ],
+        visual: <SubsetValidationSpotlight />,
+      },
+      {
+        title: 'Processing Exception Audit Trail',
+        category: 'Compliance & Defensibility',
+        description: 'Every processing exception (encrypted files, corrupted archives, password-protected attachments) is tracked with a full chain-of-custody record. Expandable details show remediation actions for each category.',
+        rationale: [
+          'Every exception surfaced prevents exclusion arguments',
+          'Counts at a glance, full audit trail one click away',
+          'Exceptions flagged for review, never silently dropped',
+        ],
+        visual: <DefensibilityAuditSpotlight />,
+      },
     ]
 
     return (
       <div className="mt-12">
-        {/* Expanded Screen Modal */}
-        <AnimatePresence>
-          {expandedScreen !== null && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
-              onClick={() => setExpandedScreen(null)}
-            >
-              <motion.div
-                initial={{ scale: 0.9, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 0.9, opacity: 0 }}
-                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="relative max-w-5xl w-full max-h-[90vh] overflow-hidden"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {/* Close button */}
-                <button
-                  onClick={() => setExpandedScreen(null)}
-                  className="absolute top-4 right-4 z-10 p-2 bg-slate-800/80 hover:bg-slate-700 rounded-full text-white transition-colors"
-                >
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-                
-                {/* Screen title */}
-                <div className="bg-slate-900 px-6 py-4 rounded-t-2xl border-b border-slate-700">
-                  <h3 className="text-xl font-bold text-white">{ediscoveryScreens[expandedScreen].title}</h3>
-                  <p className="text-sm text-slate-400 mt-1">{ediscoveryScreens[expandedScreen].description}</p>
-                </div>
-                
-                {/* Large screen display */}
-                <div className="bg-slate-950 rounded-b-2xl overflow-hidden" style={{ height: '560px' }}>
-                  {(() => {
-                    const ScreenComponent = ediscoveryScreens[expandedScreen].component
-                    return <ScreenComponent />
-                  })()}
-                </div>
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
         {/* Section Header with Prototype Link */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
           <div>
@@ -1008,45 +1912,187 @@ function ScreenGallery({ prototype, prototypeLink, isDark }) {
           )}
         </div>
 
-        {/* eDiscovery Screen Gallery Grid */}
-        <div className="grid md:grid-cols-2 gap-12 lg:gap-16">
-          {ediscoveryScreens.map((screen, i) => {
+        {/* Hero Screens */}
+        <div className="grid md:grid-cols-3 gap-6 mb-6">
+          {heroScreens.map((screen, i) => {
             const ScreenComponent = screen.component
+            const hoverGradients = [
+              'hover:from-teal-50 hover:to-cyan-50 dark:hover:from-teal-900/20 dark:hover:to-cyan-900/20',
+              'hover:from-violet-50 hover:to-indigo-50 dark:hover:from-violet-900/20 dark:hover:to-indigo-900/20',
+              'hover:from-amber-50 hover:to-orange-50 dark:hover:from-amber-900/20 dark:hover:to-orange-900/20',
+            ]
             return (
-              <div key={i} className="group">
-                {/* Desktop Frame with Screen - Clickable */}
+              <div key={i}>
                 <div 
-                  className={`relative rounded-2xl p-6 md:p-8 mb-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${
-                    i % 6 === 0 ? 'bg-gradient-to-br from-teal-50 to-cyan-50 dark:from-teal-900/20 dark:to-cyan-900/20' :
-                    i % 6 === 1 ? 'bg-gradient-to-br from-violet-50 to-indigo-50 dark:from-violet-900/20 dark:to-indigo-900/20' :
-                    i % 6 === 2 ? 'bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20' :
-                    i % 6 === 3 ? 'bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20' :
-                    i % 6 === 4 ? 'bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20' :
-                    'bg-gradient-to-br from-rose-50 to-pink-50 dark:from-rose-900/20 dark:to-pink-900/20'
-                  }`}
                   onClick={() => setExpandedScreen(i)}
+                  className={`relative rounded-2xl p-4 md:p-6 mb-4 cursor-pointer group bg-white dark:bg-slate-800/40 bg-gradient-to-br from-transparent to-transparent transition-all duration-300 ${hoverGradients[i]}`}
                 >
-                  {/* Expand hint */}
-                  <div className="absolute top-3 right-3 p-2 bg-white/80 dark:bg-slate-800/80 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                    <svg className="w-4 h-4 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-                    </svg>
-                  </div>
                   <SmallDesktopFrame>
                     <ScreenComponent />
                   </SmallDesktopFrame>
+                  {/* Click hint overlay */}
+                  <div className="absolute inset-0 rounded-2xl bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+                    <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-white dark:bg-slate-800 px-4 py-2 rounded-full shadow-xl flex items-center gap-2">
+                      <svg className="w-4 h-4 text-teal-600 dark:text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+                      </svg>
+                      <span className="text-sm font-medium text-gray-800 dark:text-white">Click to interact</span>
+                    </div>
+                  </div>
                 </div>
-                
-                {/* Title and Description */}
-                <h4 className={`text-xl font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                <h4 className={`text-lg font-bold mb-1.5 ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
                   {screen.title}
                 </h4>
-                <p className={isDark ? 'text-gray-300' : 'text-gray-600 dark:text-gray-300'}>
+                <p className={`text-xs leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600 dark:text-gray-300'}`}>
                   {screen.description}
                 </p>
               </div>
             )
           })}
+        </div>
+
+        {/* Expanded interactive modal */}
+        <AnimatePresence>
+          {expandedScreen !== null && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 md:p-8"
+              onClick={() => setExpandedScreen(null)}
+            >
+              <motion.div
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.92 }}
+                transition={{ duration: 0.25, ease: 'easeOut' }}
+                className="relative w-full flex flex-col"
+                style={{ maxWidth: '1200px', maxHeight: '90vh' }}
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Header bar */}
+                <div className="flex items-center justify-between px-4 py-2.5 bg-slate-900 rounded-t-xl border border-white/10 border-b-0">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium text-white">{heroScreens[expandedScreen]?.title}</span>
+                    <span className="text-xs text-white/40">- Click to interact with elements</span>
+                  </div>
+                  <button
+                    onClick={() => setExpandedScreen(null)}
+                    className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                {/* Interactive prototype container */}
+                <div className="w-full rounded-b-xl overflow-hidden border border-white/10 border-t-0 shadow-2xl bg-slate-950" style={{ aspectRatio: '16 / 10' }}>
+                  {heroScreens[expandedScreen]?.interactive()}
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Visual Divider */}
+        <div className="mt-24 mb-20">
+          <div className={`h-px w-full ${isDark ? 'bg-gradient-to-r from-transparent via-slate-700 to-transparent' : 'bg-gradient-to-r from-transparent via-gray-300 to-transparent dark:via-slate-700'}`} />
+        </div>
+
+        {/* Feature Spotlights */}
+        <div>
+          <div className="text-center mb-16">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <span className={`inline-block px-4 py-1.5 rounded-full text-sm font-medium mb-5 ${isDark ? 'bg-teal-500/10 text-teal-400 border border-teal-500/20' : 'bg-teal-50 text-teal-700 border border-teal-200 dark:bg-teal-500/10 dark:text-teal-400 dark:border-teal-500/20'}`}>Feature Deep Dive</span>
+              <h3 className={`text-2xl md:text-3xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                Key Design Decisions
+              </h3>
+              <p className={`max-w-xl mx-auto text-base leading-relaxed ${isDark ? 'text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}>
+                Each feature balances power with usability and legal defensibility.
+              </p>
+            </motion.div>
+          </div>
+
+          <div className="space-y-12">
+            {featureSpotlights.map((spotlight, i) => {
+              const accentColors = [
+                { border: 'border-teal-500/20', glow: 'shadow-teal-500/5', accent: 'bg-teal-500', stripe: 'from-teal-500/20 to-transparent' },
+                { border: 'border-violet-500/20', glow: 'shadow-violet-500/5', accent: 'bg-violet-500', stripe: 'from-violet-500/20 to-transparent' },
+                { border: 'border-amber-500/20', glow: 'shadow-amber-500/5', accent: 'bg-amber-500', stripe: 'from-amber-500/20 to-transparent' },
+                { border: 'border-rose-500/20', glow: 'shadow-rose-500/5', accent: 'bg-rose-500', stripe: 'from-rose-500/20 to-transparent' },
+              ]
+              const colors = accentColors[i % accentColors.length]
+              return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: '-50px' }}
+                transition={{ duration: 0.5 }}
+                className={`relative rounded-2xl overflow-hidden ${
+                  isDark
+                    ? `bg-slate-900/60 border ${colors.border} shadow-xl ${colors.glow}`
+                    : `bg-white border border-gray-200 shadow-lg dark:bg-slate-900/60 dark:border-slate-700 dark:shadow-xl`
+                }`}
+              >
+                {/* Top accent stripe */}
+                <div className={`h-1 w-full bg-gradient-to-r ${colors.stripe}`} />
+
+                <div className={`grid md:grid-cols-2 gap-8 lg:gap-12 p-6 md:p-8 lg:p-10 items-start`}>
+                  {/* Visual - alternates sides */}
+                  <div className={i % 2 === 1 ? 'md:order-2' : ''}>
+                    {spotlight.visual}
+                  </div>
+
+                  {/* Text content */}
+                  <div className={`${i % 2 === 1 ? 'md:order-1' : ''} flex flex-col justify-center`}>
+                    <span className={`inline-block self-start px-3 py-1 rounded-full text-xs font-medium mb-4 ${
+                      isDark
+                        ? 'bg-teal-500/10 text-teal-400 border border-teal-500/20'
+                        : 'bg-teal-50 text-teal-700 border border-teal-200 dark:bg-teal-500/10 dark:text-teal-400 dark:border-teal-500/20'
+                    }`}>
+                      {spotlight.category}
+                    </span>
+                    <h4 className={`text-xl md:text-2xl font-bold mb-3 leading-tight ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                      {spotlight.title}
+                    </h4>
+                    <p className={`mb-6 leading-relaxed ${isDark ? 'text-gray-300' : 'text-gray-600 dark:text-gray-300'}`}>
+                      {spotlight.description}
+                    </p>
+                    
+                    <div className={`rounded-xl p-5 ${
+                      isDark
+                        ? 'bg-slate-800/80 border border-slate-700/50'
+                        : 'bg-gray-50 border border-gray-200 dark:bg-slate-800/80 dark:border-slate-700/50'
+                    }`}>
+                      <h5 className={`text-sm font-semibold mb-3 flex items-center gap-2 ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
+                        <svg className="w-4 h-4 text-teal-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        Design Rationale
+                      </h5>
+                      <ul className="space-y-2.5">
+                        {spotlight.rationale.map((point, j) => (
+                          <li key={j} className={`text-sm leading-relaxed flex gap-2.5 ${isDark ? 'text-gray-400' : 'text-gray-600 dark:text-gray-400'}`}>
+                            <svg className="w-4 h-4 text-teal-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                            </svg>
+                            {point}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+              )
+            })}
+          </div>
         </div>
       </div>
     )
@@ -1201,7 +2247,7 @@ function CaseStudy() {
               {study.title}
             </h1>
             
-            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-3xl">
+            <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 leading-relaxed max-w-3xl font-semibold">
               {study.subtitle}
             </p>
           </div>
@@ -1217,9 +2263,10 @@ function CaseStudy() {
             // Section color themes for visual containment
             const sectionThemes = [
               { bg: 'bg-slate-900', text: 'text-white', accent: 'teal' },
-              { bg: 'bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20', text: 'text-gray-900 dark:text-white', accent: 'amber' },
+              { bg: 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950', text: 'text-white', accent: 'teal' },
               { bg: 'bg-gradient-to-br from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20', text: 'text-gray-900 dark:text-white', accent: 'violet' },
-              { bg: 'bg-gradient-to-br from-teal-50 to-emerald-50 dark:from-teal-900/20 dark:to-emerald-900/20', text: 'text-gray-900 dark:text-white', accent: 'teal' },
+              { bg: 'bg-gradient-to-br from-slate-900 via-slate-850 to-slate-950', text: 'text-white', accent: 'teal' },
+              { bg: 'bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20', text: 'text-gray-900 dark:text-white', accent: 'sky' },
               { bg: 'bg-slate-900', text: 'text-white', accent: 'amber' },
             ]
             const theme = sectionThemes[index % sectionThemes.length]
@@ -1661,12 +2708,12 @@ function CaseStudy() {
                         <div className="absolute bottom-0 right-0 w-64 h-64 bg-gradient-to-br from-teal-500/15 to-transparent rounded-full blur-3xl" />
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-gradient-to-br from-violet-500/10 to-transparent rounded-full blur-2xl" />
                         
-                        <div className="relative max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
-                          {/* Left Side - Problem Content */}
+                        <div className="relative max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-12 items-center">
+                          {/* Left Side - Problem Content (wider) */}
                           {section.problemBento && section.problemBento.callout && (
-                            <div className="space-y-5">
+                            <div className="lg:col-span-3 space-y-5">
                               {/* Headline */}
-                              <h3 className="text-2xl md:text-3xl font-bold text-white leading-tight">
+                              <h3 className="text-3xl md:text-4xl font-black text-white leading-tight">
                                 {section.problemBento.callout.headline}
                               </h3>
                               
@@ -1674,9 +2721,18 @@ function CaseStudy() {
                               <p className="text-slate-300 text-base leading-relaxed">
                                 {section.problemBento.callout.subtext}
                               </p>
+
+                              {/* Challenge callout */}
+                              {section.problemBento.callout.challenge && (
+                                <div className="bg-rose-500/10 border border-rose-500/25 rounded-xl px-5 py-4">
+                                  <p className="text-rose-200 font-medium text-base leading-relaxed">
+                                    {section.problemBento.callout.challenge}
+                                  </p>
+                                </div>
+                              )}
                               
                               {/* Visual pain points */}
-                              <div className="flex flex-wrap gap-2 pt-2">
+                              <div className="flex flex-wrap gap-2 pt-1">
                                 {(section.problemBento.callout.painPoints || ['Missed tasks', 'No visibility', "Can't prove work"]).map((point, i) => {
                                   const colors = [
                                     'bg-rose-500/20 border-rose-500/30 text-rose-300',
@@ -1702,7 +2758,7 @@ function CaseStudy() {
 
                           {/* Right Side - Document Folders Visual */}
                           {!section.researchBanner && section.problemBento && section.problemBento.visualType === 'document-folders' && (
-                            <div className="relative h-72 md:h-80 flex items-center justify-center">
+                            <div className="lg:col-span-2 relative h-64 md:h-80 flex items-center justify-center">
                               {/* Folder stack */}
                               <div className="relative w-64 h-48">
                                 {/* Back folders */}
@@ -1798,7 +2854,7 @@ function CaseStudy() {
 
                           {/* Right Side - Animated Stacking Papers */}
                           {!section.researchBanner && section.problemBento && section.problemBento.visualType !== 'skeptical-attorneys' && section.problemBento.visualType !== 'concern-feature-outcome' && section.problemBento.visualType !== 'document-folders' && (
-                            <div className="relative h-72 md:h-80 flex items-center justify-center">
+                            <div className="lg:col-span-2 relative h-64 md:h-80 flex items-center justify-center">
                               {/* Paper stack animation */}
                               <div className="relative w-48 h-64">
                                 {[...Array(8)].map((_, i) => {
@@ -1922,7 +2978,7 @@ function CaseStudy() {
 
                           {/* Right Side - Skeptical Attorneys Grid */}
                           {!section.researchBanner && section.problemBento && section.problemBento.visualType === 'skeptical-attorneys' && (
-                            <div className="relative h-72 md:h-80 flex items-center justify-center">
+                            <div className="lg:col-span-2 relative h-64 md:h-80 flex items-center justify-center">
                               {/* Attorney grid */}
                               <div className="relative">
                                 {/* Grid of skeptical attorney avatars */}
@@ -2045,7 +3101,7 @@ function CaseStudy() {
 
                           {/* Right Side - Concern Feature Outcome - Full Width Table */}
                           {!section.researchBanner && section.problemBento && section.problemBento.visualType === 'concern-feature-outcome' && section.problemBento.callout?.concernMapping && (
-                            <div className="space-y-4">
+                            <div className="lg:col-span-2 space-y-4">
                               <div className="overflow-hidden rounded-xl border border-slate-700/50">
                                 {/* Table header with arrows */}
                                 <div className="grid grid-cols-3 bg-slate-800/60 border-b border-slate-700/50">
@@ -2097,7 +3153,7 @@ function CaseStudy() {
 
                           {/* Right Side - Research Stats */}
                           {section.researchBanner && (
-                            <div className="space-y-5">
+                            <div className="lg:col-span-2 space-y-5">
                               {/* Research Header */}
                               <div>
                                 <div className="flex items-center gap-2 mb-2">
@@ -2285,6 +3341,118 @@ function CaseStudy() {
                             </div>
                           )}
                         </div>
+
+                        {/* User Research Section - embedded inside problem bento dark container */}
+                        {section.userResearchSection && (
+                          <motion.div 
+                            className="max-w-6xl mx-auto mt-12 pt-10 border-t border-slate-700/50"
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                          >
+                            {/* Section label */}
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className="w-8 h-8 rounded-lg bg-teal-500/20 border border-teal-500/30 flex items-center justify-center">
+                                <svg className="w-4 h-4 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                              </div>
+                              <h4 className="text-sm font-bold uppercase tracking-wider text-teal-400">Discovery Phase</h4>
+                            </div>
+
+                            {/* Transition narrative */}
+                            <p className="text-slate-300 text-base leading-relaxed mb-10 max-w-3xl">{section.userResearchSection.intro}</p>
+                    
+                            {/* Research stat cards */}
+                            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                              {section.userResearchSection.researchMethods.map((method, i) => {
+                                const methodIcons = {
+                                  observe: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>,
+                                  workflow: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>,
+                                  users: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+                                  data: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
+                                  ai: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                                }
+                                const methodColors = [
+                                  { gradient: 'from-teal-500 to-cyan-500', statText: 'text-teal-300' },
+                                  { gradient: 'from-violet-500 to-indigo-500', statText: 'text-violet-300' },
+                                  { gradient: 'from-amber-500 to-orange-500', statText: 'text-amber-300' },
+                                  { gradient: 'from-rose-500 to-pink-500', statText: 'text-rose-300' },
+                                  { gradient: 'from-cyan-500 to-blue-500', statText: 'text-cyan-300' }
+                                ]
+                                return (
+                                  <motion.div
+                                    key={i}
+                                    className="bg-white/5 border border-white/10 rounded-2xl p-5 text-center group hover:scale-[1.03] transition-transform"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: i * 0.1 }}
+                                  >
+                                    <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${methodColors[i].gradient} flex items-center justify-center text-white shadow-lg mx-auto mb-4`}>
+                                      {methodIcons[method.icon]}
+                                    </div>
+                                    <div className={`text-4xl md:text-5xl font-black mb-1 ${methodColors[i].statText}`}>
+                                      {method.stat}
+                                    </div>
+                                    <div className="text-xs font-medium uppercase tracking-wider mb-3 text-slate-400">
+                                      {method.statLabel}
+                                    </div>
+                                    <h4 className="text-sm font-bold mb-2 text-white">{method.method}</h4>
+                                  </motion.div>
+                                )
+                              })}
+                            </div>
+
+                            {/* Insights strip */}
+                            <div className="bg-slate-800/60 border border-slate-700/50 rounded-2xl overflow-hidden">
+                              {section.userResearchSection.researchMethods.map((method, i) => {
+                                const accentColors = [
+                                  { border: 'border-l-teal-500', icon: 'text-teal-500' },
+                                  { border: 'border-l-violet-500', icon: 'text-violet-500' },
+                                  { border: 'border-l-amber-500', icon: 'text-amber-500' },
+                                  { border: 'border-l-rose-500', icon: 'text-rose-500' },
+                                  { border: 'border-l-cyan-500', icon: 'text-cyan-500' }
+                                ]
+                                return (
+                                  <motion.div
+                                    key={i}
+                                    className={`flex items-start gap-3 px-5 py-4 border-l-4 ${accentColors[i].border} ${i < section.userResearchSection.researchMethods.length - 1 ? 'border-b border-b-slate-700/50' : ''}`}
+                                    initial={{ opacity: 0, x: -10 }}
+                                    whileInView={{ opacity: 1, x: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.3 + i * 0.08 }}
+                                  >
+                                    <svg className={`w-4 h-4 mt-0.5 shrink-0 ${accentColors[i].icon}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    <p className="text-sm leading-relaxed text-slate-200">
+                                      <span className="font-semibold text-white">{method.method}:</span> {method.insight}
+                                    </p>
+                                  </motion.div>
+                                )
+                              })}
+                            </div>
+
+                            {/* Key Finding Callout */}
+                            {section.userResearchSection.keyFinding && (
+                              <motion.div 
+                                className="mt-8 bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/30 rounded-2xl p-6 flex items-center gap-6"
+                                initial={{ opacity: 0, y: 20 }}
+                                whileInView={{ opacity: 1, y: 0 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: 0.4 }}
+                                whileHover={{ scale: 1.01 }}
+                              >
+                                <div className="text-4xl md:text-5xl font-black shrink-0 bg-gradient-to-br from-amber-300 to-orange-400 bg-clip-text text-transparent">
+                                  {section.userResearchSection.keyFinding.stat}
+                                </div>
+                                <div className="flex-1">
+                                  <div className="font-semibold text-lg text-white">{section.userResearchSection.keyFinding.label}</div>
+                                  <div className="text-sm mt-1 text-amber-300/80">{section.userResearchSection.keyFinding.detail}</div>
+                                </div>
+                              </motion.div>
+                            )}
+                          </motion.div>
+                        )}
                       </motion.div>
                     )}
 
@@ -3129,7 +4297,7 @@ function CaseStudy() {
 
                 {/* Combined Review Section - Before/After with Concern Mapping */}
                 {section.combinedReviewSection && (
-                  <CombinedReviewSection data={section.combinedReviewSection} />
+                  <CombinedReviewSection data={section.combinedReviewSection} isDark={isDark} />
                 )}
 
                 {/* Legacy images support */}
@@ -3211,6 +4379,1761 @@ function CaseStudy() {
                     </motion.div>
                   </motion.div>
                 )}
+
+                {/* User Research Section - Stat-driven research cards (standalone only, combined renders inside problemBento) */}
+                {section.userResearchSection && !section.problemBento && (
+                  <motion.div 
+                    className="mt-8"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                  >
+                    <p className={`text-base leading-relaxed mb-10 max-w-3xl ${isDark ? 'text-slate-300' : 'text-gray-600 dark:text-slate-300'}`}>{section.userResearchSection.intro}</p>
+                    
+                    <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+                      {section.userResearchSection.researchMethods.map((method, i) => {
+                        const methodIcons = {
+                          observe: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>,
+                          workflow: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>,
+                          users: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+                          data: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
+                          ai: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                        }
+                        const methodColors = [
+                          { gradient: 'from-teal-500 to-cyan-500', text: 'text-teal-600 dark:text-teal-400', statText: 'text-teal-700 dark:text-teal-300' },
+                          { gradient: 'from-violet-500 to-indigo-500', text: 'text-violet-600 dark:text-violet-400', statText: 'text-violet-700 dark:text-violet-300' },
+                          { gradient: 'from-amber-500 to-orange-500', text: 'text-amber-600 dark:text-amber-400', statText: 'text-amber-700 dark:text-amber-300' },
+                          { gradient: 'from-rose-500 to-pink-500', text: 'text-rose-600 dark:text-rose-400', statText: 'text-rose-700 dark:text-rose-300' },
+                          { gradient: 'from-cyan-500 to-blue-500', text: 'text-cyan-600 dark:text-cyan-400', statText: 'text-cyan-700 dark:text-cyan-300' }
+                        ]
+                        return (
+                          <motion.div
+                            key={i}
+                            className={`rounded-2xl p-5 text-center group hover:scale-[1.03] transition-transform ${isDark ? 'bg-white/5 border border-white/10' : 'bg-white border border-gray-200 shadow-md dark:bg-white/5 dark:border-white/10'}`}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1 }}
+                          >
+                            <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${methodColors[i].gradient} flex items-center justify-center text-white shadow-lg mx-auto mb-4`}>
+                              {methodIcons[method.icon]}
+                            </div>
+                            <div className={`text-4xl md:text-5xl font-black mb-1 ${isDark ? methodColors[i].statText : methodColors[i].statText}`}>
+                              {method.stat}
+                            </div>
+                            <div className={`text-xs font-medium uppercase tracking-wider mb-3 ${isDark ? 'text-slate-400' : 'text-gray-500 dark:text-slate-400'}`}>
+                              {method.statLabel}
+                            </div>
+                            <h4 className={`text-sm font-bold mb-2 ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>{method.method}</h4>
+                          </motion.div>
+                        )
+                      })}
+                    </div>
+
+                    {/* Insights strip */}
+                    <div className={`rounded-2xl overflow-hidden ${isDark ? 'bg-slate-800/60 border border-slate-700/50' : 'bg-white border border-gray-200 shadow-md dark:bg-slate-800/60 dark:border-slate-700/50'}`}>
+                      {section.userResearchSection.researchMethods.map((method, i) => {
+                        const accentColors = [
+                          { border: 'border-l-teal-500', icon: 'text-teal-500' },
+                          { border: 'border-l-violet-500', icon: 'text-violet-500' },
+                          { border: 'border-l-amber-500', icon: 'text-amber-500' },
+                          { border: 'border-l-rose-500', icon: 'text-rose-500' },
+                          { border: 'border-l-cyan-500', icon: 'text-cyan-500' }
+                        ]
+                        return (
+                          <motion.div
+                            key={i}
+                            className={`flex items-start gap-3 px-5 py-4 border-l-4 ${accentColors[i].border} ${i < section.userResearchSection.researchMethods.length - 1 ? (isDark ? 'border-b border-b-slate-700/50' : 'border-b border-b-gray-100 dark:border-b-slate-700/50') : ''}`}
+                            initial={{ opacity: 0, x: -10 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 + i * 0.08 }}
+                          >
+                            <svg className={`w-4 h-4 mt-0.5 shrink-0 ${accentColors[i].icon}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-200' : 'text-gray-700 dark:text-slate-200'}`}>
+                              <span className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>{method.method}:</span> {method.insight}
+                            </p>
+                          </motion.div>
+                        )
+                      })}
+                    </div>
+
+                    {/* Key Finding Callout */}
+                    {section.userResearchSection.keyFinding && (
+                      <motion.div 
+                        className={`mt-8 rounded-2xl p-6 flex items-center gap-6 ${isDark ? 'bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/30' : 'bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-300/50 shadow-md dark:from-amber-500/15 dark:to-orange-500/10 dark:border-amber-500/30'}`}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.4 }}
+                        whileHover={{ scale: 1.01 }}
+                      >
+                        <div className={`text-4xl md:text-5xl font-black shrink-0 ${isDark ? 'bg-gradient-to-br from-amber-300 to-orange-400 bg-clip-text text-transparent' : 'text-amber-600 dark:bg-gradient-to-br dark:from-amber-300 dark:to-orange-400 dark:bg-clip-text dark:text-transparent'}`}>
+                          {section.userResearchSection.keyFinding.stat}
+                        </div>
+                        <div className="flex-1">
+                          <div className={`font-semibold text-lg ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>{section.userResearchSection.keyFinding.label}</div>
+                          <div className={`text-sm mt-1 ${isDark ? 'text-amber-300/80' : 'text-amber-700 dark:text-amber-300/80'}`}>{section.userResearchSection.keyFinding.detail}</div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                )}
+
+                {/* User Stories Section - Interactive Pain Point Cards */}
+                {section.userStoriesSection && (() => {
+                  const storyIcons = {
+                    search: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>,
+                    shield: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>,
+                    route: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" /></svg>,
+                    clipboard: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>,
+                    clock: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+                    gavel: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>
+                  }
+                  const categoryStyles = {
+                    'Predictability': { gradient: 'from-rose-500 to-pink-500', bg: isDark ? 'bg-rose-500/10' : 'bg-rose-50 dark:bg-rose-500/10', border: isDark ? 'border-rose-500/30' : 'border-rose-200 dark:border-rose-500/30', activeBorder: 'border-rose-500', tag: isDark ? 'text-rose-400 bg-rose-500/20' : 'text-rose-700 bg-rose-100 dark:text-rose-400 dark:bg-rose-500/20', icon: 'text-rose-500', responseBg: isDark ? 'from-rose-500/20 to-pink-500/10' : 'from-rose-50 to-pink-50 dark:from-rose-500/20 dark:to-pink-500/10' },
+                    'Audit Trail': { gradient: 'from-emerald-500 to-green-500', bg: isDark ? 'bg-emerald-500/10' : 'bg-emerald-50 dark:bg-emerald-500/10', border: isDark ? 'border-emerald-500/30' : 'border-emerald-200 dark:border-emerald-500/30', activeBorder: 'border-emerald-500', tag: isDark ? 'text-emerald-400 bg-emerald-500/20' : 'text-emerald-700 bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-500/20', icon: 'text-emerald-500', responseBg: isDark ? 'from-emerald-500/20 to-green-500/10' : 'from-emerald-50 to-green-50 dark:from-emerald-500/20 dark:to-green-500/10' },
+                    'Resource Allocation': { gradient: 'from-amber-500 to-orange-500', bg: isDark ? 'bg-amber-500/10' : 'bg-amber-50 dark:bg-amber-500/10', border: isDark ? 'border-amber-500/30' : 'border-amber-200 dark:border-amber-500/30', activeBorder: 'border-amber-500', tag: isDark ? 'text-amber-400 bg-amber-500/20' : 'text-amber-700 bg-amber-100 dark:text-amber-400 dark:bg-amber-500/20', icon: 'text-amber-500', responseBg: isDark ? 'from-amber-500/20 to-orange-500/10' : 'from-amber-50 to-orange-50 dark:from-amber-500/20 dark:to-orange-500/10' },
+                    'Accuracy': { gradient: 'from-sky-500 to-blue-500', bg: isDark ? 'bg-sky-500/10' : 'bg-sky-50 dark:bg-sky-500/10', border: isDark ? 'border-sky-500/30' : 'border-sky-200 dark:border-sky-500/30', activeBorder: 'border-sky-500', tag: isDark ? 'text-sky-400 bg-sky-500/20' : 'text-sky-700 bg-sky-100 dark:text-sky-400 dark:bg-sky-500/20', icon: 'text-sky-500', responseBg: isDark ? 'from-sky-500/20 to-blue-500/10' : 'from-sky-50 to-blue-50 dark:from-sky-500/20 dark:to-blue-500/10' },
+                    'Quality Control': { gradient: 'from-teal-500 to-cyan-500', bg: isDark ? 'bg-teal-500/10' : 'bg-teal-50 dark:bg-teal-500/10', border: isDark ? 'border-teal-500/30' : 'border-teal-200 dark:border-teal-500/30', activeBorder: 'border-teal-500', tag: isDark ? 'text-teal-400 bg-teal-500/20' : 'text-teal-700 bg-teal-100 dark:text-teal-400 dark:bg-teal-500/20', icon: 'text-teal-500', responseBg: isDark ? 'from-teal-500/20 to-cyan-500/10' : 'from-teal-50 to-cyan-50 dark:from-teal-500/20 dark:to-cyan-500/10' },
+                    'Defensibility': { gradient: 'from-violet-500 to-indigo-500', bg: isDark ? 'bg-violet-500/10' : 'bg-violet-50 dark:bg-violet-500/10', border: isDark ? 'border-violet-500/30' : 'border-violet-200 dark:border-violet-500/30', activeBorder: 'border-violet-500', tag: isDark ? 'text-violet-400 bg-violet-500/20' : 'text-violet-700 bg-violet-100 dark:text-violet-400 dark:bg-violet-500/20', icon: 'text-violet-500', responseBg: isDark ? 'from-violet-500/20 to-indigo-500/10' : 'from-violet-50 to-indigo-50 dark:from-violet-500/20 dark:to-indigo-500/10' }
+                  }
+                  return (
+                  <motion.div 
+                    className="mt-8"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                  >
+                    <p className={`text-base leading-relaxed mb-8 max-w-3xl ${isDark ? 'text-slate-300' : 'text-gray-600 dark:text-slate-300'}`}>{section.userStoriesSection.intro}</p>
+                    
+                    {/* Interactive Flip Card Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+                      {section.userStoriesSection.stories.map((story, i) => {
+                        const style = categoryStyles[story.category] || categoryStyles['Explainability']
+                        return (
+                          <PainPointCard key={i} story={story} index={i} style={style} icon={storyIcons[story.icon]} isDark={isDark} />
+                        )
+                      })}
+                    </div>
+
+                    {/* Synthesis callout */}
+                    {section.userStoriesSection.synthesis && (
+                      <motion.div
+                        className={`rounded-2xl p-5 flex items-start gap-4 ${isDark ? 'bg-gradient-to-r from-teal-500/10 to-transparent border border-teal-500/20' : 'bg-gradient-to-r from-teal-50 to-transparent border border-teal-200 dark:from-teal-500/10 dark:to-transparent dark:border-teal-500/20'}`}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.5 }}
+                      >
+                        <svg className={`w-5 h-5 mt-0.5 shrink-0 ${isDark ? 'text-teal-400' : 'text-teal-600 dark:text-teal-400'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                        <p className={`text-sm font-medium leading-relaxed ${isDark ? 'text-white' : 'text-gray-800 dark:text-white'}`}>{section.userStoriesSection.synthesis}</p>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                  )
+                })()}
+
+                {/* AI Wireframes Section - Research to design pipeline */}
+                {section.aiWireframesSection && (() => {
+                  // --- Detailed Wireframe SVG Definitions ---
+                  const wireframeDefs = [
+                    { label: 'Case Assessment Dashboard',
+                      purpose: 'One screen for case health, risk, and volume.',
+                      userStory: 'See risk scores and doc counts at a glance to triage instantly.',
+                      businessReq: 'Consolidate 4+ data sources into one real-time view.',
+                      elements: (dk) => (
+                      <g>
+                        {/* Top nav */}
+                        <rect x="0" y="0" width="200" height="14" rx="0" className={dk ? 'fill-slate-700/80' : 'fill-gray-200'} />
+                        <rect x="6" y="4" width="24" height="6" rx="1" className={dk ? 'fill-teal-500/40' : 'fill-teal-400/50'} />
+                        <rect x="140" y="5" width="16" height="4" rx="1" className={dk ? 'fill-slate-500/50' : 'fill-gray-300/80'} />
+                        <rect x="160" y="5" width="16" height="4" rx="1" className={dk ? 'fill-slate-500/50' : 'fill-gray-300/80'} />
+                        <circle cx="188" cy="7" r="4" className={dk ? 'fill-slate-600/60' : 'fill-gray-300'} />
+                        {/* Left sidebar - case info */}
+                        <rect x="0" y="14" width="40" height="136" className={dk ? 'fill-slate-800/60' : 'fill-gray-100'} />
+                        <rect x="6" y="22" width="28" height="3" rx="0.5" className={dk ? 'fill-teal-400/30' : 'fill-teal-500/30'} />
+                        <rect x="6" y="28" width="20" height="2" rx="0.5" className={dk ? 'fill-slate-500/40' : 'fill-gray-300'} />
+                        <rect x="6" y="33" width="24" height="2" rx="0.5" className={dk ? 'fill-slate-500/30' : 'fill-gray-300/70'} />
+                        <rect x="6" y="42" width="28" height="12" rx="1" className={dk ? 'fill-slate-700/50' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="9" y="45" width="10" height="2" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-400/60'} />
+                        <rect x="9" y="49" width="18" height="2" rx="0.5" className={dk ? 'fill-slate-400/30' : 'fill-gray-300/80'} />
+                        <rect x="6" y="60" width="28" height="6" rx="1" className={dk ? 'fill-teal-500/20' : 'fill-teal-100/80'} />
+                        <rect x="6" y="72" width="28" height="6" rx="1" className={dk ? 'fill-slate-600/40' : 'fill-gray-200/80'} />
+                        <rect x="6" y="84" width="28" height="6" rx="1" className={dk ? 'fill-slate-600/40' : 'fill-gray-200/80'} />
+                        {/* 4 stat cards */}
+                        <rect x="46" y="20" width="35" height="24" rx="2" className={dk ? 'fill-slate-700/60' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="50" y="24" width="14" height="3" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-400/50'} />
+                        <rect x="50" y="30" width="20" height="5" rx="0.5" className={dk ? 'fill-teal-400/50' : 'fill-teal-500/40'} />
+                        <rect x="50" y="37" width="10" height="2" rx="0.5" className={dk ? 'fill-emerald-400/30' : 'fill-emerald-500/30'} />
+                        <rect x="85" y="20" width="35" height="24" rx="2" className={dk ? 'fill-slate-700/60' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="89" y="24" width="14" height="3" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-400/50'} />
+                        <rect x="89" y="30" width="18" height="5" rx="0.5" className={dk ? 'fill-amber-400/50' : 'fill-amber-500/40'} />
+                        <rect x="89" y="37" width="12" height="2" rx="0.5" className={dk ? 'fill-amber-400/30' : 'fill-amber-500/30'} />
+                        <rect x="124" y="20" width="35" height="24" rx="2" className={dk ? 'fill-slate-700/60' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="128" y="24" width="14" height="3" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-400/50'} />
+                        <rect x="128" y="30" width="16" height="5" rx="0.5" className={dk ? 'fill-cyan-400/50' : 'fill-cyan-500/40'} />
+                        <rect x="128" y="37" width="8" height="2" rx="0.5" className={dk ? 'fill-cyan-400/30' : 'fill-cyan-500/30'} />
+                        <rect x="163" y="20" width="35" height="24" rx="2" className={dk ? 'fill-slate-700/60' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="167" y="24" width="14" height="3" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-400/50'} />
+                        <rect x="167" y="30" width="22" height="5" rx="0.5" className={dk ? 'fill-violet-400/50' : 'fill-violet-500/40'} />
+                        <rect x="167" y="37" width="10" height="2" rx="0.5" className={dk ? 'fill-violet-400/30' : 'fill-violet-500/30'} />
+                        {/* Bar chart area */}
+                        <rect x="46" y="50" width="74" height="48" rx="2" className={dk ? 'fill-slate-700/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="52" y="60" width="6" height="32" rx="1" className={dk ? 'fill-teal-500/40' : 'fill-teal-400/50'} />
+                        <rect x="62" y="68" width="6" height="24" rx="1" className={dk ? 'fill-teal-500/30' : 'fill-teal-400/40'} />
+                        <rect x="72" y="56" width="6" height="36" rx="1" className={dk ? 'fill-teal-500/50' : 'fill-teal-400/60'} />
+                        <rect x="82" y="74" width="6" height="18" rx="1" className={dk ? 'fill-amber-500/40' : 'fill-amber-400/50'} />
+                        <rect x="92" y="80" width="6" height="12" rx="1" className={dk ? 'fill-rose-500/40' : 'fill-rose-400/50'} />
+                        <rect x="102" y="70" width="6" height="22" rx="1" className={dk ? 'fill-teal-500/30' : 'fill-teal-400/40'} />
+                        {/* Document Concept Map */}
+                        <rect x="124" y="50" width="74" height="48" rx="2" className={dk ? 'fill-slate-700/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <circle cx="143" cy="66" r="8" className={dk ? 'fill-teal-500/35' : 'fill-teal-400/45'} />
+                        <circle cx="164" cy="60" r="5.5" className={dk ? 'fill-violet-500/35' : 'fill-violet-400/45'} />
+                        <circle cx="180" cy="72" r="6" className={dk ? 'fill-amber-500/35' : 'fill-amber-400/45'} />
+                        <circle cx="153" cy="83" r="4" className={dk ? 'fill-rose-500/35' : 'fill-rose-400/45'} />
+                        <circle cx="174" cy="87" r="3.5" className={dk ? 'fill-emerald-500/35' : 'fill-emerald-400/45'} />
+                        <line x1="143" y1="66" x2="164" y2="60" stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(156,163,175,0.4)'} strokeWidth="0.5" strokeDasharray="2,1" />
+                        <line x1="164" y1="60" x2="180" y2="72" stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(156,163,175,0.4)'} strokeWidth="0.5" strokeDasharray="2,1" />
+                        <line x1="143" y1="66" x2="153" y2="83" stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(156,163,175,0.4)'} strokeWidth="0.5" strokeDasharray="2,1" />
+                        <line x1="180" y1="72" x2="174" y2="87" stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(156,163,175,0.4)'} strokeWidth="0.5" strokeDasharray="2,1" />
+                        <line x1="153" y1="83" x2="174" y2="87" stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(156,163,175,0.4)'} strokeWidth="0.5" strokeDasharray="2,1" />
+                        {/* Timeline pace bar */}
+                        <rect x="46" y="104" width="152" height="20" rx="2" className={dk ? 'fill-slate-700/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="50" y="108" width="60" height="4" rx="1" className={dk ? 'fill-teal-500/40' : 'fill-teal-400/50'} />
+                        <rect x="50" y="115" width="100" height="3" rx="1" className={dk ? 'fill-slate-600/40' : 'fill-gray-200'} />
+                        <rect x="50" y="115" width="65" height="3" rx="1" className={dk ? 'fill-emerald-500/40' : 'fill-emerald-400/50'} />
+                      </g>
+                    )},
+                    { label: 'Protocol Builder',
+                      purpose: 'Build review protocols in plain English - AI handles the search logic.',
+                      userStory: 'Describe what to find in natural language, skip the Boolean syntax.',
+                      businessReq: 'Cut protocol setup time and eliminate query syntax errors.',
+                      elements: (dk) => (
+                      <g>
+                        {/* Top nav */}
+                        <rect x="0" y="0" width="200" height="14" rx="0" className={dk ? 'fill-slate-700/80' : 'fill-gray-200'} />
+                        <rect x="6" y="4" width="24" height="6" rx="1" className={dk ? 'fill-teal-500/40' : 'fill-teal-400/50'} />
+                        {/* Breadcrumb */}
+                        <rect x="40" y="5" width="50" height="4" rx="1" className={dk ? 'fill-slate-600/40' : 'fill-gray-300/60'} />
+                        {/* Left - ECA Context Drawer */}
+                        <rect x="0" y="14" width="48" height="136" className={dk ? 'fill-slate-800/50' : 'fill-gray-50'} />
+                        <rect x="4" y="18" width="40" height="8" rx="1" className={dk ? 'fill-slate-700/60' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="7" y="20.5" width="20" height="2" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-400/50'} />
+                        {/* Doc list items */}
+                        <rect x="4" y="30" width="40" height="10" rx="1" className={dk ? 'fill-teal-500/15' : 'fill-teal-50'} stroke={dk ? 'rgba(45,212,191,0.3)' : 'rgba(20,184,166,0.3)'} strokeWidth="0.5" />
+                        <rect x="7" y="33" width="24" height="2" rx="0.5" className={dk ? 'fill-slate-300/50' : 'fill-gray-700/60'} />
+                        <rect x="7" y="36.5" width="16" height="1.5" rx="0.5" className={dk ? 'fill-slate-400/30' : 'fill-gray-400/40'} />
+                        <rect x="4" y="42" width="40" height="10" rx="1" className={dk ? 'fill-slate-700/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.6)'} strokeWidth="0.5" />
+                        <rect x="7" y="45" width="22" height="2" rx="0.5" className={dk ? 'fill-slate-300/40' : 'fill-gray-600/50'} />
+                        <rect x="7" y="48.5" width="14" height="1.5" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/35'} />
+                        <rect x="4" y="54" width="40" height="10" rx="1" className={dk ? 'fill-slate-700/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.6)'} strokeWidth="0.5" />
+                        <rect x="4" y="66" width="40" height="10" rx="1" className={dk ? 'fill-slate-700/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.6)'} strokeWidth="0.5" />
+                        <rect x="4" y="78" width="40" height="10" rx="1" className={dk ? 'fill-slate-700/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.6)'} strokeWidth="0.5" />
+                        {/* Center - Document content */}
+                        <rect x="52" y="18" width="96" height="106" rx="2" className={dk ? 'fill-slate-800/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="58" y="24" width="50" height="3" rx="0.5" className={dk ? 'fill-slate-300/40' : 'fill-gray-700/40'} />
+                        <rect x="58" y="30" width="82" height="2" rx="0.5" className={dk ? 'fill-slate-400/30' : 'fill-gray-400/40'} />
+                        <rect x="58" y="34" width="78" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/35'} />
+                        <rect x="58" y="38" width="70" height="2" rx="0.5" className={dk ? 'fill-slate-400/30' : 'fill-gray-400/40'} />
+                        {/* Highlighted privileged section */}
+                        <rect x="56" y="43" width="88" height="14" rx="1" className={dk ? 'fill-amber-500/15' : 'fill-amber-100/80'} stroke={dk ? 'rgba(245,158,11,0.3)' : 'rgba(245,158,11,0.4)'} strokeWidth="0.5" />
+                        <rect x="58" y="46" width="80" height="2" rx="0.5" className={dk ? 'fill-amber-300/40' : 'fill-amber-700/30'} />
+                        <rect x="58" y="50" width="72" height="2" rx="0.5" className={dk ? 'fill-amber-300/30' : 'fill-amber-700/25'} />
+                        <rect x="58" y="60" width="82" height="2" rx="0.5" className={dk ? 'fill-slate-400/30' : 'fill-gray-400/40'} />
+                        <rect x="58" y="64" width="76" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/35'} />
+                        <rect x="58" y="68" width="68" height="2" rx="0.5" className={dk ? 'fill-slate-400/30' : 'fill-gray-400/40'} />
+                        <rect x="58" y="72" width="80" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/35'} />
+                        <rect x="58" y="76" width="60" height="2" rx="0.5" className={dk ? 'fill-slate-400/20' : 'fill-gray-400/30'} />
+                        {/* Entity tags inline */}
+                        <rect x="58" y="82" width="18" height="5" rx="1" className={dk ? 'fill-violet-500/25' : 'fill-violet-200/80'} />
+                        <rect x="80" y="82" width="22" height="5" rx="1" className={dk ? 'fill-cyan-500/25' : 'fill-cyan-200/80'} />
+                        <rect x="106" y="82" width="16" height="5" rx="1" className={dk ? 'fill-rose-500/25' : 'fill-rose-200/80'} />
+                        {/* Action bar */}
+                        <rect x="52" y="126" width="96" height="16" rx="2" className={dk ? 'fill-slate-750/60' : 'fill-gray-50'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="58" y="130" width="22" height="8" rx="2" className={dk ? 'fill-emerald-500/30' : 'fill-emerald-400/40'} />
+                        <rect x="84" y="130" width="22" height="8" rx="2" className={dk ? 'fill-rose-500/30' : 'fill-rose-400/40'} />
+                        <rect x="110" y="130" width="22" height="8" rx="2" className={dk ? 'fill-amber-500/30' : 'fill-amber-400/40'} />
+                        {/* Right - AI Reasoning Panel */}
+                        <rect x="152" y="18" width="46" height="124" rx="2" className={dk ? 'fill-slate-800/60' : 'fill-teal-50/80'} stroke={dk ? 'rgba(45,212,191,0.2)' : 'rgba(20,184,166,0.3)'} strokeWidth="0.5" />
+                        <rect x="156" y="22" width="30" height="3" rx="0.5" className={dk ? 'fill-teal-400/40' : 'fill-teal-600/40'} />
+                        {/* Confidence meter */}
+                        <rect x="156" y="30" width="38" height="16" rx="1" className={dk ? 'fill-slate-700/50' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.6)'} strokeWidth="0.5" />
+                        <rect x="159" y="34" width="32" height="3" rx="1" className={dk ? 'fill-slate-600/60' : 'fill-gray-200'} />
+                        <rect x="159" y="34" width="26" height="3" rx="1" className={dk ? 'fill-emerald-500/50' : 'fill-emerald-400/60'} />
+                        <rect x="159" y="40" width="14" height="2" rx="0.5" className={dk ? 'fill-emerald-400/30' : 'fill-emerald-600/30'} />
+                        {/* Reasoning bullets */}
+                        <rect x="156" y="52" width="36" height="2" rx="0.5" className={dk ? 'fill-slate-300/30' : 'fill-gray-600/40'} />
+                        <rect x="156" y="57" width="32" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-500/35'} />
+                        <rect x="156" y="62" width="28" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-500/35'} />
+                        <rect x="156" y="67" width="34" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-500/35'} />
+                        {/* Source citations */}
+                        <rect x="156" y="76" width="24" height="3" rx="0.5" className={dk ? 'fill-teal-400/25' : 'fill-teal-500/25'} />
+                        <rect x="156" y="82" width="38" height="8" rx="1" className={dk ? 'fill-slate-700/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.5)'} strokeWidth="0.5" />
+                        <rect x="159" y="85" width="28" height="2" rx="0.5" className={dk ? 'fill-slate-400/30' : 'fill-gray-400/40'} />
+                        {/* Tag suggestions */}
+                        <rect x="156" y="96" width="20" height="3" rx="0.5" className={dk ? 'fill-teal-400/25' : 'fill-teal-500/25'} />
+                        <rect x="156" y="102" width="16" height="5" rx="1.5" className={dk ? 'fill-teal-500/20' : 'fill-teal-200/80'} />
+                        <rect x="175" y="102" width="16" height="5" rx="1.5" className={dk ? 'fill-violet-500/20' : 'fill-violet-200/80'} />
+                        <rect x="156" y="110" width="20" height="5" rx="1.5" className={dk ? 'fill-amber-500/20' : 'fill-amber-200/80'} />
+                      </g>
+                    )},
+                    { label: 'Subset Test Results',
+                      purpose: 'Test AI accuracy on a sample before committing to a full run.',
+                      userStory: 'Review precision, recall, and F1 scores before approving a full run.',
+                      businessReq: 'Quality gate on sample data prevents costly full-run errors.',
+                      elements: (dk) => (
+                      <g>
+                        {/* Top nav */}
+                        <rect x="0" y="0" width="200" height="14" rx="0" className={dk ? 'fill-slate-700/80' : 'fill-gray-200'} />
+                        <rect x="6" y="4" width="24" height="6" rx="1" className={dk ? 'fill-teal-500/40' : 'fill-teal-400/50'} />
+                        {/* TEST MODE badge */}
+                        <rect x="160" y="4" width="32" height="6" rx="2" className={dk ? 'fill-amber-500/30' : 'fill-amber-200/80'} />
+                        {/* 3 performance metric cards: Precision, Recall, F1 */}
+                        <rect x="4" y="20" width="62" height="28" rx="2" className={dk ? 'fill-slate-700/50' : 'fill-white'} stroke={dk ? 'rgba(45,212,191,0.3)' : 'rgba(20,184,166,0.4)'} strokeWidth="0.5" />
+                        <rect x="8" y="24" width="20" height="2.5" rx="0.5" className={dk ? 'fill-slate-400/35' : 'fill-gray-400/50'} />
+                        <rect x="8" y="30" width="30" height="7" rx="0.5" className={dk ? 'fill-teal-400/50' : 'fill-teal-500/40'} />
+                        <rect x="8" y="40" width="40" height="2" rx="0.5" className={dk ? 'fill-slate-500/25' : 'fill-gray-400/30'} />
+                        <rect x="70" y="20" width="62" height="28" rx="2" className={dk ? 'fill-slate-700/50' : 'fill-white'} stroke={dk ? 'rgba(34,211,238,0.3)' : 'rgba(6,182,212,0.4)'} strokeWidth="0.5" />
+                        <rect x="74" y="24" width="16" height="2.5" rx="0.5" className={dk ? 'fill-slate-400/35' : 'fill-gray-400/50'} />
+                        <rect x="74" y="30" width="28" height="7" rx="0.5" className={dk ? 'fill-cyan-400/50' : 'fill-cyan-500/40'} />
+                        <rect x="74" y="40" width="36" height="2" rx="0.5" className={dk ? 'fill-slate-500/25' : 'fill-gray-400/30'} />
+                        <rect x="136" y="20" width="60" height="28" rx="2" className={dk ? 'fill-slate-700/50' : 'fill-white'} stroke={dk ? 'rgba(167,139,250,0.3)' : 'rgba(124,58,237,0.4)'} strokeWidth="0.5" />
+                        <rect x="140" y="24" width="20" height="2.5" rx="0.5" className={dk ? 'fill-slate-400/35' : 'fill-gray-400/50'} />
+                        <rect x="140" y="30" width="24" height="7" rx="0.5" className={dk ? 'fill-violet-400/50' : 'fill-violet-500/40'} />
+                        <rect x="140" y="40" width="32" height="2" rx="0.5" className={dk ? 'fill-slate-500/25' : 'fill-gray-400/30'} />
+                        {/* Readiness progress bar */}
+                        <rect x="4" y="54" width="192" height="6" rx="2" className={dk ? 'fill-slate-700/40' : 'fill-gray-100'} />
+                        <rect x="4" y="54" width="178" height="6" rx="2" className={dk ? 'fill-teal-500/30' : 'fill-teal-400/40'} />
+                        {/* 2-col document cards with relevance scores */}
+                        {[0,1,2,3,4,5].map(r => {
+                          const col = r % 2;
+                          const row = Math.floor(r / 2);
+                          return (
+                            <g key={r}>
+                              <rect x={col === 0 ? 4 : 102} y={66 + row * 20} width="94" height="16" rx="2" className={dk ? 'fill-slate-800/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.6)'} strokeWidth="0.5" />
+                              <rect x={col === 0 ? 8 : 106} y={69 + row * 20} width="40" height="2.5" rx="0.5" className={dk ? 'fill-slate-300/35' : 'fill-gray-700/40'} />
+                              <rect x={col === 0 ? 8 : 106} y={74 + row * 20} width="60" height="2" rx="0.5" className={dk ? 'fill-slate-400/20' : 'fill-gray-400/30'} />
+                              <rect x={col === 0 ? 76 : 174} y={69 + row * 20} width="18" height="6" rx="1.5" className={dk ? (r < 2 ? 'fill-emerald-500/40' : r < 4 ? 'fill-teal-500/40' : 'fill-cyan-500/40') : (r < 2 ? 'fill-emerald-400/50' : r < 4 ? 'fill-teal-400/50' : 'fill-cyan-400/50')} />
+                            </g>
+                          )
+                        })}
+                        {/* Bottom action bar */}
+                        <rect x="4" y="130" width="192" height="14" rx="2" className={dk ? 'fill-slate-750/40' : 'fill-gray-50'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.6)'} strokeWidth="0.5" />
+                        <rect x="8" y="133" width="30" height="7" rx="2" className={dk ? 'fill-slate-600/40' : 'fill-gray-200/80'} />
+                        <rect x="150" y="133" width="40" height="7" rx="2" className={dk ? 'fill-teal-500/40' : 'fill-teal-400/50'} />
+                      </g>
+                    )},
+                    { label: 'Review Results',
+                      purpose: 'Documents grouped by AI confidence - focus effort where it matters.',
+                      userStory: 'Prioritize uncertain docs instead of re-checking high-confidence ones.',
+                      businessReq: 'Auto-route low-confidence docs to senior reviewers.',
+                      elements: (dk) => (
+                      <g>
+                        {/* Top nav */}
+                        <rect x="0" y="0" width="200" height="14" rx="0" className={dk ? 'fill-slate-700/80' : 'fill-gray-200'} />
+                        <rect x="6" y="4" width="24" height="6" rx="1" className={dk ? 'fill-teal-500/40' : 'fill-teal-400/50'} />
+                        {/* Filter bar */}
+                        <rect x="4" y="18" width="192" height="10" rx="2" className={dk ? 'fill-slate-800/50' : 'fill-gray-50'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.6)'} strokeWidth="0.5" />
+                        <rect x="8" y="21" width="24" height="4" rx="1" className={dk ? 'fill-teal-500/25' : 'fill-teal-200/60'} />
+                        <rect x="36" y="21" width="24" height="4" rx="1" className={dk ? 'fill-slate-600/40' : 'fill-gray-200/80'} />
+                        <rect x="64" y="21" width="24" height="4" rx="1" className={dk ? 'fill-slate-600/40' : 'fill-gray-200/80'} />
+                        {/* Three confidence band headers */}
+                        <rect x="4" y="32" width="62" height="8" rx="1" className={dk ? 'fill-emerald-500/20' : 'fill-emerald-100/80'} />
+                        <rect x="8" y="34" width="30" height="3" rx="0.5" className={dk ? 'fill-emerald-400/40' : 'fill-emerald-600/40'} />
+                        <rect x="70" y="32" width="62" height="8" rx="1" className={dk ? 'fill-amber-500/20' : 'fill-amber-100/80'} />
+                        <rect x="74" y="34" width="28" height="3" rx="0.5" className={dk ? 'fill-amber-400/40' : 'fill-amber-600/40'} />
+                        <rect x="136" y="32" width="60" height="8" rx="1" className={dk ? 'fill-rose-500/20' : 'fill-rose-100/80'} />
+                        <rect x="140" y="34" width="24" height="3" rx="0.5" className={dk ? 'fill-rose-400/40' : 'fill-rose-600/40'} />
+                        {/* Document table */}
+                        <rect x="4" y="44" width="192" height="8" rx="0" className={dk ? 'fill-slate-700/40' : 'fill-gray-100'} />
+                        <rect x="8" y="46" width="26" height="3" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-500/50'} />
+                        <rect x="44" y="46" width="20" height="3" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-500/50'} />
+                        <rect x="74" y="46" width="24" height="3" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-500/50'} />
+                        <rect x="110" y="46" width="18" height="3" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-500/50'} />
+                        <rect x="144" y="46" width="16" height="3" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-500/50'} />
+                        <rect x="170" y="46" width="20" height="3" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-500/50'} />
+                        {/* Table rows with confidence indicators */}
+                        {[0,1,2,3,4,5,6,7].map(r => (
+                          <g key={r}>
+                            <rect x="4" y={54 + r * 11} width="192" height="10" rx="0" className={dk ? (r % 2 === 0 ? 'fill-slate-800/30' : 'fill-slate-800/10') : (r % 2 === 0 ? 'fill-white' : 'fill-gray-50/50')} />
+                            <rect x="8" y={56 + r * 11} width={20 + (r * 3) % 12} height="2" rx="0.5" className={dk ? 'fill-slate-300/30' : 'fill-gray-600/35'} />
+                            <rect x="44" y={56 + r * 11} width="14" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/35'} />
+                            {/* Confidence bar */}
+                            <rect x="74" y={55.5 + r * 11} width="22" height="4" rx="1" className={dk ? 'fill-slate-600/40' : 'fill-gray-200'} />
+                            <rect x="74" y={55.5 + r * 11} width={r < 3 ? 20 : r < 6 ? 14 : 8} height="4" rx="1" className={dk ? (r < 3 ? 'fill-emerald-500/50' : r < 6 ? 'fill-amber-500/50' : 'fill-rose-500/50') : (r < 3 ? 'fill-emerald-400/60' : r < 6 ? 'fill-amber-400/60' : 'fill-rose-400/60')} />
+                            <rect x="110" y={56 + r * 11} width="12" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/30'} />
+                            <rect x="144" y={55.5 + r * 11} width="10" height="4" rx="1" className={dk ? (r < 3 ? 'fill-emerald-500/25' : r < 6 ? 'fill-amber-500/25' : 'fill-rose-500/25') : (r < 3 ? 'fill-emerald-200/80' : r < 6 ? 'fill-amber-200/80' : 'fill-rose-200/80')} />
+                            <rect x="170" y={56 + r * 11} width="16" height="2" rx="0.5" className={dk ? 'fill-slate-400/20' : 'fill-gray-400/25'} />
+                          </g>
+                        ))}
+                      </g>
+                    )},
+                    { label: 'Citation Review',
+                      purpose: 'AI-highlighted entities and privilege markers with inline reasoning.',
+                      userStory: 'See AI rationale alongside the document to accept or override in context.',
+                      businessReq: 'Audit-ready reasoning for every classification.',
+                      elements: (dk) => (
+                      <g>
+                        {/* Top nav */}
+                        <rect x="0" y="0" width="200" height="14" rx="0" className={dk ? 'fill-slate-700/80' : 'fill-gray-200'} />
+                        <rect x="6" y="4" width="24" height="6" rx="1" className={dk ? 'fill-teal-500/40' : 'fill-teal-400/50'} />
+                        {/* Mini sidebar */}
+                        <rect x="0" y="14" width="10" height="136" className={dk ? 'fill-slate-800/70' : 'fill-gray-100'} />
+                        <circle cx="5" cy="22" r="3" className={dk ? 'fill-teal-500/30' : 'fill-teal-400/40'} />
+                        {/* Left panel - Document viewer (3/5) */}
+                        <rect x="14" y="18" width="108" height="126" rx="2" className={dk ? 'fill-slate-800/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="18" y="22" width="60" height="3.5" rx="0.5" className={dk ? 'fill-slate-300/45' : 'fill-gray-700/50'} />
+                        <rect x="84" y="22" width="20" height="4" rx="1.5" className={dk ? 'fill-emerald-500/30' : 'fill-emerald-400/40'} />
+                        {/* Tab bar */}
+                        <rect x="18" y="30" width="16" height="4" rx="1" className={dk ? 'fill-teal-500/30' : 'fill-teal-200/80'} />
+                        <rect x="37" y="30" width="14" height="4" rx="1" className={dk ? 'fill-slate-600/30' : 'fill-gray-200'} />
+                        <rect x="54" y="30" width="12" height="4" rx="1" className={dk ? 'fill-slate-600/30' : 'fill-gray-200'} />
+                        {/* Document text */}
+                        <rect x="18" y="40" width="98" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/35'} />
+                        <rect x="18" y="44" width="90" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/35'} />
+                        <rect x="18" y="48" width="96" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/35'} />
+                        {/* Highlighted amber span */}
+                        <rect x="18" y="54" width="94" height="10" rx="1" className={dk ? 'fill-amber-500/15' : 'fill-amber-100/80'} stroke={dk ? 'rgba(245,158,11,0.25)' : 'rgba(245,158,11,0.35)'} strokeWidth="0.5" />
+                        <rect x="22" y="56" width="86" height="2" rx="0.5" className={dk ? 'fill-amber-300/35' : 'fill-amber-700/25'} />
+                        <rect x="22" y="60" width="70" height="2" rx="0.5" className={dk ? 'fill-amber-300/25' : 'fill-amber-700/20'} />
+                        <rect x="18" y="68" width="90" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/35'} />
+                        {/* Highlighted violet span */}
+                        <rect x="30" y="73" width="56" height="7" rx="1" className={dk ? 'fill-violet-500/15' : 'fill-violet-100/80'} />
+                        <rect x="34" y="75" width="48" height="2" rx="0.5" className={dk ? 'fill-violet-300/35' : 'fill-violet-700/25'} />
+                        <rect x="18" y="83" width="96" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/35'} />
+                        <rect x="18" y="87" width="84" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/35'} />
+                        {/* Highlighted teal span */}
+                        <rect x="42" y="91" width="48" height="7" rx="1" className={dk ? 'fill-teal-500/15' : 'fill-teal-100/80'} />
+                        <rect x="46" y="93" width="40" height="2" rx="0.5" className={dk ? 'fill-teal-300/35' : 'fill-teal-700/25'} />
+                        <rect x="18" y="102" width="70" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/35'} />
+                        {/* Entity tag pills */}
+                        <rect x="18" y="112" width="18" height="5" rx="1.5" className={dk ? 'fill-amber-500/25' : 'fill-amber-200/80'} />
+                        <rect x="40" y="112" width="14" height="5" rx="1.5" className={dk ? 'fill-violet-500/25' : 'fill-violet-200/80'} />
+                        <rect x="58" y="112" width="22" height="5" rx="1.5" className={dk ? 'fill-teal-500/25' : 'fill-teal-200/80'} />
+                        {/* Accept button */}
+                        <rect x="18" y="128" width="96" height="10" rx="2" className={dk ? 'fill-teal-500/30' : 'fill-teal-400/40'} />
+                        {/* Right panel - AI Insights (2/5) */}
+                        <rect x="126" y="18" width="70" height="126" rx="2" className={dk ? 'fill-slate-800/60' : 'fill-teal-50/80'} stroke={dk ? 'rgba(45,212,191,0.2)' : 'rgba(20,184,166,0.3)'} strokeWidth="0.5" />
+                        <rect x="130" y="22" width="26" height="3" rx="0.5" className={dk ? 'fill-violet-400/40' : 'fill-violet-600/35'} />
+                        <rect x="162" y="22" width="28" height="4" rx="1.5" className={dk ? 'fill-emerald-500/25' : 'fill-emerald-200/80'} />
+                        {/* Relevance meter */}
+                        <rect x="130" y="32" width="60" height="14" rx="1" className={dk ? 'fill-slate-700/50' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.6)'} strokeWidth="0.5" />
+                        <rect x="134" y="36" width="52" height="3" rx="1" className={dk ? 'fill-slate-600/40' : 'fill-gray-200'} />
+                        <rect x="134" y="36" width="44" height="3" rx="1" className={dk ? 'fill-emerald-500/50' : 'fill-emerald-400/60'} />
+                        <rect x="134" y="42" width="16" height="2" rx="0.5" className={dk ? 'fill-emerald-400/30' : 'fill-emerald-600/30'} />
+                        {/* AI Rationale card */}
+                        <rect x="130" y="52" width="60" height="24" rx="1" className={dk ? 'fill-slate-700/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.5)'} strokeWidth="0.5" />
+                        <rect x="134" y="56" width="28" height="2.5" rx="0.5" className={dk ? 'fill-slate-300/35' : 'fill-gray-600/40'} />
+                        <rect x="134" y="61" width="52" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-500/30'} />
+                        <rect x="134" y="65" width="48" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-500/30'} />
+                        <rect x="134" y="69" width="40" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-500/30'} />
+                        {/* Citations list */}
+                        <rect x="130" y="82" width="60" height="28" rx="1" className={dk ? 'fill-slate-700/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.5)'} strokeWidth="0.5" />
+                        <rect x="134" y="86" width="20" height="2.5" rx="0.5" className={dk ? 'fill-slate-300/35' : 'fill-gray-600/40'} />
+                        <circle cx="136" cy="93" r="1.5" className={dk ? 'fill-rose-400/50' : 'fill-rose-500/50'} />
+                        <rect x="140" y="92" width="44" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/30'} />
+                        <circle cx="136" cy="99" r="1.5" className={dk ? 'fill-amber-400/50' : 'fill-amber-500/50'} />
+                        <rect x="140" y="98" width="40" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/30'} />
+                        <circle cx="136" cy="105" r="1.5" className={dk ? 'fill-teal-400/50' : 'fill-teal-500/50'} />
+                        <rect x="140" y="104" width="36" height="2" rx="0.5" className={dk ? 'fill-slate-400/25' : 'fill-gray-400/30'} />
+                        {/* Classification summary */}
+                        <rect x="130" y="116" width="60" height="14" rx="1" className={dk ? 'fill-slate-700/40' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.5)'} strokeWidth="0.5" />
+                        <rect x="134" y="119" width="24" height="2.5" rx="0.5" className={dk ? 'fill-emerald-400/30' : 'fill-emerald-600/30'} />
+                        <rect x="134" y="124" width="20" height="2" rx="0.5" className={dk ? 'fill-slate-400/20' : 'fill-gray-400/25'} />
+                      </g>
+                    )},
+                    { label: 'Privilege Log',
+                      purpose: 'Auto-generated logs with AI-populated fields and one-click export.',
+                      userStory: 'Review and export production-ready logs without manual assembly.',
+                      businessReq: 'Cut production timelines by 60% with automated log creation.',
+                      elements: (dk) => (
+                      <g>
+                        {/* Top nav */}
+                        <rect x="0" y="0" width="200" height="14" rx="0" className={dk ? 'fill-slate-700/80' : 'fill-gray-200'} />
+                        <rect x="6" y="4" width="24" height="6" rx="1" className={dk ? 'fill-teal-500/40' : 'fill-teal-400/50'} />
+                        {/* 4 summary stat cards */}
+                        <rect x="4" y="20" width="46" height="22" rx="2" className={dk ? 'fill-slate-700/50' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="8" y="24" width="16" height="2.5" rx="0.5" className={dk ? 'fill-slate-400/35' : 'fill-gray-400/50'} />
+                        <rect x="8" y="29" width="22" height="5" rx="0.5" className={dk ? 'fill-emerald-400/50' : 'fill-emerald-500/40'} />
+                        <rect x="8" y="36" width="12" height="2" rx="0.5" className={dk ? 'fill-emerald-400/25' : 'fill-emerald-500/25'} />
+                        <rect x="54" y="20" width="46" height="22" rx="2" className={dk ? 'fill-slate-700/50' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="58" y="24" width="16" height="2.5" rx="0.5" className={dk ? 'fill-slate-400/35' : 'fill-gray-400/50'} />
+                        <rect x="58" y="29" width="20" height="5" rx="0.5" className={dk ? 'fill-teal-400/50' : 'fill-teal-500/40'} />
+                        <rect x="58" y="36" width="10" height="2" rx="0.5" className={dk ? 'fill-teal-400/25' : 'fill-teal-500/25'} />
+                        <rect x="104" y="20" width="46" height="22" rx="2" className={dk ? 'fill-slate-700/50' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="108" y="24" width="16" height="2.5" rx="0.5" className={dk ? 'fill-slate-400/35' : 'fill-gray-400/50'} />
+                        <rect x="108" y="29" width="24" height="5" rx="0.5" className={dk ? 'fill-cyan-400/50' : 'fill-cyan-500/40'} />
+                        <rect x="108" y="36" width="14" height="2" rx="0.5" className={dk ? 'fill-cyan-400/25' : 'fill-cyan-500/25'} />
+                        <rect x="154" y="20" width="42" height="22" rx="2" className={dk ? 'fill-slate-700/50' : 'fill-white'} stroke={dk ? 'rgba(100,116,139,0.3)' : 'rgba(209,213,219,0.8)'} strokeWidth="0.5" />
+                        <rect x="158" y="24" width="16" height="2.5" rx="0.5" className={dk ? 'fill-slate-400/35' : 'fill-gray-400/50'} />
+                        <rect x="158" y="29" width="18" height="5" rx="0.5" className={dk ? 'fill-violet-400/50' : 'fill-violet-500/40'} />
+                        <rect x="158" y="36" width="10" height="2" rx="0.5" className={dk ? 'fill-violet-400/25' : 'fill-violet-500/25'} />
+                        {/* Results table */}
+                        <rect x="4" y="48" width="192" height="8" rx="0" className={dk ? 'fill-slate-700/40' : 'fill-gray-100'} />
+                        <rect x="8" y="50" width="20" height="2.5" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-500/45'} />
+                        <rect x="42" y="50" width="24" height="2.5" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-500/45'} />
+                        <rect x="82" y="50" width="18" height="2.5" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-500/45'} />
+                        <rect x="116" y="50" width="22" height="2.5" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-500/45'} />
+                        <rect x="156" y="50" width="16" height="2.5" rx="0.5" className={dk ? 'fill-slate-400/40' : 'fill-gray-500/45'} />
+                        {[0,1,2,3,4,5].map(r => (
+                          <g key={r}>
+                            <rect x="4" y={58 + r * 10} width="192" height="9" rx="0" className={dk ? (r % 2 === 0 ? 'fill-slate-800/25' : 'fill-transparent') : (r % 2 === 0 ? 'fill-white' : 'fill-gray-50/40')} />
+                            <rect x="8" y={60.5 + r * 10} width={16 + (r * 4) % 10} height="2" rx="0.5" className={dk ? 'fill-slate-300/25' : 'fill-gray-600/30'} />
+                            <rect x="42" y={60.5 + r * 10} width="16" height="2" rx="0.5" className={dk ? 'fill-slate-400/20' : 'fill-gray-400/30'} />
+                            <rect x="82" y={60 + r * 10} width="12" height="4" rx="1" className={dk ? (r < 2 ? 'fill-emerald-500/30' : r < 4 ? 'fill-amber-500/30' : 'fill-rose-500/30') : (r < 2 ? 'fill-emerald-200/80' : r < 4 ? 'fill-amber-200/80' : 'fill-rose-200/80')} />
+                            <rect x="116" y={60.5 + r * 10} width="18" height="2" rx="0.5" className={dk ? 'fill-slate-400/20' : 'fill-gray-400/25'} />
+                            <rect x="156" y={60 + r * 10} width="24" height="4" rx="1" className={dk ? 'fill-slate-600/30' : 'fill-gray-200/60'} />
+                          </g>
+                        ))}
+                        {/* Export / Production controls */}
+                        <rect x="4" y="122" width="192" height="22" rx="2" className={dk ? 'fill-slate-750/40' : 'fill-gray-50'} stroke={dk ? 'rgba(100,116,139,0.2)' : 'rgba(209,213,219,0.6)'} strokeWidth="0.5" />
+                        <rect x="8" y="127" width="28" height="3" rx="0.5" className={dk ? 'fill-slate-400/30' : 'fill-gray-500/40'} />
+                        <rect x="8" y="133" width="50" height="2" rx="0.5" className={dk ? 'fill-slate-400/20' : 'fill-gray-400/25'} />
+                        <rect x="110" y="127" width="34" height="8" rx="2" className={dk ? 'fill-slate-600/40' : 'fill-gray-200/80'} />
+                        <rect x="150" y="127" width="40" height="8" rx="2" className={dk ? 'fill-teal-500/40' : 'fill-teal-400/50'} />
+                      </g>
+                    )}
+                  ]
+
+                  // --- Session Notes: PM + Design Lead captured, AI-synthesized, director/verifier validated ---
+                  const sessionNotes = [
+                    {
+                      session: 'Stakeholder Review #1',
+                      attendees: 'Legal SMEs, Engineering',
+                      notes: [
+                        'Privilege risk visibility needs to be immediate - not buried in tabs',
+                        'Reviewers want natural language input, not Boolean query syntax',
+                        'Volume prediction tied to complexity would reduce timeline padding',
+                      ],
+                      aiOutput: 'Dashboard privilege risk score with threshold alerts; natural language protocol builder with AI-translated search logic',
+                      verified: 'Director confirmed business alignment - privilege visibility is a compliance requirement. Engineering verified NLP feasibility.',
+                    },
+                    {
+                      session: 'Stakeholder Review #2',
+                      attendees: 'Partners, Project Managers',
+                      notes: [
+                        'Need precision/recall metrics visible before committing to a full review run',
+                        'Sampling before full runs would catch errors early and save rework hours',
+                        'Low-confidence documents should route to senior reviewers automatically',
+                      ],
+                      aiOutput: 'Subset testing with metrics gate before full run; confidence-based routing to senior review tiers; iterative sample-and-refine workflow',
+                      verified: 'Director validated subset testing maps to defensibility requirements. Verifier confirmed confidence scoring is technically achievable with current model architecture.',
+                    },
+                  ]
+
+                  const WireframeFlipCard = ({ wf, wi, isDark }) => {
+                    const [isFlipped, setIsFlipped] = useState(false)
+                    const flipColors = [
+                      { accent: isDark ? 'text-teal-400' : 'text-teal-600', bg: isDark ? 'bg-teal-500/10' : 'bg-teal-50', border: isDark ? 'border-teal-500/30' : 'border-teal-300/60' },
+                      { accent: isDark ? 'text-amber-400' : 'text-amber-600', bg: isDark ? 'bg-amber-500/10' : 'bg-amber-50', border: isDark ? 'border-amber-500/30' : 'border-amber-300/60' },
+                      { accent: isDark ? 'text-cyan-400' : 'text-cyan-600', bg: isDark ? 'bg-cyan-500/10' : 'bg-cyan-50', border: isDark ? 'border-cyan-500/30' : 'border-cyan-300/60' },
+                      { accent: isDark ? 'text-violet-400' : 'text-violet-600', bg: isDark ? 'bg-violet-500/10' : 'bg-violet-50', border: isDark ? 'border-violet-500/30' : 'border-violet-300/60' },
+                      { accent: isDark ? 'text-rose-400' : 'text-rose-600', bg: isDark ? 'bg-rose-500/10' : 'bg-rose-50', border: isDark ? 'border-rose-500/30' : 'border-rose-300/60' },
+                      { accent: isDark ? 'text-emerald-400' : 'text-emerald-600', bg: isDark ? 'bg-emerald-500/10' : 'bg-emerald-50', border: isDark ? 'border-emerald-500/30' : 'border-emerald-300/60' },
+                    ]
+                    const fc = flipColors[wi % flipColors.length]
+
+                    return (
+                      <motion.div
+                        className="cursor-pointer group"
+                        style={{ perspective: 1000 }}
+                        initial={{ opacity: 0, y: 15 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.05 + wi * 0.06 }}
+                        onClick={() => setIsFlipped(!isFlipped)}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setIsFlipped(!isFlipped) } }}
+                        aria-label={`${wf.label} - click to ${isFlipped ? 'see wireframe' : 'see details'}`}
+                      >
+                        <motion.div
+                          className="relative w-full"
+                          style={{ transformStyle: 'preserve-3d' }}
+                          animate={{ rotateY: isFlipped ? 180 : 0 }}
+                          transition={{ duration: 0.5, type: 'spring', stiffness: 260, damping: 25 }}
+                        >
+                          {/* Front - Wireframe (always light mode for contrast) */}
+                          <div
+                            className={`rounded-xl overflow-hidden border transition-all duration-300 ${
+                              isDark 
+                                ? 'bg-white border-slate-500/30 shadow-lg shadow-black/40 group-hover:shadow-2xl group-hover:shadow-teal-500/10 group-hover:border-teal-400/50 ring-1 ring-white/10' 
+                                : 'bg-white border-gray-200 shadow-lg shadow-gray-300/60 group-hover:shadow-xl group-hover:border-teal-400/60'
+                            }`}
+                            style={{ backfaceVisibility: 'hidden' }}
+                          >
+                            {/* Title bar at top */}
+                            <div className={`px-3 py-2 border-b flex items-center justify-between ${isDark ? 'bg-gray-50 border-gray-200' : 'bg-gray-50 border-gray-200'}`}>
+                              <span className="text-xs font-bold text-gray-800">{wf.label}</span>
+                              <div className={`flex items-center gap-1 text-[9px] font-medium px-1.5 py-0.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-gray-200/90 text-gray-500`}>
+                                <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                                Flip
+                              </div>
+                            </div>
+                            <div className="aspect-[4/3] flex items-center justify-center p-1.5 bg-white">
+                              <svg viewBox="0 0 200 150" className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+                                {wf.elements(false)}
+                              </svg>
+                            </div>
+                          </div>
+
+                          {/* Back - Bento Grid with animated glow borders */}
+                          <div
+                            className={`absolute inset-0 rounded-xl overflow-hidden transition-all duration-300 ${
+                              isDark 
+                                ? 'bg-slate-900/98 shadow-xl shadow-black/40' 
+                                : 'bg-gray-50 shadow-xl shadow-gray-300/60'
+                            }`}
+                            style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                          >
+                            <div className="flex flex-col h-full">
+                              {/* Title bar */}
+                              <div className={`px-3 py-1.5 flex items-center justify-between shrink-0 ${isDark ? 'border-b border-slate-700/60' : 'border-b border-gray-200'}`}>
+                                <span className={`text-[11px] font-bold ${isDark ? 'text-white' : 'text-gray-800'}`}>{wf.label}</span>
+                                <div className={`flex items-center gap-1 text-[8px] font-medium px-1.5 py-0.5 rounded-full ${isDark ? 'bg-slate-700/60 text-slate-400' : 'bg-gray-200/90 text-gray-500'}`}>
+                                  <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                                  Flip
+                                </div>
+                              </div>
+
+                              {/* Bento grid */}
+                              <div className="flex-1 grid grid-cols-5 grid-rows-2 gap-1.5 p-2 min-h-0">
+                                {/* User Story - hero tile spanning 3 cols, 2 rows */}
+                                <div className="col-span-3 row-span-2 relative rounded-lg overflow-hidden">
+                                  {/* Animated rotating border glow */}
+                                  <div className="absolute inset-0 rounded-lg pointer-events-none" style={{
+                                    padding: '1px',
+                                    background: 'linear-gradient(var(--border-angle, 0deg), rgba(139,92,246,0.6), transparent 40%, rgba(139,92,246,0.6))',
+                                    mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                    maskComposite: 'exclude',
+                                    WebkitMaskComposite: 'xor',
+                                    animation: 'borderRotate 4s linear infinite',
+                                  }} />
+                                  <div className={`absolute inset-[1px] rounded-[7px] flex flex-col justify-center p-2.5 ${
+                                    isDark ? 'bg-slate-800/95' : 'bg-white/95'
+                                  }`}>
+                                    {/* Noise texture */}
+                                    <div className="absolute inset-0 rounded-[7px] pointer-events-none" style={{ backgroundImage: noiseDataUri, backgroundRepeat: 'repeat', backgroundSize: '128px 128px', opacity: 0.03 }} />
+                                    {/* Subtle glow in corner */}
+                                    <div className="absolute -top-4 -right-4 w-20 h-20 rounded-full pointer-events-none" style={{ background: isDark ? 'radial-gradient(circle, rgba(139,92,246,0.12), transparent 70%)' : 'radial-gradient(circle, rgba(124,58,237,0.08), transparent 70%)' }} />
+                                    {/* Chip label */}
+                                    <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border w-fit mb-1.5 ${
+                                      isDark ? 'bg-violet-500/20 text-violet-200 border-violet-500/30' : 'bg-violet-100 text-violet-700 border-violet-300/60'
+                                    }`}>
+                                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                                      User Story
+                                    </span>
+                                    <p className={`text-xs leading-relaxed italic relative ${isDark ? 'text-slate-100' : 'text-gray-800'}`}>
+                                      "{wf.userStory}"
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Purpose - top right tile */}
+                                <div className="col-span-2 relative rounded-lg overflow-hidden">
+                                  {/* Animated rotating border glow */}
+                                  <div className="absolute inset-0 rounded-lg pointer-events-none" style={{
+                                    padding: '1px',
+                                    background: 'linear-gradient(var(--border-angle, 0deg), rgba(20,184,166,0.5), transparent 40%, rgba(20,184,166,0.5))',
+                                    mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                    maskComposite: 'exclude',
+                                    WebkitMaskComposite: 'xor',
+                                    animation: 'borderRotate 6s linear infinite',
+                                  }} />
+                                  <div className={`absolute inset-[1px] rounded-[7px] flex flex-col justify-center p-2.5 ${
+                                    isDark ? 'bg-slate-800/95' : 'bg-white/95'
+                                  }`}>
+                                    <div className="absolute inset-0 rounded-[7px] pointer-events-none" style={{ backgroundImage: noiseDataUri, backgroundRepeat: 'repeat', backgroundSize: '128px 128px', opacity: 0.03 }} />
+                                    {/* Chip label */}
+                                    <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border w-fit mb-1.5 ${
+                                      isDark ? 'bg-teal-500/20 text-teal-200 border-teal-500/30' : 'bg-teal-100 text-teal-700 border-teal-300/60'
+                                    }`}>
+                                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                      Purpose
+                                    </span>
+                                    <p className={`text-[11px] leading-snug relative ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{wf.purpose}</p>
+                                  </div>
+                                </div>
+
+                                {/* Business Req - bottom right tile */}
+                                <div className="col-span-2 relative rounded-lg overflow-hidden">
+                                  {/* Animated rotating border glow */}
+                                  <div className="absolute inset-0 rounded-lg pointer-events-none" style={{
+                                    padding: '1px',
+                                    background: 'linear-gradient(var(--border-angle, 0deg), rgba(251,191,36,0.45), transparent 40%, rgba(251,191,36,0.45))',
+                                    mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                                    maskComposite: 'exclude',
+                                    WebkitMaskComposite: 'xor',
+                                    animation: 'borderRotate 5s linear infinite reverse',
+                                  }} />
+                                  <div className={`absolute inset-[1px] rounded-[7px] flex flex-col justify-center p-2.5 ${
+                                    isDark ? 'bg-slate-800/95' : 'bg-white/95'
+                                  }`}>
+                                    <div className="absolute inset-0 rounded-[7px] pointer-events-none" style={{ backgroundImage: noiseDataUri, backgroundRepeat: 'repeat', backgroundSize: '128px 128px', opacity: 0.03 }} />
+                                    {/* Chip label */}
+                                    <span className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border w-fit mb-1.5 ${
+                                      isDark ? 'bg-amber-500/20 text-amber-200 border-amber-500/30' : 'bg-amber-100 text-amber-700 border-amber-300/60'
+                                    }`}>
+                                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
+                                      Requirement
+                                    </span>
+                                    <p className={`text-[11px] leading-snug relative ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{wf.businessReq}</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      </motion.div>
+                    )
+                  }
+
+                  // Scroll-activated timeline pipeline component
+                  const ScrollPipeline = () => {
+                    const containerRef = useRef(null)
+                    const { scrollYProgress } = useScroll({
+                      target: containerRef,
+                      offset: ["start 85%", "end 30%"]
+                    })
+                    const lineHeight = useSpring(scrollYProgress, { stiffness: 80, damping: 25, restDelta: 0.001 })
+
+                    // Individual step refs for in-view detection
+                    const stepRef0 = useRef(null)
+                    const stepRef1 = useRef(null)
+                    const stepRef2 = useRef(null)
+                    const stepRef3 = useRef(null)
+                    const stepRefs = [stepRef0, stepRef1, stepRef2, stepRef3]
+
+                    const s0 = useInView(stepRef0, { once: false, margin: "-20% 0px -65% 0px" })
+                    const s1 = useInView(stepRef1, { once: false, margin: "-20% 0px -65% 0px" })
+                    const s2 = useInView(stepRef2, { once: false, margin: "-20% 0px -65% 0px" })
+                    const s3 = useInView(stepRef3, { once: false, margin: "-20% 0px -65% 0px" })
+
+                    const [reachedSteps, setReachedSteps] = useState(new Set())
+                    const stepsInView = [s0, s1, s2, s3]
+
+                    useEffect(() => {
+                      stepsInView.forEach((inView, i) => {
+                        if (inView) setReachedSteps(prev => {
+                          if (prev.has(i)) return prev
+                          return new Set([...prev, i])
+                        })
+                      })
+                    }, [s0, s1, s2, s3])
+
+                    // Currently active = highest index currently in view
+                    const currentlyActive = stepsInView.reduce((max, v, i) => v ? i : max, -1)
+
+                    const process = section.aiWireframesSection.process
+                    const stepGradients = [
+                      'from-teal-500 to-emerald-500',
+                      'from-amber-500 to-orange-500',
+                      'from-cyan-500 to-blue-500',
+                      'from-violet-500 to-indigo-500'
+                    ]
+                    const stepAccentBorders = [
+                      isDark ? 'border-l-teal-400' : 'border-l-teal-500',
+                      isDark ? 'border-l-amber-400' : 'border-l-amber-500',
+                      isDark ? 'border-l-cyan-400' : 'border-l-cyan-500',
+                      isDark ? 'border-l-violet-400' : 'border-l-violet-500',
+                    ]
+                    const stepChipColors = [
+                      'bg-teal-500/20 text-teal-200 border-teal-500/30',
+                      'bg-amber-500/20 text-amber-200 border-amber-500/30',
+                      'bg-cyan-500/20 text-cyan-200 border-cyan-500/30',
+                      'bg-violet-500/20 text-violet-200 border-violet-500/30',
+                    ]
+                    const stepPulseColors = [
+                      isDark ? 'bg-teal-400' : 'bg-teal-500',
+                      isDark ? 'bg-amber-400' : 'bg-amber-500',
+                      isDark ? 'bg-cyan-400' : 'bg-cyan-500',
+                      isDark ? 'bg-violet-400' : 'bg-violet-500',
+                    ]
+                    const stepGlowShadows = [
+                      isDark ? '0 0 20px rgba(45,212,191,0.4), 0 0 40px rgba(45,212,191,0.15)' : '0 0 16px rgba(20,184,166,0.35)',
+                      isDark ? '0 0 20px rgba(245,158,11,0.4), 0 0 40px rgba(245,158,11,0.15)' : '0 0 16px rgba(217,119,6,0.35)',
+                      isDark ? '0 0 20px rgba(34,211,238,0.4), 0 0 40px rgba(34,211,238,0.15)' : '0 0 16px rgba(6,182,212,0.35)',
+                      isDark ? '0 0 20px rgba(139,92,246,0.4), 0 0 40px rgba(139,92,246,0.15)' : '0 0 16px rgba(124,58,237,0.35)',
+                    ]
+
+                    return (
+                      <div ref={containerRef} className="relative mb-10">
+                        {/* Timeline track - visible on md+ */}
+                        <div className={`absolute left-6 top-0 bottom-0 w-0.5 hidden md:block ${isDark ? 'bg-slate-800' : 'bg-gray-200'}`}>
+                          <motion.div
+                            className={`absolute inset-x-0 top-0 origin-top bg-gradient-to-b ${isDark ? 'from-teal-400 via-cyan-400 to-violet-500' : 'from-teal-500 via-cyan-500 to-violet-500'}`}
+                            style={{ height: useTransform(lineHeight, [0, 1], ['0%', '100%']) }}
+                          />
+                        </div>
+
+                        <div className="space-y-4">
+                          {process.map((step, i) => {
+                            const isReached = reachedSteps.has(i)
+                            const isActive = currentlyActive === i
+                            
+                            return (
+                              <div key={i} ref={stepRefs[i]}>
+                                <motion.div
+                                  className="relative md:pl-16"
+                                  initial={{ opacity: 0, x: -30 }}
+                                  whileInView={{ opacity: 1, x: 0 }}
+                                  viewport={{ once: true }}
+                                  transition={{ delay: i * 0.15, type: 'spring', stiffness: 100, damping: 20 }}
+                                >
+                                  {/* Timeline node */}
+                                  <div className="absolute left-[7px] top-5 hidden md:flex items-center justify-center">
+                                    {/* Active pulse ring */}
+                                    {isActive && (
+                                      <motion.div
+                                        className={`absolute w-12 h-12 rounded-full ${stepPulseColors[i]}`}
+                                        animate={{ scale: [1, 2, 1], opacity: [0.3, 0, 0.3] }}
+                                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                                      />
+                                    )}
+                                    {/* Glow halo for reached steps */}
+                                    {isReached && (
+                                      <motion.div
+                                        className={`absolute w-8 h-8 rounded-full ${stepPulseColors[i]}`}
+                                        initial={{ opacity: 0, scale: 0.5 }}
+                                        animate={{ opacity: 0.2, scale: 1 }}
+                                        style={{ filter: 'blur(6px)' }}
+                                      />
+                                    )}
+                                    {/* Node circle */}
+                                    <motion.div
+                                      className={`relative w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs ring-2 ${isDark ? 'ring-slate-900' : 'ring-white'}`}
+                                      animate={{
+                                        background: isReached
+                                          ? undefined
+                                          : isDark ? 'rgb(51,65,85)' : 'rgb(209,213,219)',
+                                        boxShadow: isReached ? stepGlowShadows[i] : 'none',
+                                      }}
+                                      transition={{ duration: 0.4 }}
+                                    >
+                                      <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${stepGradients[i]} transition-opacity duration-400 ${isReached ? 'opacity-100' : 'opacity-0'}`} />
+                                      <span className={`relative z-10 transition-colors duration-300 ${isReached ? 'text-white' : isDark ? 'text-slate-500' : 'text-gray-400'}`}>{i + 1}</span>
+                                    </motion.div>
+                                  </div>
+
+                                  <motion.div
+                                    className={`rounded-xl px-5 py-4 border-l-[3px] border transition-all duration-300 cursor-default ${stepAccentBorders[i]} ${
+                                      isDark 
+                                        ? 'bg-gradient-to-r from-slate-800/80 to-slate-800/50 border-slate-600/40 shadow-md shadow-black/20 hover:shadow-xl hover:shadow-black/30' 
+                                        : 'bg-white border-gray-200 hover:border-gray-300 shadow-sm shadow-gray-200/80 hover:shadow-md hover:shadow-gray-300/60'
+                                    }`}
+                                    whileHover={{ x: 4, y: -1 }}
+                                    transition={{ type: 'spring', stiffness: 400, damping: 25 }}
+                                  >
+                                    {/* Step number + title */}
+                                    <div className="flex items-center gap-2.5">
+                                      <div className={`md:hidden w-6 h-6 rounded-full bg-gradient-to-br ${stepGradients[i]} flex items-center justify-center text-white text-[11px] font-bold shrink-0`}>{i + 1}</div>
+                                      <h4 className={`text-base font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{step.stage}</h4>
+                                    </div>
+                                    {step.tools && (
+                                      <div className="flex flex-wrap gap-1.5 mt-1.5 mb-2">
+                                        {step.tools.map((tool, ti) => (
+                                          <motion.span
+                                            key={ti}
+                                            className={`inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border ${stepChipColors[i]}`}
+                                            initial={{ opacity: 0, scale: 0.8 }}
+                                            whileInView={{ opacity: 1, scale: 1 }}
+                                            viewport={{ once: true }}
+                                            transition={{ delay: i * 0.15 + ti * 0.05 + 0.3 }}
+                                          >
+                                            <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                            </svg>
+                                            {tool}
+                                          </motion.span>
+                                        ))}
+                                      </div>
+                                    )}
+                                    <p className={`text-sm leading-relaxed ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>{step.description}</p>
+                                  </motion.div>
+                                </motion.div>
+
+                                {/* AI-Generated Wireframes gallery - after step 2 */}
+                                {i === 1 && (
+                                  <motion.div
+                                    className="md:pl-16 mt-4"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.25 }}
+                                  >
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                                      {wireframeDefs.map((wf, wi) => <WireframeFlipCard key={wi} wf={wf} wi={wi} isDark={isDark} />)}
+                                    </div>
+                                  </motion.div>
+                                )}
+
+                                {/* Session Notes - after step 3 */}
+                                {i === 2 && (
+                                  <motion.div
+                                    className="md:pl-16 mt-3"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.25, type: 'spring', stiffness: 100 }}
+                                  >
+                                    <div className="space-y-3">
+                                      {sessionNotes.map((sn, si) => (
+                                        <motion.div
+                                          key={si}
+                                          className={`rounded-xl border overflow-hidden transition-all duration-300 ${
+                                            isDark 
+                                              ? 'bg-gradient-to-br from-slate-800/80 to-slate-800/50 border-slate-600/40 shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-black/30 hover:border-slate-500/50' 
+                                              : 'bg-white border-gray-200 shadow-md shadow-gray-200/60 hover:shadow-lg hover:shadow-gray-300/60 hover:border-gray-300'
+                                          }`}
+                                          initial={{ opacity: 0, y: 15 }}
+                                          whileInView={{ opacity: 1, y: 0 }}
+                                          viewport={{ once: true }}
+                                          transition={{ delay: 0.1 + si * 0.15, type: 'spring', stiffness: 100 }}
+                                          whileHover={{ x: 4, y: -1 }}
+                                        >
+                                          {/* Session header */}
+                                          <div className={`px-4 py-2.5 flex items-center justify-between border-b ${
+                                            isDark ? 'bg-slate-700/50 border-slate-600/40' : 'bg-gray-50/80 border-gray-200/80'
+                                          }`}>
+                                            <div className="flex items-center gap-2">
+                                              <svg className={`w-3.5 h-3.5 ${isDark ? 'text-cyan-400' : 'text-cyan-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                              </svg>
+                                              <span className={`text-sm font-bold ${isDark ? 'text-white' : 'text-gray-900'}`}>{sn.session}</span>
+                                            </div>
+                                            <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${isDark ? 'bg-slate-600/60 text-slate-300' : 'bg-gray-200 text-gray-600'}`}>{sn.attendees}</span>
+                                          </div>
+
+                                          <div className="px-4 py-3 space-y-3">
+                                            {/* Raw notes */}
+                                            <div>
+                                              <span className={`text-[10px] uppercase tracking-wider font-bold ${isDark ? 'text-slate-400' : 'text-gray-500'}`}>Session Notes</span>
+                                              <ul className="mt-1.5 space-y-1">
+                                                {sn.notes.map((note, ni) => (
+                                                  <motion.li
+                                                    key={ni}
+                                                    className="flex items-start gap-2"
+                                                    initial={{ opacity: 0, x: -10 }}
+                                                    whileInView={{ opacity: 1, x: 0 }}
+                                                    viewport={{ once: true }}
+                                                    transition={{ delay: 0.3 + si * 0.15 + ni * 0.08 }}
+                                                  >
+                                                    <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${isDark ? 'bg-cyan-400' : 'bg-cyan-500'}`} />
+                                                    <span className={`text-xs leading-relaxed ${isDark ? 'text-slate-300' : 'text-gray-700'}`}>{note}</span>
+                                                  </motion.li>
+                                                ))}
+                                              </ul>
+                                            </div>
+
+                                            {/* AI-generated output */}
+                                            <motion.div
+                                              className={`rounded-lg px-3 py-2.5 ${isDark ? 'bg-teal-500/15 border border-teal-500/30' : 'bg-teal-50 border border-teal-300/50'}`}
+                                              initial={{ opacity: 0 }}
+                                              whileInView={{ opacity: 1 }}
+                                              viewport={{ once: true }}
+                                              transition={{ delay: 0.5 + si * 0.15 }}
+                                            >
+                                              <div className="flex items-center gap-1.5 mb-1">
+                                                <svg className={`w-3 h-3 ${isDark ? 'text-teal-400' : 'text-teal-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                                                </svg>
+                                                <span className={`text-[10px] uppercase tracking-wider font-bold ${isDark ? 'text-teal-300' : 'text-teal-700'}`}>AI-Generated Requirements</span>
+                                              </div>
+                                              <p className={`text-xs leading-relaxed ${isDark ? 'text-teal-200' : 'text-teal-900'}`}>{sn.aiOutput}</p>
+                                            </motion.div>
+
+                                            {/* Director/verifier validation */}
+                                            <motion.div
+                                              className={`rounded-lg px-3 py-2.5 ${isDark ? 'bg-violet-500/15 border border-violet-500/30' : 'bg-violet-50 border border-violet-300/50'}`}
+                                              initial={{ opacity: 0 }}
+                                              whileInView={{ opacity: 1 }}
+                                              viewport={{ once: true }}
+                                              transition={{ delay: 0.6 + si * 0.15 }}
+                                            >
+                                              <div className="flex items-center gap-1.5 mb-1">
+                                                <svg className={`w-3 h-3 ${isDark ? 'text-violet-400' : 'text-violet-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                                <span className={`text-[10px] uppercase tracking-wider font-bold ${isDark ? 'text-violet-300' : 'text-violet-700'}`}>Director/Verifier Validation</span>
+                                              </div>
+                                              <p className={`text-xs leading-relaxed ${isDark ? 'text-violet-200' : 'text-violet-900'}`}>{sn.verified}</p>
+                                            </motion.div>
+                                          </div>
+                                        </motion.div>
+                                      ))}
+                                    </div>
+                                  </motion.div>
+                                )}
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    )
+                  }
+
+                  return (
+                  <motion.div 
+                    className="mt-8"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                  >
+                    {/* Intro - full width */}
+                    <p className={`text-base leading-relaxed mb-10 ${isDark ? 'text-slate-300' : 'text-gray-600 dark:text-slate-300'}`}>{section.aiWireframesSection.intro}</p>
+                    
+                    {/* Process Pipeline with scroll-activated timeline */}
+                    <ScrollPipeline />
+
+                    {/* Key Benefit Callout */}
+                    {section.aiWireframesSection.keyBenefit && (
+                      <motion.div 
+                        className={`rounded-2xl p-6 flex items-center gap-6 border ${
+                          isDark 
+                            ? 'bg-gradient-to-br from-indigo-500/15 to-violet-500/10 border-indigo-500/30 shadow-lg shadow-indigo-900/20' 
+                            : 'bg-gradient-to-br from-indigo-50 to-violet-50 border-indigo-200/60 shadow-md shadow-indigo-100/60'
+                        }`}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.5 }}
+                        whileHover={{ scale: 1.01 }}
+                      >
+                        <div className={`text-4xl md:text-5xl font-black bg-clip-text text-transparent shrink-0 ${
+                          isDark 
+                            ? 'bg-gradient-to-br from-indigo-300 to-violet-400' 
+                            : 'bg-gradient-to-br from-indigo-600 to-violet-600'
+                        }`}>
+                          {section.aiWireframesSection.keyBenefit.stat}
+                        </div>
+                        <div className="flex-1">
+                          <div className={`font-semibold text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>{section.aiWireframesSection.keyBenefit.label}</div>
+                          <div className={`text-sm mt-1 ${isDark ? 'text-indigo-300/80' : 'text-gray-600'}`}>{section.aiWireframesSection.keyBenefit.detail}</div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </motion.div>
+                  )
+                })()}
+
+                {/* Multimodal Showcase - All-visible channel cards */}
+                {section.multimodalShowcase && (() => {
+                  const channelColors = [
+                    { gradient: 'from-rose-500 to-pink-500', bg: 'bg-rose-500/10', ring: 'ring-rose-500/20', text: 'text-rose-400', glow: 'rgba(244,63,94,0.15)', glowHex: '#f43f5e', glowSoft: 'rgba(244,63,94,0.08)', statText: 'text-rose-300' },
+                    { gradient: 'from-violet-500 to-purple-500', bg: 'bg-violet-500/10', ring: 'ring-violet-500/20', text: 'text-violet-400', glow: 'rgba(139,92,246,0.15)', glowHex: '#8b5cf6', glowSoft: 'rgba(139,92,246,0.08)', statText: 'text-violet-300' },
+                    { gradient: 'from-blue-500 to-cyan-500', bg: 'bg-blue-500/10', ring: 'ring-blue-500/20', text: 'text-blue-400', glow: 'rgba(59,130,246,0.15)', glowHex: '#3b82f6', glowSoft: 'rgba(59,130,246,0.08)', statText: 'text-blue-300' }
+                  ]
+
+                  // Animated count-up
+                  const CountUp = ({ target, delay = 0, suffix = 'x', colors }) => {
+                    const [count, setCount] = useState(0)
+                    const ref = useRef(null)
+                    const hasAnimated = useRef(false)
+
+                    useEffect(() => {
+                      const observer = new IntersectionObserver(
+                        ([entry]) => {
+                          if (entry.isIntersecting && !hasAnimated.current) {
+                            hasAnimated.current = true
+                            const duration = 1200
+                            const startTime = performance.now() + delay * 1000
+                            const animate = (now) => {
+                              const elapsed = now - startTime
+                              if (elapsed < 0) { requestAnimationFrame(animate); return }
+                              const progress = Math.min(elapsed / duration, 1)
+                              const eased = 1 - Math.pow(1 - progress, 3)
+                              setCount(Math.round(eased * target))
+                              if (progress < 1) requestAnimationFrame(animate)
+                            }
+                            requestAnimationFrame(animate)
+                          }
+                        },
+                        { threshold: 0.3 }
+                      )
+                      if (ref.current) observer.observe(ref.current)
+                      return () => observer.disconnect()
+                    }, [target, delay])
+
+                    return (
+                      <span ref={ref} className={`text-4xl md:text-5xl font-black ${colors.statText} tabular-nums`}>
+                        {count}{suffix}
+                      </span>
+                    )
+                  }
+
+                  // Animated icon: Video - camera with pulsing record dot
+                  const VideoIcon = ({ colors }) => (
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center text-white shadow-lg relative overflow-hidden`}>
+                      <svg className="w-6 h-6 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                      </svg>
+                      {/* Recording dot */}
+                      <motion.div
+                        className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-white z-20"
+                        animate={{ opacity: [1, 0.2, 1] }}
+                        transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}
+                      />
+                      {/* Scan line */}
+                      <motion.div
+                        className="absolute left-0 right-0 h-[1px] bg-white/30 z-10"
+                        animate={{ top: ['10%', '90%', '10%'] }}
+                        transition={{ repeat: Infinity, duration: 2.5, ease: 'easeInOut' }}
+                      />
+                    </div>
+                  )
+
+                  // Animated icon: Audio - mic with concentric half-circle arcs above
+                  const AudioIcon = ({ colors }) => (
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${colors.gradient} flex items-end justify-center pb-1.5 text-white shadow-lg relative overflow-hidden`}>
+                      {/* Mic body - smaller, positioned at bottom */}
+                      <svg className="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                      </svg>
+                      {/* Concentric arcs above mic */}
+                      <svg className="absolute top-0 left-0 w-full h-full z-0" viewBox="0 0 56 56" fill="none">
+                        {[0, 1, 2].map((j) => {
+                          const r = 7 + j * 5
+                          return (
+                            <motion.path
+                              key={j}
+                              d={`M ${28 - r} ${28} A ${r} ${r} 0 0 1 ${28 + r} ${28}`}
+                              stroke="white"
+                              strokeWidth={2}
+                              strokeLinecap="round"
+                              fill="none"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: [0.7, 0.15, 0.7] }}
+                              transition={{ repeat: Infinity, duration: 1.4, delay: j * 0.2, ease: 'easeInOut' }}
+                            />
+                          )
+                        })}
+                      </svg>
+                    </div>
+                  )
+
+                  // Animated icon: Chat - bubble with typing dots
+                  const ChatIcon = ({ colors }) => (
+                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${colors.gradient} flex items-center justify-center text-white shadow-lg relative`}>
+                      {/* Chat bubble outline */}
+                      <svg className="w-8 h-8 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                      </svg>
+                      {/* Three bouncing dots inside the bubble */}
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex gap-[2px] z-20">
+                        {[0, 0.15, 0.3].map((d, j) => (
+                          <motion.div
+                            key={j}
+                            className="w-[3px] h-[3px] rounded-full bg-white"
+                            animate={{ y: [0, -2.5, 0], opacity: [0.5, 1, 0.5] }}
+                            transition={{ repeat: Infinity, duration: 0.8, delay: d, ease: 'easeInOut' }}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  )
+
+                  const channelIconComponents = { video: VideoIcon, audio: AudioIcon, chat: ChatIcon }
+
+                  const MultimodalCards = () => {
+                    const channels = section.multimodalShowcase.channels
+
+                    return (
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        {channels.map((channel, i) => {
+                          const colors = channelColors[i]
+                          const speedNum = parseInt(channel.speedup)
+                          const IconComponent = channelIconComponents[channel.icon]
+
+                          return (
+                            <motion.div
+                              key={channel.type}
+                              className="group relative"
+                              initial={{ opacity: 0, y: 20 }}
+                              whileInView={{ opacity: 1, y: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: i * 0.12, duration: 0.5 }}
+                              whileHover={{ y: -4 }}
+                            >
+                              {/* Hover glow */}
+                              <div
+                                className="absolute -inset-1.5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl pointer-events-none"
+                                style={{ background: colors.glow }}
+                              />
+
+                              {/* Card */}
+                              <div className="relative rounded-2xl overflow-hidden h-full">
+                                {/* Gradient border */}
+                                <div className="absolute inset-0 rounded-2xl" style={{ background: `linear-gradient(135deg, ${colors.glowSoft}, transparent 40%, transparent 60%, ${colors.glowSoft})` }} />
+                                
+                                <div className="relative m-[1px] bg-gradient-to-b from-slate-800/80 to-slate-900/90 backdrop-blur-xl rounded-[15px] h-full flex flex-col"
+                                  style={{ boxShadow: `inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.3), 0 4px 24px rgba(0,0,0,0.2)` }}
+                                >
+                                  {/* Noise */}
+                                  <div className="absolute inset-0 rounded-[15px] opacity-[0.03] pointer-events-none" style={{ backgroundImage: `url("${noiseDataUri}")` }} />
+                                  
+                                  {/* Top color wash */}
+                                  <div className="absolute top-0 left-0 right-0 h-32 rounded-t-[15px] pointer-events-none" style={{ background: `linear-gradient(180deg, ${colors.glowSoft} 0%, transparent 100%)` }} />
+
+                                  {/* Stat block - stacked like Discovery Phase */}
+                                  <div className="relative text-center pt-5 pb-4 px-5">
+                                    <div className="flex justify-center mb-3">
+                                      <IconComponent colors={colors} />
+                                    </div>
+                                    <div>
+                                      <CountUp target={speedNum} delay={i * 0.15} suffix="x" colors={colors} />
+                                    </div>
+                                    <div className="text-xs font-medium uppercase tracking-wider mt-1 mb-1 text-slate-400">
+                                      Faster {channel.type}
+                                    </div>
+                                  </div>
+
+                                  {/* Transformation strip */}
+                                  <div className="relative mx-5 rounded-xl overflow-hidden" style={{ boxShadow: 'inset 0 1px 2px rgba(0,0,0,0.3)' }}>
+                                    <div className="flex items-stretch">
+                                      <div className="flex-1 bg-slate-700/30 px-3 py-2.5 border-r border-white/[0.04]">
+                                        <div className="text-[9px] uppercase tracking-wider text-slate-500 font-semibold mb-0.5">Manual</div>
+                                        <div className="text-xs text-slate-400 leading-tight">{channel.before}</div>
+                                      </div>
+                                      <div className="flex items-center justify-center px-2 bg-slate-700/20">
+                                        <motion.div
+                                          animate={{ x: [0, 3, 0] }}
+                                          transition={{ repeat: Infinity, duration: 1.5, ease: 'easeInOut' }}
+                                        >
+                                          <svg className={`w-4 h-4 ${colors.text}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" /></svg>
+                                        </motion.div>
+                                      </div>
+                                      <div className="flex-1 px-3 py-2.5" style={{ background: colors.glowSoft }}>
+                                        <div className={`text-[9px] uppercase tracking-wider ${colors.text} font-semibold mb-0.5`}>AI-Powered</div>
+                                        <div className={`text-xs font-medium ${colors.text} leading-tight`}>{channel.after}</div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Capabilities */}
+                                  <div className="relative flex flex-wrap gap-1.5 p-5 mt-auto">
+                                    {channel.capabilities.map((cap, j) => (
+                                      <motion.span
+                                        key={j}
+                                        className="inline-flex items-center gap-1.5 text-[11px] px-2.5 py-1 rounded-full border border-white/[0.06] bg-slate-700/30 text-slate-300 group-hover:border-white/[0.1] group-hover:bg-slate-700/50 transition-colors duration-300"
+                                        initial={{ opacity: 0, scale: 0.9 }}
+                                        whileInView={{ opacity: 1, scale: 1 }}
+                                        viewport={{ once: true }}
+                                        transition={{ delay: i * 0.08 + j * 0.05 + 0.4 }}
+                                      >
+                                        <span className={`w-1 h-1 rounded-full bg-gradient-to-r ${colors.gradient} shrink-0`} />
+                                        {cap}
+                                      </motion.span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                            </motion.div>
+                          )
+                        })}
+                      </div>
+                    )
+                  }
+
+                  return <MultimodalCards />
+                })()}
+
+                {/* Workflow Pipeline - SDLC-style interactive horizontal flow */}
+                {section.workflowTimeline && (() => {
+                  const phases = section.workflowTimeline.phases
+                  const phaseIcons = {
+                    research: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>,
+                    stories: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>,
+                    design: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" /></svg>,
+                    code: <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                  }
+                  const phaseColors = [
+                    'from-teal-500 to-cyan-500',
+                    'from-violet-500 to-indigo-500',
+                    'from-amber-500 to-orange-500',
+                    'from-emerald-500 to-green-500'
+                  ]
+                  const phaseBgColors = [
+                    'bg-teal-50 border-teal-200',
+                    'bg-violet-50 border-violet-200',
+                    'bg-amber-50 border-amber-200',
+                    'bg-emerald-50 border-emerald-200'
+                  ]
+
+                  const WorkflowPipeline = () => {
+                    const [activePhase, setActivePhase] = useState(0)
+                    const [isPipelineAnimating, setIsPipelineAnimating] = useState(true)
+
+                    useEffect(() => {
+                      if (!isPipelineAnimating) return
+                      const timer = setInterval(() => {
+                        setActivePhase((prev) => (prev + 1) % phases.length)
+                      }, 4000)
+                      return () => clearInterval(timer)
+                    }, [isPipelineAnimating])
+
+                    const active = phases[activePhase]
+
+                    return (
+                      <motion.div
+                        className="mt-8"
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                      >
+                        <div className="w-full max-w-5xl mx-auto">
+                          {/* Main Container */}
+                          <div className="bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+                            {/* Header Bar */}
+                            <div className="px-6 py-4 bg-gradient-to-r from-gray-900 to-gray-800">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-10 h-10 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-xl flex items-center justify-center">
+                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                                    </svg>
+                                  </div>
+                                  <div>
+                                    <h3 className="text-white font-bold">AI-Powered Delivery Pipeline</h3>
+                                    <p className="text-gray-400 text-sm">How I led the SDLC with AI at every phase</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                  <button
+                                    onClick={() => setIsPipelineAnimating(!isPipelineAnimating)}
+                                    className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                                      isPipelineAnimating 
+                                        ? 'bg-teal-500/20 text-teal-400' 
+                                        : 'bg-gray-700 text-gray-400 hover:text-white'
+                                    }`}
+                                  >
+                                    {isPipelineAnimating ? '⏸ Pause' : '▶ Play'}
+                                  </button>
+                                  <div className="text-right hidden sm:block">
+                                    <p className="text-teal-400 font-bold">4 months</p>
+                                    <p className="text-gray-500 text-xs">vs. 6 mo estimate</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Pipeline content */}
+                            <div className="p-6">
+                              {/* Horizontal step indicators */}
+                              <div className="flex items-center justify-between mb-8 relative">
+                                {/* Connection line background */}
+                                <div className="absolute top-6 left-8 right-8 h-0.5 bg-gray-200" />
+                                {/* Connection line progress */}
+                                <motion.div 
+                                  className="absolute top-6 left-8 h-0.5 bg-gradient-to-r from-teal-500 to-cyan-500"
+                                  animate={{ width: `${(activePhase / (phases.length - 1)) * (100 - 12)}%` }}
+                                  transition={{ duration: 0.5 }}
+                                />
+
+                                {phases.map((phase, i) => (
+                                  <button
+                                    key={i}
+                                    onClick={() => {
+                                      setActivePhase(i)
+                                      setIsPipelineAnimating(false)
+                                    }}
+                                    className="relative z-10 flex flex-col items-center gap-2 group"
+                                  >
+                                    <motion.div 
+                                      className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                                        i <= activePhase 
+                                          ? `bg-gradient-to-br ${phaseColors[i]} text-white shadow-lg` 
+                                          : 'bg-gray-100 text-gray-400'
+                                      }`}
+                                      animate={i === activePhase ? { scale: 1.1 } : { scale: 1 }}
+                                      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                                    >
+                                      {phaseIcons[phase.icon]}
+                                    </motion.div>
+                                    <span className={`text-xs font-medium text-center max-w-[90px] transition-colors ${
+                                      i <= activePhase ? 'text-gray-900' : 'text-gray-400'
+                                    }`}>
+                                      {phase.phase}
+                                    </span>
+                                  </button>
+                                ))}
+                              </div>
+
+                              {/* Active Phase Detail Card */}
+                              <AnimatePresence mode="wait">
+                                <motion.div
+                                  key={activePhase}
+                                  className={`${phaseBgColors[activePhase]} border rounded-2xl p-6`}
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  exit={{ opacity: 0, y: -10 }}
+                                  transition={{ duration: 0.3 }}
+                                >
+                                  <div className="flex flex-col lg:flex-row gap-6">
+                                    {/* Left - Phase info */}
+                                    <div className="flex-1">
+                                      <div className="flex items-center gap-3 mb-5">
+                                        <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${phaseColors[activePhase]} flex items-center justify-center text-white`}>
+                                          {phaseIcons[active.icon]}
+                                        </div>
+                                        <div>
+                                          <span className="text-xs text-gray-500 uppercase tracking-wider font-medium">Step {activePhase + 1}</span>
+                                          <h4 className="text-xl font-bold text-gray-900">{active.phase}</h4>
+                                        </div>
+                                      </div>
+
+                                      {/* AI + Human side-by-side */}
+                                      <div className="grid md:grid-cols-2 gap-4">
+                                        {/* AI column */}
+                                        <div className="bg-white rounded-xl p-4 border border-teal-200/80 shadow-sm">
+                                          <div className="flex items-center gap-2 mb-3">
+                                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-teal-500 to-cyan-500 flex items-center justify-center">
+                                              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                              </svg>
+                                            </div>
+                                            <span className="text-xs font-bold text-teal-700 uppercase tracking-wider">AI Assisted</span>
+                                          </div>
+                                          <ul className="space-y-2">
+                                            {active.ai.map((item, j) => (
+                                              <li key={j} className="text-sm text-gray-700 flex items-start gap-2">
+                                                <svg className="w-4 h-4 text-teal-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
+                                                {item}
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </div>
+
+                                        {/* Human column */}
+                                        <div className="bg-white rounded-xl p-4 border border-violet-200/80 shadow-sm">
+                                          <div className="flex items-center gap-2 mb-3">
+                                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-violet-500 to-indigo-500 flex items-center justify-center">
+                                              <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                              </svg>
+                                            </div>
+                                            <span className="text-xs font-bold text-violet-700 uppercase tracking-wider">I Led</span>
+                                          </div>
+                                          <ul className="space-y-2">
+                                            {active.human.map((item, j) => (
+                                              <li key={j} className="text-sm text-gray-700 flex items-start gap-2">
+                                                <svg className="w-4 h-4 text-violet-500 mt-0.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                  <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                </svg>
+                                                {item}
+                                              </li>
+                                            ))}
+                                          </ul>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    {/* Right - Outcome card */}
+                                    <div className="lg:w-64 shrink-0 flex items-center">
+                                      <div className="w-full bg-white rounded-xl p-5 shadow-lg border border-gray-100">
+                                        <div className="flex items-center gap-2 mb-3">
+                                          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                                          <span className="text-xs font-medium text-gray-500 uppercase tracking-wider">Outcome</span>
+                                        </div>
+                                        <p className="text-sm text-gray-900 font-semibold leading-relaxed">{active.outcome}</p>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </motion.div>
+                              </AnimatePresence>
+
+                              {/* Results Summary Metrics */}
+                              <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                                {[
+                                  { value: '47', label: 'Stories Shipped' },
+                                  { value: '2x', label: 'Dev Velocity' },
+                                  { value: '85%', label: 'Test Coverage' },
+                                  { value: '33%', label: 'Ahead of Schedule' }
+                                ].map((metric, mi) => (
+                                  <motion.div 
+                                    key={mi}
+                                    className="bg-gray-50 rounded-xl p-4 text-center border border-gray-100"
+                                    initial={{ opacity: 0, y: 10 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: mi * 0.08 }}
+                                  >
+                                    <p className="text-2xl font-bold text-teal-600">{metric.value}</p>
+                                    <p className="text-xs text-gray-500 mt-0.5">{metric.label}</p>
+                                  </motion.div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="px-6 py-3.5 bg-gray-50 border-t border-gray-200">
+                              <div className="flex items-center justify-between">
+                                <p className="text-sm text-gray-500">
+                                  <span className="text-teal-600 font-medium">Result:</span> Complex AI platform delivered 2 months early with a small cross-functional team
+                                </p>
+                                <span className="flex items-center gap-1.5 text-xs text-gray-400">
+                                  <span className="w-2 h-2 bg-green-500 rounded-full" />
+                                  All phases complete
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )
+                  }
+
+                  return <WorkflowPipeline />
+                })()}
+
+                {/* Technical Challenges - Card grid */}
+                {section.technicalChallenges && (
+                  <motion.div 
+                    className="mt-8"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                  >
+                    <p className="text-gray-400 text-base mb-8 max-w-2xl">{section.technicalChallenges.description}</p>
+                    
+                    <div className="grid md:grid-cols-2 gap-4">
+                      {section.technicalChallenges.challenges.map((item, i) => {
+                        const challengeIcons = {
+                          puzzle: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z" /></svg>,
+                          shield: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" /></svg>,
+                          gauge: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
+                          refresh: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+                        }
+                        const cardColors = [
+                          { gradient: 'from-teal-500/10 to-cyan-500/5', border: 'border-teal-500/20', icon: 'from-teal-500 to-cyan-500', accent: 'text-teal-400' },
+                          { gradient: 'from-rose-500/10 to-red-500/5', border: 'border-rose-500/20', icon: 'from-rose-500 to-red-500', accent: 'text-rose-400' },
+                          { gradient: 'from-amber-500/10 to-orange-500/5', border: 'border-amber-500/20', icon: 'from-amber-500 to-orange-500', accent: 'text-amber-400' },
+                          { gradient: 'from-violet-500/10 to-indigo-500/5', border: 'border-violet-500/20', icon: 'from-violet-500 to-indigo-500', accent: 'text-violet-400' }
+                        ]
+                        const cc = cardColors[i]
+                        return (
+                          <motion.div
+                            key={i}
+                            className={`bg-gradient-to-br ${cc.gradient} border ${cc.border} rounded-2xl p-6`}
+                            initial={{ opacity: 0, y: 15 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: i * 0.1 }}
+                          >
+                            {/* Header */}
+                            <div className="flex items-center gap-3 mb-4">
+                              <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${cc.icon} flex items-center justify-center text-white shadow-lg`}>
+                                {challengeIcons[item.icon]}
+                              </div>
+                              <h4 className="text-lg font-bold text-white">{item.challenge}</h4>
+                            </div>
+
+                            {/* Problem */}
+                            <div className="mb-3">
+                              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Problem</span>
+                              <p className="text-sm text-slate-300 mt-1">{item.problem}</p>
+                            </div>
+
+                            {/* Solution */}
+                            <div className="mb-3">
+                              <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Solution</span>
+                              <p className="text-sm text-slate-300 mt-1">{item.solution}</p>
+                            </div>
+
+                            {/* Result */}
+                            <div className={`flex items-center gap-2 pt-3 border-t border-slate-700/50`}>
+                              <svg className={`w-4 h-4 ${cc.accent} shrink-0`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                              <span className={`text-sm font-medium ${cc.accent}`}>{item.result}</span>
+                            </div>
+                          </motion.div>
+                        )
+                      })}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Building Trust & Results - Combined finale */}
+                {section.trustAndResults && (() => {
+                  const tr = section.trustAndResults
+                  const metricIcons = {
+                    chart: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
+                    speed: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
+                    dollar: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+                    clock: <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                  }
+                  const metricColors = isDark ? [
+                    { bg: 'from-sky-500/15 to-cyan-500/5', border: 'border-sky-500/25', text: 'from-sky-300 to-cyan-400', icon: 'bg-sky-500/20 text-sky-400' },
+                    { bg: 'from-fuchsia-500/15 to-pink-500/5', border: 'border-fuchsia-500/25', text: 'from-fuchsia-300 to-pink-400', icon: 'bg-fuchsia-500/20 text-fuchsia-400' },
+                    { bg: 'from-emerald-500/15 to-teal-500/5', border: 'border-emerald-500/25', text: 'from-emerald-300 to-teal-400', icon: 'bg-emerald-500/20 text-emerald-400' },
+                    { bg: 'from-amber-500/15 to-orange-500/5', border: 'border-amber-500/25', text: 'from-amber-300 to-orange-400', icon: 'bg-amber-500/20 text-amber-400' }
+                  ] : [
+                    { bg: 'from-sky-50 to-cyan-50', border: 'border-sky-200', text: 'from-sky-600 to-cyan-600', icon: 'bg-sky-100 text-sky-600' },
+                    { bg: 'from-fuchsia-50 to-pink-50', border: 'border-fuchsia-200', text: 'from-fuchsia-600 to-pink-600', icon: 'bg-fuchsia-100 text-fuchsia-600' },
+                    { bg: 'from-emerald-50 to-teal-50', border: 'border-emerald-200', text: 'from-emerald-600 to-teal-600', icon: 'bg-emerald-100 text-emerald-600' },
+                    { bg: 'from-amber-50 to-orange-50', border: 'border-amber-200', text: 'from-amber-600 to-orange-600', icon: 'bg-amber-100 text-amber-600' }
+                  ]
+
+                  const TrustAndResults = () => {
+                    return (
+                      <div className="space-y-10">
+                        {/* Trust Journey - Skepticism → Advocacy */}
+                        <div>
+                          <p className={`text-sm mb-6 max-w-2xl ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>The real challenge wasn't technical - it was earning the trust of attorneys whose careers depend on accuracy.</p>
+                          
+                          <div className="grid md:grid-cols-2 gap-4 relative">
+                            {/* Before - Skepticism */}
+                            <motion.div
+                              className={`rounded-2xl p-6 border ${isDark ? 'bg-sky-950/50 border-sky-500/30' : 'bg-sky-50 border-sky-200'}`}
+                              initial={{ opacity: 0, x: -20 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              viewport={{ once: true }}
+                            >
+                              <div className="flex items-center gap-3 mb-4">
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-sky-500/20' : 'bg-sky-100'}`}>
+                                  <svg className={`w-5 h-5 ${isDark ? 'text-sky-400' : 'text-sky-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01" /></svg>
+                                </div>
+                                <h4 className={`text-lg font-bold ${isDark ? 'text-sky-200' : 'text-sky-700'}`}>{tr.trustJourney.before.title}</h4>
+                              </div>
+                              <div className="space-y-2">
+                                {tr.trustJourney.before.items.map((item, i) => (
+                                  <motion.div 
+                                    key={i} 
+                                    className={`rounded-lg px-3 py-2.5 ${isDark ? 'bg-sky-500/15' : 'bg-sky-100/70'}`}
+                                    initial={{ opacity: 0 }}
+                                    whileInView={{ opacity: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: i * 0.08 }}
+                                  >
+                                    <span className={`text-sm italic ${isDark ? 'text-sky-100' : 'text-sky-900'}`}>{item}</span>
+                                  </motion.div>
+                                ))}
+                              </div>
+                            </motion.div>
+
+                            {/* Center arrow */}
+                            <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10">
+                              <motion.div
+                                className={`w-12 h-12 rounded-full bg-gradient-to-r border flex items-center justify-center backdrop-blur-sm ${isDark ? 'from-sky-500/30 to-emerald-500/30 border-white/15' : 'from-sky-100 to-emerald-100 border-sky-200 shadow-lg'}`}
+                                animate={{ scale: [1, 1.1, 1] }}
+                                transition={{ repeat: Infinity, duration: 2 }}
+                              >
+                                <svg className={`w-5 h-5 ${isDark ? 'text-white' : 'text-sky-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" /></svg>
+                              </motion.div>
+                            </div>
+
+                            {/* After - Advocacy */}
+                            <motion.div
+                              className={`rounded-2xl p-6 border ${isDark ? 'bg-slate-800 border-emerald-500/30' : 'bg-emerald-50 border-emerald-200'}`}
+                              initial={{ opacity: 0, x: 20 }}
+                              whileInView={{ opacity: 1, x: 0 }}
+                              viewport={{ once: true }}
+                              transition={{ delay: 0.15 }}
+                            >
+                              <div className="flex items-center gap-3 mb-4">
+                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isDark ? 'bg-emerald-500/20' : 'bg-emerald-100'}`}>
+                                  <svg className={`w-5 h-5 ${isDark ? 'text-emerald-400' : 'text-emerald-600'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                </div>
+                                <h4 className={`text-lg font-bold ${isDark ? 'text-emerald-200' : 'text-emerald-700'}`}>{tr.trustJourney.after.title}</h4>
+                              </div>
+                              <div className="space-y-2">
+                                {tr.trustJourney.after.items.map((item, i) => (
+                                  <motion.div 
+                                    key={i} 
+                                    className={`rounded-lg px-3 py-2.5 ${isDark ? 'bg-emerald-500/10' : 'bg-emerald-100/60'}`}
+                                    initial={{ opacity: 0 }}
+                                    whileInView={{ opacity: 1 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: 0.15 + i * 0.08 }}
+                                  >
+                                    <span className={`text-sm italic ${isDark ? 'text-white/90' : 'text-emerald-900'}`}>{item}</span>
+                                  </motion.div>
+                                ))}
+                              </div>
+                            </motion.div>
+                          </div>
+                        </div>
+
+                        {/* Divider with "and the results proved it" bridge */}
+                        <motion.div 
+                          className="flex items-center gap-4"
+                          initial={{ opacity: 0 }}
+                          whileInView={{ opacity: 1 }}
+                          viewport={{ once: true }}
+                        >
+                          <div className={`flex-1 h-px bg-gradient-to-r from-transparent to-transparent ${isDark ? 'via-teal-500/40' : 'via-teal-300'}`} />
+                          <span className={`text-xs uppercase tracking-widest font-semibold whitespace-nowrap ${isDark ? 'text-teal-300' : 'text-teal-700'}`}>And the results proved it</span>
+                          <div className={`flex-1 h-px bg-gradient-to-r from-transparent to-transparent ${isDark ? 'via-teal-500/40' : 'via-teal-300'}`} />
+                        </motion.div>
+
+                        {/* Results headline */}
+                        <div className="text-center">
+                          <motion.h3 
+                            className={`text-3xl md:text-4xl font-black bg-gradient-to-r bg-clip-text text-transparent mb-2 ${isDark ? 'from-teal-300 via-cyan-300 to-emerald-400' : 'from-teal-600 via-cyan-600 to-emerald-600'}`}
+                            initial={{ opacity: 0, y: 10 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                          >
+                            {tr.headline}
+                          </motion.h3>
+                          <p className={`text-base max-w-xl mx-auto ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{tr.subheadline}</p>
+                        </div>
+
+                        {/* Metrics Grid */}
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                          {tr.metrics.map((metric, i) => {
+                            const mc = metricColors[i]
+                            return (
+                              <motion.div
+                                key={i}
+                                className={`bg-gradient-to-br ${mc.bg} border ${mc.border} rounded-2xl p-5 text-center`}
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                whileInView={{ opacity: 1, scale: 1 }}
+                                viewport={{ once: true }}
+                                transition={{ delay: i * 0.1 }}
+                              >
+                                <div className={`w-10 h-10 rounded-xl ${mc.icon} flex items-center justify-center mx-auto mb-3`}>
+                                  {metricIcons[metric.icon]}
+                                </div>
+                                <div className={`text-3xl md:text-4xl font-black bg-gradient-to-br ${mc.text} bg-clip-text text-transparent mb-1`}>
+                                  {metric.value}
+                                </div>
+                                <div className={`text-sm font-semibold mb-1 ${isDark ? 'text-white' : 'text-gray-900'}`}>{metric.label}</div>
+                                <div className={`text-xs leading-snug ${isDark ? 'text-slate-200' : 'text-gray-700'}`}>{metric.detail}</div>
+                              </motion.div>
+                            )
+                          })}
+                        </div>
+
+                        {/* Impact Statement */}
+                        <motion.div 
+                          className={`rounded-2xl p-6 flex items-center gap-6 border ${isDark ? 'bg-gradient-to-r from-indigo-500/15 via-blue-500/10 to-indigo-500/15 border-indigo-500/25' : 'bg-gradient-to-r from-indigo-50 via-blue-50 to-indigo-50 border-indigo-200'}`}
+                          initial={{ opacity: 0, y: 10 }}
+                          whileInView={{ opacity: 1, y: 0 }}
+                          viewport={{ once: true }}
+                          transition={{ delay: 0.4 }}
+                        >
+                          <div className={`text-5xl md:text-6xl font-black bg-gradient-to-br bg-clip-text text-transparent shrink-0 ${isDark ? 'from-indigo-200 to-blue-300' : 'from-indigo-600 to-blue-600'}`}>
+                            {tr.impactStatement.stat}
+                          </div>
+                          <div className="flex-1">
+                            <div className={`font-semibold text-lg ${isDark ? 'text-white' : 'text-gray-900'}`}>{tr.impactStatement.description}</div>
+                            <div className={`text-sm mt-1 ${isDark ? 'text-indigo-300' : 'text-indigo-700'}`}>{tr.impactStatement.detail}</div>
+                          </div>
+                        </motion.div>
+                      </div>
+                    )
+                  }
+
+                  return <TrustAndResults />
+                })()}
 
                 {section.highlights && !section.imageGallery && !section.outcomesMetrics && !section.researchStats && (
                   <KeyInsights highlights={section.highlights} sectionIndex={index} />
@@ -4860,7 +7783,7 @@ function CaseStudy() {
                         </div>
                       </motion.div>
                     )}
-                    <WorkflowDiagram />
+                    <WorkflowDiagram variant={slug === 'ai-powered-ediscovery-review' ? 'ediscovery' : 'designops'} />
                   </div>
                 )}
 

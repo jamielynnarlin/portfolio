@@ -3192,8 +3192,13 @@ export function EDiscoveryNLCullingStatic() {
   )
 }
 
-// eDiscovery Multimodal Review Screen (Static) - Video/Audio
-export function EDiscoveryMultimodalStatic() {
+// eDiscovery Subset Test Results (Static) - Card-based validation
+export function EDiscoverySubsetTestStatic() {
+  const getRelevanceColor = (score) => {
+    if (score >= 93) return 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30'
+    if (score >= 88) return 'text-teal-400 bg-teal-500/15 border-teal-500/30'
+    return 'text-cyan-400 bg-cyan-500/15 border-cyan-500/30'
+  }
   return (
     <div className="h-full flex bg-slate-950 text-white">
       {/* Mini Sidebar */}
@@ -3203,71 +3208,102 @@ export function EDiscoveryMultimodalStatic() {
             <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
           </svg>
         </div>
+        <div className="flex-1 flex flex-col gap-0.5">
+          {[0,1,2,3].map(i => (
+            <div key={i} className={`w-5 h-5 rounded flex items-center justify-center ${i === 2 ? 'bg-teal-500/20' : ''}`}>
+              <div className={`w-3 h-3 rounded ${i === 2 ? 'bg-teal-400/40' : 'bg-slate-700'}`} />
+            </div>
+          ))}
+        </div>
       </div>
       
-      <div className="flex-1 flex overflow-hidden">
-        {/* Video Panel */}
-        <div className="w-1/2 flex flex-col border-r border-slate-800">
-          <div className="bg-slate-900 px-2 py-1 border-b border-slate-800">
-            <h3 className="text-[8px] font-medium text-white">Zoom: Q3 Review Meeting</h3>
-            <span className="text-[6px] text-slate-400">Duration: 47:23</span>
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-slate-900 px-2 py-1.5 flex items-center justify-between border-b border-slate-800">
+          <div className="flex items-center gap-1.5">
+            <div>
+              <h1 className="text-[9px] font-semibold text-white">Subset Test Results</h1>
+              <p className="text-[7px] text-slate-400">1,000-document sample from 48,291 total</p>
+            </div>
+            <span className="px-1 py-0.5 bg-amber-500/15 text-amber-400 text-[6px] rounded border border-amber-500/20 font-medium">TEST</span>
           </div>
-          
-          {/* Video Placeholder */}
-          <div className="flex-1 bg-slate-800 flex items-center justify-center relative">
-            <div className="w-12 h-12 rounded-full bg-slate-700 flex items-center justify-center">
-              <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M8 5v14l11-7z"/>
-              </svg>
-            </div>
-            {/* Playback bar */}
-            <div className="absolute bottom-0 left-0 right-0 px-2 py-1 bg-gradient-to-t from-slate-900">
-              <div className="h-1 bg-slate-700 rounded-full">
-                <div className="h-full bg-teal-500 rounded-full" style={{ width: '35%' }} />
+          <button className="px-1.5 py-0.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-[7px] font-medium text-white">Ask AI</button>
+        </div>
+
+        {/* Protocol Performance */}
+        <div className="px-2 py-1.5 bg-slate-900/50 border-b border-slate-800">
+          <div className="flex items-center gap-1 mb-1.5">
+            <svg className="w-2.5 h-2.5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span className="text-[7px] font-semibold text-white">Protocol Performance</span>
+          </div>
+          <div className="grid grid-cols-3 gap-1.5">
+            {[
+              { label: 'Precision', value: '94.2%', color: 'text-teal-400' },
+              { label: 'Recall', value: '91.8%', color: 'text-cyan-400' },
+              { label: 'F1 Score', value: '0.93', color: 'text-violet-400' },
+            ].map((m, i) => (
+              <div key={i} className="bg-slate-800/40 rounded p-1.5 border border-slate-700/50">
+                <span className="text-[6px] text-slate-400">{m.label}</span>
+                <p className={`text-[11px] font-bold ${m.color}`}>{m.value}</p>
               </div>
-              <div className="flex justify-between text-[6px] text-slate-400 mt-0.5">
-                <span>16:42</span>
-                <span>47:23</span>
-              </div>
+            ))}
+          </div>
+          <div className="mt-1.5 flex items-center gap-1.5">
+            <div className="flex-1 h-1 bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-teal-500 via-cyan-400 to-violet-400 rounded-full" style={{ width: '93%' }} />
             </div>
+            <span className="text-[6px] text-teal-400 font-semibold">93% ready</span>
           </div>
         </div>
 
-        {/* Transcript Panel with Sentiment Heat Map */}
-        <div className="flex-1 flex flex-col">
-          <div className="bg-slate-900 px-2 py-1 border-b border-slate-800 flex items-center justify-between">
-            <h3 className="text-[8px] font-medium text-white">Transcript</h3>
-            <span className="text-[6px] text-violet-400">AI Annotated</span>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto">
-            {/* Transcript lines with sentiment colors */}
-            <div className="p-1.5 space-y-1">
-              <div className="px-1.5 py-1 rounded bg-slate-800/50 border-l-2 border-slate-600">
-                <p className="text-[6px] text-slate-500">16:42 - CFO</p>
-                <p className="text-[7px] text-slate-300">"Let's look at the Q3 numbers for a moment..."</p>
-              </div>
-              <div className="px-1.5 py-1 rounded bg-amber-500/10 border-l-2 border-amber-500">
-                <p className="text-[6px] text-amber-400">16:45 - Controller</p>
-                <p className="text-[7px] text-slate-300">"There's something I need to flag about the timing..."</p>
-              </div>
-              <div className="px-1.5 py-1 rounded bg-rose-500/10 border-l-2 border-rose-500">
-                <p className="text-[6px] text-rose-400">16:47 - CFO (Elevated)</p>
-                <p className="text-[7px] text-slate-300">"Wait, what do you mean the books were adjusted?"</p>
-              </div>
-              <div className="px-1.5 py-1 rounded bg-rose-500/20 border-l-2 border-rose-600">
-                <p className="text-[6px] text-rose-400">16:48 - Controller (High Tension)</p>
-                <p className="text-[7px] text-slate-300">"I'm just saying we need to discuss this offline..."</p>
-              </div>
+        {/* Sample Document Cards */}
+        <div className="flex-1 overflow-y-auto px-2 py-1.5">
+          <div className="flex items-center justify-between mb-1.5">
+            <p className="text-[7px] text-slate-400 font-medium">Sample Documents</p>
+            <div className="flex items-center gap-2 text-[6px]">
+              <span className="text-teal-400">94 Relevant</span>
+              <span className="text-amber-400">8 Priv.</span>
+              <span className="text-rose-400">4 Hot</span>
             </div>
           </div>
-
-          {/* Sentiment Legend */}
-          <div className="px-2 py-1 bg-slate-900/80 border-t border-slate-800 flex items-center gap-2 text-[6px]">
-            <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 bg-slate-600 rounded" />Neutral</span>
-            <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 bg-amber-500 rounded" />Urgent</span>
-            <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 bg-rose-500 rounded" />Hot</span>
+          <div className="grid grid-cols-2 gap-1.5">
+            {[
+              { title: 'RE: Q4 Revenue Discussion', type: 'Email', score: 96, finding: 'Revenue recognition timing', hot: true },
+              { title: 'Board Meeting Minutes', type: 'Minutes', score: 92, finding: 'Board-level financial oversight', hot: false },
+              { title: 'FW: Auditor Concerns', type: 'Email', score: 94, finding: 'External auditor comms', hot: true },
+              { title: 'Year-End Financial Summary', type: 'Report', score: 87, finding: 'Q4 financial compilation', hot: false },
+              { title: 'Audit Committee Brief', type: 'Memo', score: 91, finding: 'Audit committee quarterly review', hot: false },
+              { title: 'Engagement Letter', type: 'Email', score: 89, finding: 'Legal counsel communication', privileged: true, hot: false },
+            ].map((doc, i) => (
+              <div 
+                key={i}
+                className={`rounded-lg border p-1.5 ${
+                  doc.hot ? 'border-rose-500/30 bg-rose-500/[0.04]' : doc.privileged ? 'border-amber-500/30 bg-amber-500/[0.04]' : 'border-slate-700/50 bg-slate-900/50'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-1 mb-1">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[7px] font-medium text-white truncate">{doc.title}</p>
+                    <p className="text-[5px] text-slate-500">{doc.type}</p>
+                  </div>
+                  <span className={`shrink-0 px-1 py-0.5 rounded text-[7px] font-bold border ${getRelevanceColor(doc.score)}`}>{doc.score}%</span>
+                </div>
+                <p className="text-[6px] text-slate-300 leading-relaxed mb-1">{doc.finding}</p>
+                <div className="flex items-center gap-1">
+                  {doc.hot && <span className="px-1 py-0.5 bg-rose-500/20 text-rose-400 text-[5px] rounded">Hot</span>}
+                  {doc.privileged && <span className="px-1 py-0.5 bg-amber-500/20 text-amber-400 text-[5px] rounded">Privileged</span>}
+                </div>
+              </div>
+            ))}
           </div>
+        </div>
+
+        {/* Footer */}
+        <div className="bg-slate-900 px-2 py-1.5 border-t border-slate-800 flex items-center justify-between">
+          <button className="px-1.5 py-0.5 bg-slate-800 rounded text-[7px] text-slate-300">Refine Protocol</button>
+          <button className="px-2 py-1 bg-teal-500 rounded text-[7px] font-bold text-slate-900">Apply to Full Corpus →</button>
         </div>
       </div>
     </div>
@@ -3497,8 +3533,14 @@ export function EDiscoveryProductionStatic() {
   )
 }
 
-// eDiscovery HITL Training Screen (Static)
-export function EDiscoveryHITLStatic() {
+// eDiscovery Review Results Dashboard (Static) - Full corpus results
+export function EDiscoveryReviewResultsStatic() {
+  const getRelevanceColor = (score) => {
+    if (score >= 93) return 'text-emerald-400 bg-emerald-500/15'
+    if (score >= 88) return 'text-teal-400 bg-teal-500/15'
+    if (score >= 80) return 'text-cyan-400 bg-cyan-500/15'
+    return 'text-slate-400 bg-slate-500/15'
+  }
   return (
     <div className="h-full flex bg-slate-950 text-white">
       {/* Mini Sidebar */}
@@ -3508,85 +3550,114 @@ export function EDiscoveryHITLStatic() {
             <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
           </svg>
         </div>
+        <div className="flex-1 flex flex-col gap-0.5">
+          {[0,1,2,3].map(i => (
+            <div key={i} className={`w-5 h-5 rounded flex items-center justify-center ${i === 3 ? 'bg-teal-500/20' : ''}`}>
+              <div className={`w-3 h-3 rounded ${i === 3 ? 'bg-teal-400/40' : 'bg-slate-700'}`} />
+            </div>
+          ))}
+        </div>
       </div>
       
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-slate-900 px-2 py-1.5 flex items-center justify-between border-b border-slate-800">
-          <h1 className="text-[9px] font-semibold text-white">Human-in-the-Loop Training</h1>
-          <span className="text-[7px] text-violet-400">47/500 samples</span>
+          <div>
+            <h1 className="text-[9px] font-semibold text-white">Review Results</h1>
+            <p className="text-[7px] text-slate-400">48,291 documents processed</p>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="px-1 py-0.5 bg-emerald-500/20 text-emerald-400 text-[6px] rounded">Complete</span>
+            <button className="px-1.5 py-0.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-[7px] font-medium text-white">Ask AI</button>
+          </div>
         </div>
 
-        {/* Training Interface */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Document */}
-          <div className="w-1/2 flex flex-col border-r border-slate-800">
-            <div className="bg-slate-900/50 px-2 py-1 border-b border-slate-800">
-              <span className="text-[7px] text-slate-400">Sample #47</span>
-            </div>
-            <div className="flex-1 overflow-y-auto p-1.5">
-              <div className="bg-white rounded p-2 text-slate-900 text-[7px]">
-                <div className="border-b border-slate-200 pb-1 mb-1.5 text-[6px]">
-                  <p><span className="font-medium">From:</span> Outside Counsel</p>
-                  <p><span className="font-medium">To:</span> General Counsel</p>
-                  <p><span className="font-medium">Re:</span> Legal Strategy Discussion</p>
+        {/* Stats Cards */}
+        <div className="px-2 py-1.5 bg-slate-900/50 border-b border-slate-800">
+          <div className="grid grid-cols-4 gap-1.5">
+            {[
+              { label: 'Relevant', value: '4,847', pct: '10.0%', color: 'text-teal-400', bg: 'from-teal-500/20 to-cyan-500/20', border: 'border-teal-500/30' },
+              { label: 'Not Relevant', value: '43,005', pct: '89.1%', color: 'text-slate-400', bg: 'from-slate-800/50 to-slate-700/50', border: 'border-slate-700/50' },
+              { label: 'Privileged', value: '312', pct: '0.6%', color: 'text-amber-400', bg: 'from-amber-500/20 to-orange-500/20', border: 'border-amber-500/30' },
+              { label: 'Hot Docs', value: '127', pct: '0.3%', color: 'text-rose-400', bg: 'from-rose-500/20 to-pink-500/20', border: 'border-rose-500/30' },
+            ].map((stat, i) => (
+              <div key={i} className={`bg-gradient-to-br ${stat.bg} rounded p-1.5 border ${stat.border}`}>
+                <div className="flex items-center justify-between mb-0.5">
+                  <span className="text-[5px] text-slate-500">{stat.pct}</span>
                 </div>
-                <p className="leading-relaxed">
-                  As we discussed in our <span className="bg-violet-200/60 px-0.5 rounded">privileged</span> call yesterday, I recommend we proceed with the settlement approach...
-                </p>
+                <p className={`text-[12px] font-bold ${stat.color}`}>{stat.value}</p>
+                <p className="text-[5px] text-slate-500">{stat.label}</p>
               </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Distribution + Meta */}
+        <div className="px-2 py-1 border-b border-slate-800 flex items-center gap-2">
+          <div className="flex items-center gap-1">
+            <span className="text-[6px] text-slate-500">Distribution:</span>
+            <div className="flex items-end gap-px h-4">
+              {[17, 26, 30, 18, 9].map((h, i) => (
+                <div key={i} className="w-4 bg-gradient-to-t from-teal-600 to-teal-400 rounded-t opacity-80" style={{ height: `${h}%` }} />
+              ))}
             </div>
           </div>
+          <div className="h-2 w-px bg-slate-700" />
+          <span className="text-[6px] text-slate-500">Claude 3.5 Sonnet</span>
+          <span className="text-[6px] text-slate-500">3.8 hrs</span>
+        </div>
 
-          {/* Training Controls */}
-          <div className="flex-1 flex flex-col">
-            <div className="bg-slate-900/50 px-2 py-1 border-b border-slate-800">
-              <span className="text-[7px] text-slate-400">AI Classification</span>
+        {/* Results Table */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="px-2 py-1 bg-slate-900/90 border-b border-slate-700 grid grid-cols-12 gap-1 text-[6px] font-medium text-slate-500 uppercase tracking-wider">
+            <span className="col-span-3">Document</span>
+            <span className="col-span-1 text-center">Score</span>
+            <span className="col-span-3">Key Finding</span>
+            <span className="col-span-3">AI Rationale</span>
+            <span className="col-span-2 text-right">Status</span>
+          </div>
+          {[
+            { title: 'RE: Q4 Revenue Discussion', type: 'Email', score: 96, finding: 'Revenue recognition timing', rationale: 'Recognition schedule and Q4 cutoff...', hot: true },
+            { title: 'Audit Committee Brief', type: 'Memo', score: 93, finding: 'Audit committee oversight', rationale: 'Q4 financial statement preparation...', hot: false },
+            { title: 'FW: Auditor Concerns', type: 'Email', score: 94, finding: 'External auditor comms', rationale: 'Auditor concerns on recognition...', hot: true },
+            { title: 'Board Meeting Minutes', type: 'Minutes', score: 91, finding: 'Board financial oversight', rationale: 'Q4 projections and audit committee...', hot: false },
+            { title: 'CEO-CFO Exchange', type: 'Email', score: 95, finding: 'Executive financial comms', rationale: 'Forward guidance pre-earnings...', hot: true },
+          ].map((doc, i) => (
+            <div key={i} className={`px-2 py-1.5 border-b border-slate-800/40 grid grid-cols-12 gap-1 items-center ${doc.hot ? 'bg-rose-500/[0.03]' : ''}`}>
+              <div className="col-span-3 min-w-0">
+                <p className="text-[7px] font-medium text-white truncate">{doc.title}</p>
+                <p className="text-[5px] text-slate-500">{doc.type}</p>
+              </div>
+              <div className="col-span-1 flex justify-center">
+                <span className={`px-1 py-0.5 rounded text-[7px] font-bold ${getRelevanceColor(doc.score)}`}>{doc.score}%</span>
+              </div>
+              <p className="col-span-3 text-[6px] text-slate-300">{doc.finding}</p>
+              <p className="col-span-3 text-[6px] text-slate-400 italic">{doc.rationale}</p>
+              <div className="col-span-2 flex justify-end">
+                {doc.hot ? (
+                  <span className="px-1 py-0.5 bg-rose-500/20 text-rose-400 text-[5px] rounded">Hot</span>
+                ) : (
+                  <span className="px-1 py-0.5 bg-emerald-500/15 text-emerald-400 text-[5px] rounded">
+                    <svg className="w-2 h-2 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </span>
+                )}
+              </div>
             </div>
-            
-            <div className="flex-1 overflow-y-auto p-1.5 space-y-2">
-              {/* AI Prediction */}
-              <div className="bg-violet-500/10 rounded p-1.5 border border-violet-500/30">
-                <div className="flex items-center gap-1 mb-0.5">
-                  <svg className="w-2.5 h-2.5 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
-                  </svg>
-                  <span className="text-[7px] font-medium text-violet-400">AI says: Privileged</span>
-                  <span className="ml-auto text-[7px] text-violet-300">94%</span>
-                </div>
-                <p className="text-[6px] text-slate-300">Detected: attorney communication, legal advice, settlement discussion</p>
-              </div>
+          ))}
+        </div>
 
-              {/* Reviewer Decision */}
-              <div>
-                <p className="text-[7px] text-slate-400 mb-1">Your Classification</p>
-                <div className="grid grid-cols-2 gap-1">
-                  <button className="p-1.5 bg-rose-500/20 border border-rose-500 rounded text-[8px] text-rose-400">Privileged</button>
-                  <button className="p-1.5 bg-slate-800 border border-slate-700 rounded text-[8px] text-slate-400">Not Privileged</button>
-                </div>
-              </div>
-
-              {/* Basis */}
-              <div>
-                <p className="text-[7px] text-slate-400 mb-1">Privilege Basis</p>
-                <div className="flex flex-wrap gap-1">
-                  <span className="px-1.5 py-0.5 bg-violet-500/20 text-violet-400 text-[7px] rounded border border-violet-500/30">Attorney-Client</span>
-                  <span className="px-1.5 py-0.5 bg-slate-800 text-slate-400 text-[7px] rounded border border-slate-700">Work Product</span>
-                </div>
-              </div>
-
-              {/* Impact */}
-              <div className="bg-slate-800/50 rounded p-1.5">
-                <p className="text-[6px] text-slate-400 mb-0.5">Training Impact</p>
-                <p className="text-[7px] text-emerald-400">Your decision will improve accuracy by ~0.3%</p>
-              </div>
-            </div>
-
-            <div className="bg-slate-900 px-2 py-1.5 border-t border-slate-800">
-              <button className="w-full py-1.5 bg-teal-500 rounded text-[8px] font-bold text-slate-900">
-                Confirm & Next Sample
-              </button>
-            </div>
+        {/* Footer */}
+        <div className="bg-slate-900 px-2 py-1.5 border-t border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-[6px]">
+            <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 bg-teal-400 rounded-full" />4,847</span>
+            <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 bg-amber-400 rounded-full" />312</span>
+            <span className="flex items-center gap-0.5"><span className="w-1.5 h-1.5 bg-rose-400 rounded-full" />127</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <button className="px-1.5 py-0.5 bg-slate-800 rounded text-[7px] text-slate-300">Export</button>
+            <button className="px-2 py-1 bg-teal-500 rounded text-[7px] font-bold text-slate-900">Begin Production</button>
           </div>
         </div>
       </div>

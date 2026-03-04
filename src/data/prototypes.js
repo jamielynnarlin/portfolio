@@ -5,7 +5,7 @@ export const prototypes = [
     subtitle: "Event Staff Task Management Flow",
     description: "Click the highlighted areas to see how event staff access and complete their tasks in the BookedOut app.",
     caseStudySlug: "mobile-task-tracker",
-    caseStudyTitle: "AI Powered Development Workflow",
+    caseStudyTitle: "Mobile Task Tracker",
     thumbnail: import.meta.env.BASE_URL + "images/case-studies/Bookedout-profile.png",
     tags: ["Mobile App", "React Native", "Task Management", "UX Flow"],
     prototype: {
@@ -77,7 +77,7 @@ export const prototypes = [
     subtitle: "Intelligent Document Review Platform",
     description: "Explore how AI transforms document review with natural language protocol building, citation-led analysis, and automated privilege logging.",
     caseStudySlug: "llm-integration-strategy",
-    caseStudyTitle: "LLM Integration Strategy",
+    caseStudyTitle: "AI-Powered eDiscovery Review",
     thumbnail: import.meta.env.BASE_URL + "images/case-studies/ediscovery-hero.jpg",
     tags: ["Desktop App", "AI/ML", "Legal Tech", "Document Review"],
     isDesktop: true,
@@ -87,9 +87,10 @@ export const prototypes = [
       description: "Navigate through the AI-assisted document review workflow with 2026-ready features",
       screens: [
         { id: "eca", label: "Case Assessment", description: "Concept map visualization, entity extraction, and sentiment analysis" },
-        { id: "protocol", label: "Protocol Builder", description: "Natural language review instructions with AI-suggested criteria" },
-        { id: "review", label: "Document Review", description: "Citation-led viewer with AI rationale and hallucination checks" },
-        { id: "privilege", label: "Privilege Log", description: "Batch-action workflow with AI-drafted descriptions" }
+        { id: "protocol", label: "Protocol Builder", description: "Write natural language review instructions or load a template" },
+        { id: "params", label: "Review Parameters", description: "Configure confidence thresholds, prioritization, dedup, and reviewer routing" },
+        { id: "subset", label: "Subset Test", description: "Validate protocol on a 1,000-document sample before full review" },
+        { id: "results", label: "Review Results", description: "Full corpus results with relevance scores, findings, and AI rationale" }
       ]
     }
   }

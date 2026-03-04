@@ -390,12 +390,12 @@ export const caseStudies = {
   },
 
   'llm-integration-strategy': {
-    title: "AI-Powered eDiscovery Review",
-    subtitle: "Transforming skeptical attorneys into AI advocates through explainable, human-in-the-loop document review.",
+    title: "Conversational Document Review",
+    subtitle: "Turning skeptical attorneys into AI advocates through explainable, human-in-the-loop document review.",
     tags: ["eDiscovery", "LLM Integration", "Human-in-the-Loop", "Legal Tech"],
     heroImage: {
-      src: import.meta.env.BASE_URL + "images/case-studies/ediscovery-hero.jpg",
-      alt: "Stack of legal documents",
+      src: "https://images.pexels.com/photos/357514/pexels-photo-357514.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      alt: "Close-up of stacked binders filled with documents",
       clientName: "Project Nexus",
       clientDescription: "Tier-1 eDiscovery provider building AI-powered document review for litigation."
     },
@@ -419,41 +419,118 @@ export const caseStudies = {
         problemBento: {
           visualType: "document-folders",
           callout: {
-            headline: "50 attorneys who didn't trust AI.",
-            subtext: "One missed privileged document could torpedo a case. Their skepticism became our design spec.",
+            headline: "Stakeholders wanted AI to accelerate review. The attorneys doing the work didn't trust it.",
+            subtext: "In large-scale litigation, teams of 50+ attorneys manually review millions of documents to identify privileged communications, attorney-client exchanges that must be withheld from opposing counsel. One missed privilege call can waive protection for an entire topic, derailing a case worth hundreds of millions. The existing process ran 50 documents per hour with a 3% error rate on routine docs, but on complex email threads, errors jumped to 12%.",
             painPoints: [
-              "AI threatens my job",
-              "Black box decisions",
-              "Can't defend in court",
-              "Zero error tolerance",
-              "My judgment matters"
+              "Black box decisions I can't defend in court",
+              "My professional judgment is being replaced",
+              "Zero tolerance for errors on privilege"
             ]
+          }
+        },
+        userResearchSection: {
+          intro: "Before designing anything, we spent two weeks embedded with the review teams to understand why.",
+          researchMethods: [
+            {
+              method: "Contextual Inquiry",
+              icon: "observe",
+              stat: "12",
+              statLabel: "reviewers shadowed",
+              insight: "Reviewers had personal flagging systems, invisible to QC and inconsistent across the team."
+            },
+            {
+              method: "Process Mapping",
+              icon: "workflow",
+              stat: "23",
+              statLabel: "decision points mapped",
+              insight: "One missed privileged document could restart an entire production cycle."
+            },
+            {
+              method: "Stakeholder Interviews",
+              icon: "users",
+              stat: "3",
+              statLabel: "stakeholder groups",
+              insight: "Attorneys feared court risk. PMs feared cost overruns. Lit support feared job loss."
+            },
+            {
+              method: "Workflow Analysis",
+              icon: "data",
+              stat: "6",
+              statLabel: "prior cases analyzed",
+              insight: "50 docs/hr with 3% error on routine, jumping to 12% on complex threading."
+            },
+            {
+              method: "AI-Assisted Analysis",
+              icon: "ai",
+              stat: "4",
+              statLabel: "AI tools evaluated",
+              insight: "Benchmarked LLM classification against manual review to identify where AI added accuracy vs. where human judgment was irreplaceable."
+            }
+          ],
+          keyFinding: {
+            stat: "3%→12%",
+            label: "Error rate increase on complex documents",
+            detail: "This accuracy gap on complex documents became our core design target."
           }
         }
       },
       {
-        title: "The Review Gap",
-        combinedReviewSection: {
-          beforeAfter: {
-            before: {
-              title: "Manual Review",
-              items: [
-                "Read every document linearly",
-                "$2.50 per document cost",
-                "Review costs exceed case value",
-                "Weeks to reach production"
-              ]
+        title: "Pain Points That Drove Design",
+        userStoriesSection: {
+          intro: "Click each pain point to see how it directly shaped a design decision.",
+          stories: [
+            {
+              role: "Project Manager",
+              icon: "clock",
+              painPoint: "I pad timelines by 40% and still miss deadlines on complex cases. I have no way to predict volume or complexity until we're already behind.",
+              designResponse: "AI-assisted volume prediction with complexity-adjusted estimates and real-time pace visibility.",
+              category: "Predictability"
             },
-            after: {
-              title: "AI-Augmented",
-              items: [
-                "AI triages, humans verify",
-                "90% volume reduction",
-                "Focus on ambiguous cases",
-                "72 hours to production"
-              ]
+            {
+              role: "Litigation Support",
+              icon: "clipboard",
+              painPoint: "Reconstructing decision history takes days of manual log review. When something goes wrong, I can't trace back who decided what or why.",
+              designResponse: "Auto-generated audit trails for every AI decision with full QC dashboards.",
+              category: "Audit Trail"
+            },
+            {
+              role: "Review Lead",
+              icon: "route",
+              painPoint: "I distribute documents randomly. Complex privilege threads get the same allocation as routine responsive docs.",
+              designResponse: "Confidence scoring routes complex documents to senior reviewers with complexity-based workload balancing.",
+              category: "Resource Allocation"
+            },
+            {
+              role: "Contract Reviewer",
+              icon: "shield",
+              painPoint: "I review 50 docs an hour and my accuracy drops after lunch. On complex email threads, I second-guess every call because one missed privilege tag could blow up the case.",
+              designResponse: "AI pre-scores confidence per document, highlights key passages, and flags complex threads for senior review - reducing fatigue-driven errors.",
+              category: "Accuracy"
+            },
+            {
+              role: "QC Attorney",
+              icon: "search",
+              painPoint: "I'm sampling 5% of decisions and hoping that catches inconsistencies. I have no way to know which reviewers are drifting or where the model disagrees with human calls.",
+              designResponse: "Real-time QC dashboards showing reviewer agreement rates, AI-vs-human discrepancies, and confidence distribution by issue code.",
+              category: "Quality Control"
+            },
+            {
+              role: "Partner / Lead Counsel",
+              icon: "gavel",
+              painPoint: "I sign the privilege log - if AI makes a mistake, it's my bar license on the line. I need to defend every call in front of a judge.",
+              designResponse: "Court-ready reporting with precision/recall metrics and full explainability for every privilege call.",
+              category: "Defensibility"
             }
-          },
+          ],
+          synthesis: "The problem was never AI replacing reviewers. It was giving them the transparency and control to trust AI as a tool."
+        }
+      },
+      {
+        title: "Building Trust by Design",
+        content: [
+          "Our research made one thing clear: every feature needed to answer the question \"why should I trust this?\" The concern mapping below shows how each attorney fear became a specific design requirement."
+        ],
+        combinedReviewSection: {
           concernMapping: [
             {
               concern: "AI threatens my job",
@@ -484,6 +561,39 @@ export const caseStudies = {
         }
       },
       {
+        title: "From Research to Wireframes",
+        aiWireframesSection: {
+          intro: "AI tooling accelerated every phase - from research synthesis to interactive prototyping - letting us explore more ideas, gather clearer feedback, and arrive at high-fidelity designs with confidence.",
+          process: [
+            {
+              stage: "Research Synthesis",
+              description: "AI-transcribed stakeholder sessions and synthesized notes into prioritized design requirements and user stories.",
+              tools: ["AI transcription", "AI summarization", "AI-written use cases"],
+            },
+            {
+              stage: "Rapid Wireframing",
+              description: "Generated 40+ layout variations from requirements in hours. Low-fidelity concepts encouraged honest critique.",
+              tools: ["Vercel v0", "Figma Make"],
+            },
+            {
+              stage: "Feedback & Validation",
+              description: "PM and I captured session notes, fed them into AI to draft use cases and requirements, then ran a director/verifier pass to confirm business alignment and technical feasibility.",
+              tools: ["AI transcription", "AI use case generation", "Director/verifier review"],
+            },
+            {
+              stage: "High-Fidelity Design",
+              description: "Translated validated wireframes into production-ready screens with stronger rationale for every design decision.",
+              tools: ["Figma"],
+            }
+          ],
+          keyBenefit: {
+            stat: "4x",
+            label: "More concepts explored",
+            detail: "AI-assisted wireframing let us test four times more layout concepts than traditional sketching alone, leading to stronger design rationale for every screen."
+          }
+        }
+      },
+      {
         title: "From Black Box to Co-Pilot",
         content: [
           "The AI explains its thinking. Reviewers correct it. Trust builds through transparency."
@@ -493,10 +603,11 @@ export const caseStudies = {
           description: "Interactive prototype showing the AI-assisted review workflow",
           prototypeLink: "/prototypes/ediscovery-ai",
           steps: [
-            { label: "Dashboard", description: "Precision, recall, sentiment clusters" },
-            { label: "Queue", description: "AI-prioritized with confidence scores" },
-            { label: "Review", description: "Split-panel with AI reasoning" },
-            { label: "Production", description: "Auto-redaction, audit trails" }
+            { label: "Case Assessment", description: "Concept map, entity extraction, sentiment analysis" },
+            { label: "Protocol Builder", description: "Natural language review instructions with AI suggestions" },
+            { label: "Review Parameters", description: "Confidence thresholds, batch sizing, reviewer routing" },
+            { label: "Subset Test", description: "Validate protocol on 1,000-doc sample" },
+            { label: "Review Results", description: "Full corpus results with scores and rationale" }
           ],
           bullets: [
             "Natural language replaces Boolean",
@@ -510,110 +621,143 @@ export const caseStudies = {
       },
       {
         title: "Multimodal Review",
-        researchStats: {
-          inputData: [
-            { icon: "video", label: "Zoom calls", value: "AI transcribes + flags tension" },
-            { icon: "chat", label: "Slack/Teams", value: "Sentiment analysis on threads" },
-            { icon: "document", label: "Email chains", value: "Thread summarization" }
-          ],
-          comparison: {
-            before: { time: "90 min", label: "Manual video review" },
-            after: { time: "10 min", label: "AI-assisted triage" }
-          },
-          keyInsight: {
-            stat: "9x",
-            description: "Faster review of video evidence",
-            detail: "Sentiment heat maps flag high-tension moments"
-          }
-        }
-      },
-      {
-        title: "Building Trust",
-        beforeAfter: {
-          before: {
-            title: "Skepticism",
-            items: [
-              "AI is replacing me",
-              "I can't verify its decisions",
-              "Courts won't accept AI",
-              "My expertise is devalued"
-            ]
-          },
-          after: {
-            title: "Advocacy",
-            items: [
-              "I'm teaching the AI my expertise",
-              "Every decision shows reasoning",
-              "Full audit trail for court",
-              "I focus on complex cases"
-            ]
-          }
-        }
-      },
-      {
-        title: "The Workflow",
-        table: {
-          headers: ["Phase", "AI Does", "Human Does"],
-          rows: [
-            ["Ingestion", "Filter junk", "Spot-check"],
-            ["Culling", "First-pass + confidence", "Review low-confidence"],
-            ["Review", "Summarize threads", "Privilege calls"],
-            ["Production", "Auto-redact PII", "Verify"]
+        multimodalShowcase: {
+          description: "Each channel gets specialized AI processing tuned to its unique structure and risk profile.",
+          channels: [
+            {
+              type: "Video",
+              icon: "video",
+              before: "90 min / hr of footage",
+              after: "10 min AI triage",
+              capabilities: ["Speaker ID transcription", "Sentiment heat maps", "Key moment extraction", "Name-to-entity matching"],
+              speedup: "9x"
+            },
+            {
+              type: "Audio",
+              icon: "audio",
+              before: "Manual playback & note-taking",
+              after: "AI transcription & flagging",
+              capabilities: ["Speaker diarization", "Emotion & tone detection", "Key phrase extraction", "Cross-reference matching"],
+              speedup: "7x"
+            },
+            {
+              type: "Chat",
+              icon: "chat",
+              before: "Thread-by-thread scanning",
+              after: "Bulk topic analysis",
+              capabilities: ["Cross-channel summaries", "Tone shift detection", "Euphemism flagging", "Relationship mapping"],
+              speedup: "12x"
+            }
           ]
         }
       },
       {
-        title: "Progressive Autonomy",
-        content: [
-          "We delivered value in Sprint 2 - then earned more autonomy as trust grew."
-        ],
-        highlights: [
-          "Tier 1: Keywords (Sprint 2)",
-          "Tier 2: LLM + spot-checks",
-          "Tier 3: Autonomous (500+ samples)",
-          "Trust unlocks capability"
-        ]
+        title: "AI-Powered Delivery",
+        workflowTimeline: {
+          description: "How I applied AI across the entire software delivery lifecycle to ship a complex platform with a small team.",
+          phases: [
+            {
+              phase: "Research & Discovery",
+              icon: "research",
+              ai: ["Synthesized 12 stakeholder interviews", "Extracted pain points across roles", "Generated persona-need matrices", "Identified cross-team patterns"],
+              human: ["Led interview sessions with legal teams", "Validated AI-surfaced insights with SMEs", "Prioritized pain points by business impact"],
+              outcome: "3 validated personas and prioritized backlog in 1 week"
+            },
+            {
+              phase: "Story & Spec Writing",
+              icon: "stories",
+              ai: ["Generated user stories from research", "Drafted acceptance criteria", "Identified edge cases from patterns", "Traced stories back to interview quotes"],
+              human: ["Refined story scope and priority", "Validated acceptance criteria with stakeholders", "Sequenced sprint backlog"],
+              outcome: "47 well-defined stories with full traceability"
+            },
+            {
+              phase: "Design & Prototyping",
+              icon: "design",
+              ai: ["Explored layout variants rapidly", "Automated accessibility audits", "Generated component specifications", "Batch-synthesized stakeholder feedback"],
+              human: ["Made final design decisions", "Led usability reviews with investigators", "Built trust through iterative demos"],
+              outcome: "5 validated screens in 2 weeks with full buy-in"
+            },
+            {
+              phase: "Build, Test & Ship",
+              icon: "code",
+              ai: ["Scaffolded components from specs", "Generated test suites from acceptance criteria", "Automated code review for patterns", "Kept documentation synced to code"],
+              human: ["Architectural decisions and tradeoffs", "Complex integration problem-solving", "Final QA and release approval"],
+              outcome: "Platform delivered 2 months ahead of schedule"
+            }
+          ]
+        }
       },
       {
         title: "Technical Architecture",
-        table: {
-          headers: ["Challenge", "Solution"],
-          rows: [
-            ["Token limits", "Map-Reduce chunking"],
-            ["Hallucination", "RAG with strict bounds"],
-            ["Overconfidence", "Calibrated confidence UI"],
-            ["Prompt drift", "Golden Dataset regression"]
+        technicalChallenges: {
+          description: "Building AI for legal review means solving hard technical problems while maintaining the trust we worked to build.",
+          challenges: [
+            {
+              challenge: "Token Limits",
+              icon: "puzzle",
+              problem: "Legal documents often exceed 100K tokens - far beyond LLM context windows.",
+              solution: "Map-Reduce chunking with overlap windows. Each chunk is classified independently, then results are aggregated with conflict resolution weighting.",
+              result: "No document too large to process"
+            },
+            {
+              challenge: "Hallucination",
+              icon: "shield",
+              problem: "LLMs can fabricate citations or misstate document content - catastrophic in legal proceedings.",
+              solution: "Retrieval-Augmented Generation (RAG) with strict source bounds. Every AI claim must cite a specific passage. Ungrounded statements are flagged and suppressed.",
+              result: "Zero fabricated citations in production"
+            },
+            {
+              challenge: "Overconfidence",
+              icon: "gauge",
+              problem: "Models assigned high confidence to ambiguous documents, eroding reviewer trust.",
+              solution: "Calibrated confidence UI with three tiers (High/Medium/Low). Model scores are mapped to empirical accuracy rates so '85% confident' means 85% of similarly scored docs were correct.",
+              result: "Reviewers trust the confidence scores"
+            },
+            {
+              challenge: "Prompt Drift",
+              icon: "refresh",
+              problem: "Minor prompt changes caused classification accuracy to silently degrade across document types.",
+              solution: "Golden Dataset regression testing. Every prompt change is validated against 500+ hand-labeled documents before deployment. Accuracy deltas are tracked per category.",
+              result: "No surprise accuracy drops"
+            }
           ]
         }
       },
       {
-        title: "My Role",
-        content: [
-          "Data scientists speak probabilities. Lawyers speak absolutes. I translated between them."
-        ],
-        highlights: [
-          "70% build / 30% research",
-          "Skepticism → advocacy",
-          "Non-linear progress comms",
-          "AI delivery frameworks"
-        ]
-      },
-      {
-        title: "Results",
-        researchStats: {
-          inputData: [
-            { icon: "chart", label: "Volume reduction", value: "90% of docs culled by AI" },
-            { icon: "users", label: "Reviewer throughput", value: "3x documents per day" },
-            { icon: "dollar", label: "Cost savings", value: "$2M in attorney fees" }
-          ],
-          comparison: {
-            before: { time: "4 weeks", label: "Time to production" },
-            after: { time: "72 hrs", label: "With AI-assisted workflow" }
+        title: "Building Trust, Delivering Results",
+        trustAndResults: {
+          trustJourney: {
+            before: {
+              title: "Skepticism",
+              items: [
+                "\"AI is replacing me\"",
+                "\"I can't verify its decisions\"",
+                "\"Courts won't accept AI\"",
+                "\"My expertise is devalued\""
+              ]
+            },
+            after: {
+              title: "Advocacy",
+              items: [
+                "\"I'm teaching the AI my expertise\"",
+                "\"Every decision shows reasoning\"",
+                "\"Full audit trail for court\"",
+                "\"I focus on complex cases\""
+              ]
+            }
           },
-          keyInsight: {
+          headline: "From 4 weeks to 72 hours",
+          subheadline: "AI-assisted review didn't just speed things up - it changed what was economically possible.",
+          metrics: [
+            { value: "90%", label: "Volume Reduction", detail: "AI culled irrelevant docs with 96% precision", icon: "chart" },
+            { value: "3x", label: "Reviewer Throughput", detail: "AI summarization & pre-classification tripled output", icon: "speed" },
+            { value: "$2M", label: "Cost Savings", detail: "Automated first-pass review cut contract attorney fees", icon: "dollar" },
+            { value: "72 hrs", label: "Time to Production", detail: "Down from 4 weeks with AI-assisted workflow", icon: "clock" }
+          ],
+          impactStatement: {
             stat: "96%",
             description: "Precision at 89% recall",
-            detail: "Higher accuracy than manual review"
+            detail: "Higher accuracy than manual review alone - the AI didn't just match human performance, it exceeded it."
           }
         }
       }
@@ -645,8 +789,8 @@ export const caseStudies = {
   },
 
   'enterprise-designops-transformation': {
-    title: "Enterprise DesignOps Transformation",
-    subtitle: "Leading UX and delivery for an AI assisted document investigation platform, aligning agency, engineering, and product teams.",
+    title: "DesignOps Transformation",
+    subtitle: "Aligning agency, engineering, and product teams around an AI-powered document intelligence platform.",
     tags: ["UX Direction", "Delivery Leadership", "DesignOps", "Agency Management", "AI Enablement"],
     roles: [
       "Director of UX",
@@ -979,8 +1123,8 @@ export const caseStudies = {
           }
         ],
         workflowIntro: {
-          title: "AI Powered Alignment Workflow",
-          description: "Every feature traced back to real user needs."
+          title: "AI-Integrated Delivery Lifecycle",
+          description: "How I applied AI tooling at every phase of the SDLC - from stakeholder discovery through release - to deliver a complex platform ahead of schedule with a small team."
         },
         showWorkflowDiagram: true
       },
@@ -1040,8 +1184,8 @@ export const caseStudies = {
   },
 
   'mobile-task-tracker': {
-    title: "Mobile Task Tracker",
-    subtitle: "Designing a task management system that transformed how BookedOut's event staff track their work, from invisible effort to recognized contribution.",
+    title: "AI Powered Development Workflow",
+    subtitle: "Designing a task management system that transformed how event staff track their work using agentic AI.",
     tags: ["Product Design", "Mobile UX", "User Research", "Journey Mapping", "AI/ML"],
     roles: [
       "Design Lead",

@@ -138,7 +138,7 @@ export default function PrototypeView() {
           )}
         </div>
 
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-12">
+        <div className="flex flex-col lg:flex-row items-start justify-center gap-12">
           {/* Display Frame - Phone or Desktop */}
           <div className="relative">
             {isEDiscoveryPrototype ? (
@@ -238,7 +238,7 @@ export default function PrototypeView() {
           </div>
 
           {/* Navigation Panel */}
-          <div className="lg:w-96">
+          <div className="lg:w-96 lg:shrink-0">
             {/* Screen Progress */}
             <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
               <h3 className="text-white font-semibold mb-5">Screen Flow</h3>
@@ -260,7 +260,7 @@ export default function PrototypeView() {
                     </span>
                     <div className="flex-1 min-w-0">
                       <p className="text-white font-semibold text-sm">{screen.label}</p>
-                      <p className="text-xs text-gray-400 line-clamp-2">{screen.description}</p>
+                      <p className="text-xs text-gray-400">{screen.description}</p>
                     </div>
                   </button>
                 ))}
@@ -284,9 +284,9 @@ export default function PrototypeView() {
                 </button>
                 <button
                   onClick={nextScreen}
-                  disabled={isEDiscoveryPrototype ? currentScreen >= 3 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3)}
+                  disabled={isEDiscoveryPrototype ? currentScreen >= 4 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3)}
                   className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-1.5 ${
-                    (isEDiscoveryPrototype ? currentScreen >= 3 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3))
+                    (isEDiscoveryPrototype ? currentScreen >= 4 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3))
                       ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
                       : 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-400 hover:to-cyan-400'
                   }`}
@@ -316,15 +316,19 @@ export default function PrototypeView() {
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-teal-400 mt-0.5">•</span>
-                      Write natural language protocols
+                      Load a template or write your own protocol
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-teal-400 mt-0.5">•</span>
-                      View AI rationale with citations
+                      Configure review parameters and AI autonomy
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-teal-400 mt-0.5">•</span>
-                      Approve AI-drafted privilege logs
+                      Test protocol on a document subset
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Review full corpus results with AI rationale
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-teal-400 mt-0.5">•</span>

@@ -27,7 +27,7 @@ export const projects = [
     category: "ai",
     liveUrl: null,
     caseStudyUrl: "/projects/llm-integration-strategy",
-    mvp: false,
+    mvp: true,
   },
   {
     id: 4,
@@ -49,8 +49,8 @@ export const projects = [
   },
 ]
 
-// MVP filtered projects - only show these in production
-export const mvpProjects = projects.filter(p => p.mvp)
+// In development, show all projects. In production, only show MVP projects.
+export const mvpProjects = import.meta.env.DEV ? projects : projects.filter(p => p.mvp)
 
 export const projectCategories = [
   { id: "all", label: "All Projects" },

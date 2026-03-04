@@ -1,261 +1,133 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { prototypes } from '../data/prototypes'
+import { useTheme } from '../context/ThemeContext'
 import { 
-  PhoneFrame, 
-  DashboardScreen, 
-  EventTasksScreen, 
-  ExpandedTasksScreen,
-  CameraScreen
+  PhoneFrame,
+  DashboardScreen,
+  DesktopFrame,
+  EDiscoveryApp
 } from '../components/PrototypeScreens'
 
-function Prototypes() {
-  const [currentScreen, setCurrentScreen] = useState(0)
-  const [isAnimating, setIsAnimating] = useState(false)
-  const [direction, setDirection] = useState('forward')
-  const [photoTaken, setPhotoTaken] = useState(false)
+// Scaled-down phone frame with the actual DashboardScreen
+function MobilePreview() {
+  return (
+    <div className="flex items-center justify-center h-full py-4">
+      <div className="pointer-events-none" style={{ transform: 'scale(0.42)', transformOrigin: 'center center' }}>
+        <PhoneFrame>
+          <DashboardScreen onEventClick={() => {}} />
+        </PhoneFrame>
+      </div>
+    </div>
+  )
+}
 
-  const proto = prototypes[0] // Mobile Task Tracker
+// Scaled-down desktop frame with the actual EDiscoveryApp
+function DesktopPreview() {
+  return (
+    <div className="flex items-center justify-center h-full py-4 px-4">
+      <div className="pointer-events-none" style={{ transform: 'scale(0.38)', transformOrigin: 'center center' }}>
+        <DesktopFrame>
+          <EDiscoveryApp currentScreen={0} onScreenChange={() => {}} showHotspots={false} />
+        </DesktopFrame>
+      </div>
+    </div>
+  )
+}
 
-  const goToScreen = (index, dir = 'forward') => {
-    if (isAnimating || index === currentScreen) return
-    setDirection(dir)
-    setIsAnimating(true)
-    setTimeout(() => {
-      setCurrentScreen(index)
-      setTimeout(() => setIsAnimating(false), 300)
-    }, 50)
-  }
-
-  const nextScreen = () => {
-    if (currentScreen < 3) {
-      goToScreen(currentScreen + 1, 'forward')
-    }
-  }
-
-  const prevScreen = () => {
-    if (currentScreen > 0) {
-      goToScreen(currentScreen - 1, 'backward')
-    }
-  }
-
-  const openCamera = () => {
-    goToScreen(3, 'forward')
-  }
-
-  const handlePhotoCapture = () => {
-    setPhotoTaken(true)
-    goToScreen(2, 'backward')
-  }
-
-  const handleCameraCancel = () => {
-    goToScreen(2, 'backward')
-  }
-
-  const screenLabels = [
-    { label: 'Dashboard', description: 'View upcoming events, stats, and tap the next event to see tasks' },
-    { label: 'Event Tasks', description: 'See task categories for your event' },
-    { label: 'Complete Tasks', description: 'Check off your tasks before the event' },
-    { label: 'Camera', description: 'Take a photo to complete the task' }
-  ]
+function PrototypeCard({ prototype }) {
+  const isMobile = !prototype.isDesktop
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950">
-      {/* Background Pattern */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-teal-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl" />
-      </div>
+    <div className="group relative flex flex-col bg-white dark:bg-gray-800/60 rounded-2xl border border-gray-200 dark:border-gray-700/50 overflow-hidden shadow-sm hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
+      {/* Preview */}
+      <Link to={`/prototypes/${prototype.id}`} className="block">
+        <div className={`relative h-64 overflow-hidden ${
+          isMobile
+            ? 'bg-gradient-to-br from-teal-50 via-cyan-50 to-sky-50 dark:from-gray-800/80 dark:via-gray-900 dark:to-gray-950'
+            : 'bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 dark:from-gray-800/80 dark:via-gray-900 dark:to-gray-950'
+        }`}>
+          {isMobile ? <MobilePreview /> : <DesktopPreview />}
+        </div>
+      </Link>
 
-      <div className="relative max-w-6xl mx-auto px-4 py-20">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mb-4">
-            {proto.title}
-          </h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-4">
-            {proto.description}
-          </p>
-          {proto.caseStudySlug && (
+      {/* Content */}
+      <div className="p-6 flex flex-col flex-1">
+        <Link to={`/prototypes/${prototype.id}`} className="block group/title">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1 group-hover/title:text-primary-600 dark:group-hover/title:text-primary-400 transition-colors">
+            {prototype.title}
+          </h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{prototype.subtitle}</p>
+        </Link>
+        <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-4">
+          {prototype.description}
+        </p>
+
+        {/* Tags */}
+        <div className="flex flex-wrap gap-2 mb-5">
+          {prototype.tags.map(tag => (
+            <span
+              key={tag}
+              className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700/50 text-gray-600 dark:text-gray-400"
+            >
+              {tag}
+            </span>
+          ))}
+        </div>
+
+        {/* Actions */}
+        <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700/50 mt-auto">
+          <Link
+            to={`/prototypes/${prototype.id}`}
+            className="inline-flex items-center gap-2 text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 transition-colors group/link"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Explore Prototype
+            <svg className="w-3.5 h-3.5 group-hover/link:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+          {prototype.caseStudySlug && (
             <Link
-              to={`/projects/${proto.caseStudySlug}`}
-              className="inline-flex items-center gap-2 text-teal-400 hover:text-teal-300 transition-colors text-sm font-medium group"
+              to={`/projects/${prototype.caseStudySlug}`}
+              className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors group/case"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              View Full Case Study
-              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              Case Study
+              <svg className="w-3 h-3 group-hover/case:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </Link>
           )}
         </div>
+      </div>
+    </div>
+  )
+}
 
-        <div className="flex flex-col lg:flex-row items-center justify-center gap-12">
-          {/* Phone Display */}
-          <div className="relative">
-            <PhoneFrame>
-              <div 
-                className={`h-full transition-all duration-300 ease-out ${
-                  isAnimating 
-                    ? direction === 'forward' 
-                      ? 'opacity-0 translate-x-4' 
-                      : 'opacity-0 -translate-x-4'
-                    : 'opacity-100 translate-x-0'
-                }`}
-              >
-                {currentScreen === 0 && (
-                  <DashboardScreen onEventClick={nextScreen} />
-                )}
-                {currentScreen === 1 && (
-                  <EventTasksScreen 
-                    onTaskClick={nextScreen} 
-                    onBackClick={prevScreen}
-                  />
-                )}
-                {currentScreen === 2 && (
-                  <ExpandedTasksScreen 
-                    onBackClick={prevScreen}
-                    onTakePhoto={openCamera}
-                    photoTaken={photoTaken}
-                  />
-                )}
-                {currentScreen === 3 && (
-                  <CameraScreen 
-                    onCapture={handlePhotoCapture}
-                    onCancel={handleCameraCancel}
-                  />
-                )}
-              </div>
-            </PhoneFrame>
-            
-            {/* Tap Hint - only show on first screen */}
-            {currentScreen === 0 && (
-              <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 translate-y-full mt-4">
-                <div className="flex items-center gap-2 text-gray-400 text-sm animate-pulse">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
-                  </svg>
-                  Tap the event card to navigate
-                </div>
-              </div>
-            )}
-          </div>
+function Prototypes() {
+  return (
+    <div className="min-h-screen bg-white dark:bg-gray-900">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        {/* Header */}
+        <div className="text-center mb-14">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            Interactive Prototypes
+          </h1>
+          <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
+            Clickable prototypes from real projects - explore the UX flows and design decisions behind each solution.
+          </p>
+        </div>
 
-          {/* Navigation Panel */}
-          <div className="lg:w-80">
-            {/* Screen Progress */}
-            <div className="bg-white/5 backdrop-blur-sm rounded-2xl p-6 border border-white/10">
-              <h3 className="text-white font-semibold mb-4">Screen Flow</h3>
-              
-              <div className="space-y-3">
-                {screenLabels.map((screen, index) => (
-                  <button
-                    key={index}
-                    onClick={() => goToScreen(index, index > currentScreen ? 'forward' : 'backward')}
-                    className={`w-full text-left p-4 rounded-xl transition-all ${
-                      currentScreen === index
-                        ? 'bg-gradient-to-r from-teal-500/20 to-cyan-500/20 border border-teal-500/30'
-                        : 'bg-white/5 hover:bg-white/10 border border-transparent'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <span className={`w-8 h-8 aspect-square rounded-full flex items-center justify-center font-bold text-sm transition-all shrink-0 flex-none ${
-                        currentScreen === index
-                          ? 'bg-teal-500 text-white'
-                          : currentScreen > index
-                            ? 'bg-teal-500/50 text-white'
-                            : 'bg-gray-700 text-gray-400'
-                      }`}>
-                        {currentScreen > index ? (
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                          </svg>
-                        ) : (
-                          index + 1
-                        )}
-                      </span>
-                      <div className="flex-1 min-w-0">
-                        <p className={`font-medium ${
-                          currentScreen === index ? 'text-white' : 'text-gray-400'
-                        }`}>
-                          {screen.label}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          {screen.description}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
-
-              {/* Navigation Buttons */}
-              <div className="flex gap-3 mt-6">
-                <button
-                  onClick={currentScreen === 3 ? handleCameraCancel : prevScreen}
-                  disabled={currentScreen === 0}
-                  className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
-                    currentScreen === 0
-                      ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
-                      : 'bg-white/10 text-white hover:bg-white/20'
-                  }`}
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                  {currentScreen === 3 ? 'Cancel' : 'Back'}
-                </button>
-                <button
-                  onClick={nextScreen}
-                  disabled={currentScreen >= 2}
-                  className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
-                    currentScreen >= 2
-                      ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-400 hover:to-cyan-400'
-                  }`}
-                >
-                  Next
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Feature Highlights */}
-            <div className="mt-6 p-6 bg-gradient-to-br from-teal-500/10 to-cyan-500/10 rounded-2xl border border-teal-500/20">
-              <h4 className="text-white font-semibold mb-3 flex items-center gap-2">
-                <svg className="w-5 h-5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-                Interactive Features
-              </h4>
-              <ul className="space-y-2 text-sm text-gray-400">
-                <li className="flex items-start gap-2">
-                  <span className="text-teal-400 mt-0.5">•</span>
-                  Tap event cards to navigate
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-teal-400 mt-0.5">•</span>
-                  Check off tasks interactively
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-teal-400 mt-0.5">•</span>
-                  Tap "Take Photo" to open camera
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-teal-400 mt-0.5">•</span>
-                  Capture photos with flash animation
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-teal-400 mt-0.5">•</span>
-                  Photo thumbnail appears after capture
-                </li>
-              </ul>
-            </div>
-          </div>
+        {/* Prototype Cards Grid */}
+        <div className="grid md:grid-cols-2 gap-8">
+          {prototypes.map(proto => (
+            <PrototypeCard key={proto.id} prototype={proto} />
+          ))}
         </div>
       </div>
     </div>

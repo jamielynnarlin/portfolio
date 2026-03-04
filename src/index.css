@@ -167,3 +167,15 @@ body {
   opacity: 0;
   animation: fadeInUp 0.8s ease-out forwards;
 }
+
+/* Living border rotation for glassmorphism cards */
+@property --border-angle {
+  syntax: '<angle>';
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes borderRotate {
+  from { --border-angle: 0deg; }
+  to { --border-angle: 360deg; }
+}

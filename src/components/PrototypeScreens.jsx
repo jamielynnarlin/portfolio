@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback, useMemo } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 // Shared styles
 const colors = {
@@ -1284,8 +1285,9 @@ function EDiscoverySidebar({ activeView, onNavigate, highlightItem = null }) {
   const navItems = [
     { id: 'eca', label: 'Case Assessment', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
     { id: 'protocol', label: 'Protocol Builder', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' },
-    { id: 'review', label: 'Document Review', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-    { id: 'privilege', label: 'Privilege Log', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
+    { id: 'params', label: 'Review Parameters', icon: 'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4' },
+    { id: 'subset', label: 'Subset Test', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4' },
+    { id: 'results', label: 'Review Results', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z' },
   ]
 
   return (
@@ -1314,9 +1316,11 @@ function EDiscoverySidebar({ activeView, onNavigate, highlightItem = null }) {
             >
               {isHighlighted && (
                 <>
-                  <div className="absolute inset-0 rounded-lg bg-teal-400/20 animate-pulse" />
-                  <div className="absolute -inset-1 rounded-xl border-2 border-teal-400/60 animate-ping" style={{ animationDuration: '1.5s' }} />
-                  <div className="absolute inset-0 rounded-lg border-2 border-teal-400" />
+                  <div className="absolute inset-0 rounded-lg bg-teal-400/10" />
+                  <span className="absolute -top-0.5 -right-0.5 flex h-2.5 w-2.5 z-20">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-400" />
+                  </span>
                 </>
               )}
               <svg className="w-5 h-5 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1397,33 +1401,335 @@ function AIChatDrawer({ isOpen, onClose }) {
 }
 
 // Screen 1: Early Case Assessment (ECA) Dashboard with Concept Map
-export function EDiscoveryDashboard({ onNavigate, onOpenAI, highlightNext = false }) {
-  // Concept clusters for the visualization
-  const conceptClusters = [
-    { id: 1, label: 'Financial Disclosures', size: 45, x: 25, y: 30, color: 'from-teal-400 to-cyan-400', docs: 1234 },
-    { id: 2, label: 'Executive Comms', size: 35, x: 55, y: 25, color: 'from-violet-400 to-indigo-400', docs: 892 },
-    { id: 3, label: 'Audit Reports', size: 28, x: 70, y: 55, color: 'from-amber-400 to-orange-400', docs: 456 },
-    { id: 4, label: 'Legal Holds', size: 22, x: 20, y: 65, color: 'from-rose-400 to-pink-400', docs: 234 },
-    { id: 5, label: 'Board Minutes', size: 18, x: 45, y: 70, color: 'from-emerald-400 to-green-400', docs: 189 },
+// Processing Health Card - displays ingestion metrics alongside Case Summary
+function ProcessingHealthCard() {
+  const [showExceptions, setShowExceptions] = useState(false)
+  const exceptions = [
+    { file: 'Acme_NDA_2023.pdf', reason: 'Encrypted PDF', size: '2.4 MB' },
+    { file: 'backup_archive.zip', reason: 'Password-Protected ZIP', size: '148 MB' },
+    { file: 'inbox_export.pst', reason: 'Corrupted PST — partial extraction', size: '1.2 GB' },
   ]
+  return (
+    <div className="px-3 pb-3">
+      <div className="space-y-1.5">
+        <div className="flex justify-between text-[9px]">
+          <span className="text-slate-500">Documents Ingested</span>
+          <span className="text-teal-400 font-medium">52,401</span>
+        </div>
+        <div className="flex justify-between text-[9px]">
+          <span className="text-slate-500">De-duplication</span>
+          <span className="text-emerald-400 font-medium">-18% reduction</span>
+        </div>
+        <div className="flex justify-between text-[9px]">
+          <span className="text-slate-500">Exceptions</span>
+          <button
+            onClick={() => setShowExceptions(!showExceptions)}
+            className={`font-medium flex items-center gap-0.5 hover:underline ${exceptions.length > 0 ? 'text-amber-400' : 'text-slate-400'}`}
+          >
+            {exceptions.length > 0 && (
+              <svg className="w-2.5 h-2.5 -mt-px" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+            )}
+            {exceptions.length}
+            <svg className={`w-2 h-2 transition-transform ${showExceptions ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      {showExceptions && (
+        <div className="mt-2 space-y-1.5">
+          {exceptions.map((ex, i) => (
+            <div key={i} className="bg-slate-800/60 rounded p-1.5">
+              <div className="flex items-center justify-between">
+                <span className="text-[8px] text-white font-medium truncate mr-2">{ex.file}</span>
+                <span className="text-[7px] text-slate-500 whitespace-nowrap">{ex.size}</span>
+              </div>
+              <span className="text-[8px] text-amber-400/80">{ex.reason}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
-  const entities = [
-    { name: 'John Mitchell', type: 'Person', mentions: 847, role: 'CFO' },
-    { name: 'Sarah Chen', type: 'Person', mentions: 623, role: 'General Counsel' },
-    { name: 'Acme Holdings', type: 'Org', mentions: 1243, role: 'Parent Company' },
-    { name: 'Q4 Revenue Report', type: 'Document', mentions: 456, role: 'Key Evidence' },
+// Data Distribution - compact file type + language breakdown for ECA staffing
+function DataDistribution() {
+  const fileTypes = [
+    { label: 'Email', pct: 60, color: 'bg-teal-400' },
+    { label: 'Word', pct: 20, color: 'bg-violet-400' },
+    { label: 'Excel', pct: 10, color: 'bg-amber-400' },
+    { label: 'Other', pct: 10, color: 'bg-slate-500' },
   ]
+  const languages = [
+    { label: 'English', pct: 92, color: 'bg-cyan-400' },
+    { label: 'Spanish', pct: 5, color: 'bg-rose-400' },
+    { label: 'Mandarin', pct: 3, color: 'bg-amber-400' },
+  ]
+  return (
+    <div className="px-3 pb-3">
+      {/* Document Type bar */}
+      <div className="mb-2">
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[8px] text-slate-500">Document Type</span>
+          <span className="text-[8px] text-slate-500">48,291 docs</span>
+        </div>
+        <div className="h-2 flex rounded-full overflow-hidden">
+          {fileTypes.map((f, i) => (
+            <div key={i} className={`${f.color} opacity-80`} style={{ width: `${f.pct}%` }} />
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-x-2 mt-1">
+          {fileTypes.map((f, i) => (
+            <span key={i} className="flex items-center gap-0.5 text-[7px] text-slate-500">
+              <span className={`w-1.5 h-1.5 rounded-full ${f.color}`} />
+              {f.label} {f.pct}%
+            </span>
+          ))}
+        </div>
+      </div>
+      {/* Language bar */}
+      <div>
+        <div className="flex items-center justify-between mb-1">
+          <span className="text-[8px] text-slate-500">Language</span>
+          {(languages.some(l => l.label !== 'English' && l.pct > 0)) && (
+            <span className="text-[7px] text-amber-400 font-medium flex items-center gap-0.5">
+              <svg className="w-2 h-2" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+              </svg>
+              Multi-lingual
+            </span>
+          )}
+        </div>
+        <div className="h-2 flex rounded-full overflow-hidden">
+          {languages.map((l, i) => (
+            <div key={i} className={`${l.color} opacity-80`} style={{ width: `${l.pct}%` }} />
+          ))}
+        </div>
+        <div className="flex flex-wrap gap-x-2 mt-1">
+          {languages.map((l, i) => (
+            <span key={i} className="flex items-center gap-0.5 text-[7px] text-slate-500">
+              <span className={`w-1.5 h-1.5 rounded-full ${l.color}`} />
+              {l.label} {l.pct}%
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Sentiment Timeline Brush Selector - click+drag to filter date range
+export function SentimentBrush({ onBrushChange }) {
+  // Generate deterministic bar data (seeded from index to avoid re-renders)
+  const barData = useMemo(() => Array.from({ length: 30 }).map((_, i) => {
+    const seed = Math.sin(i * 47.3 + 7) * 10000
+    const height = 20 + (seed - Math.floor(seed)) * 60
+    const sentSeed = Math.sin(i * 31.7 + 13) * 10000
+    const sentiment = sentSeed - Math.floor(sentSeed)
+    return { height, sentiment }
+  }), [])
+
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']
+
+  const containerRef = useRef(null)
+  const [brushStart, setBrushStart] = useState(null)
+  const [brushEnd, setBrushEnd] = useState(null)
+  const [isDragging, setIsDragging] = useState(false)
+
+  const barIndexFromEvent = useCallback((e) => {
+    if (!containerRef.current) return null
+    const rect = containerRef.current.getBoundingClientRect()
+    const x = (e.clientX || e.touches?.[0]?.clientX || 0) - rect.left
+    const pct = x / rect.width
+    return Math.max(0, Math.min(29, Math.floor(pct * 30)))
+  }, [])
+
+  const handlePointerDown = useCallback((e) => {
+    const idx = barIndexFromEvent(e)
+    if (idx === null) return
+    setBrushStart(idx)
+    setBrushEnd(idx)
+    setIsDragging(true)
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }, [barIndexFromEvent])
+
+  const handlePointerMove = useCallback((e) => {
+    if (!isDragging) return
+    const idx = barIndexFromEvent(e)
+    if (idx !== null) setBrushEnd(idx)
+  }, [isDragging, barIndexFromEvent])
+
+  const handlePointerUp = useCallback(() => {
+    if (!isDragging) return
+    setIsDragging(false)
+    if (brushStart !== null && brushEnd !== null) {
+      const lo = Math.min(brushStart, brushEnd)
+      const hi = Math.max(brushStart, brushEnd)
+      onBrushChange({ start: lo, end: hi })
+    }
+  }, [isDragging, brushStart, brushEnd, onBrushChange])
+
+  const clearBrush = useCallback(() => {
+    setBrushStart(null)
+    setBrushEnd(null)
+    onBrushChange(null)
+  }, [onBrushChange])
+
+  const lo = brushStart !== null && brushEnd !== null ? Math.min(brushStart, brushEnd) : null
+  const hi = brushStart !== null && brushEnd !== null ? Math.max(brushStart, brushEnd) : null
+  const hasSelection = lo !== null && hi !== null
+
+  return (
+    <div className="bg-slate-900 rounded-lg border border-slate-800 p-3">
+      <div className="flex items-center justify-between mb-2">
+        <h3 className="text-[10px] font-medium text-slate-400">Sentiment Timeline</h3>
+        {hasSelection && !isDragging && (
+          <button
+            onClick={clearBrush}
+            className="text-[8px] text-teal-400 hover:text-teal-300 transition-colors flex items-center gap-0.5"
+          >
+            <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Clear filter
+          </button>
+        )}
+      </div>
+      <div
+        ref={containerRef}
+        className="h-24 flex items-end gap-1 cursor-crosshair relative select-none"
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+      >
+        {/* Brush overlay */}
+        {hasSelection && (
+          <div
+            className="absolute top-0 bottom-0 bg-teal-400/10 border-x border-teal-400/40 pointer-events-none z-10 rounded"
+            style={{
+              left: `${(lo / 30) * 100}%`,
+              width: `${((hi - lo + 1) / 30) * 100}%`,
+            }}
+          />
+        )}
+        {barData.map((bar, i) => {
+          const inBrush = hasSelection && i >= lo && i <= hi
+          const dimmed = hasSelection && !inBrush
+          const color = bar.sentiment > 0.7 ? 'bg-rose-400' : bar.sentiment > 0.4 ? 'bg-amber-400' : 'bg-emerald-400'
+          return (
+            <div
+              key={i}
+              className={`flex-1 ${color} rounded-t transition-opacity duration-200 ${dimmed ? 'opacity-20' : 'opacity-80'}`}
+              style={{ height: `${bar.height}%` }}
+            />
+          )
+        })}
+      </div>
+      <div className="flex justify-between mt-1 text-[8px] text-slate-500">
+        {months.map((m, i) => (
+          <span key={i} className={hasSelection && i >= Math.floor(lo / 5) && i <= Math.floor(hi / 5) ? 'text-teal-400 font-medium' : ''}>
+            {m} 2024
+          </span>
+        ))}
+      </div>
+      {hasSelection && !isDragging && (
+        <motion.div
+          initial={{ opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-1.5 flex items-center gap-1.5 text-[8px]"
+        >
+          <span className="text-teal-400 font-medium">
+            {months[Math.floor(lo / 5)]} {((lo % 5) * 6 + 1)}-{months[Math.floor(hi / 5)]} {((hi % 5) * 6 + 6)}
+          </span>
+          <span className="text-slate-600">•</span>
+          <span className="text-slate-400">{hi - lo + 1} bars selected</span>
+        </motion.div>
+      )}
+    </div>
+  )
+}
+
+// Collapsible panel wrapper for modular dashboard sections
+function CollapsiblePanel({ title, badge, defaultOpen = true, children }) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <div className="bg-slate-900 rounded-lg border border-slate-800 overflow-hidden">
+      <button
+        onClick={() => setOpen(!open)}
+        className="w-full px-3 py-2 flex items-center justify-between hover:bg-slate-800/50 transition-colors"
+      >
+        <div className="flex items-center gap-2">
+          <svg className={`w-3 h-3 text-slate-500 transition-transform ${open ? 'rotate-90' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+          <h3 className="text-[11px] font-medium text-white">{title}</h3>
+          {badge && <span className="px-1.5 py-0.5 bg-teal-500/20 text-teal-400 text-[8px] rounded">{badge}</span>}
+        </div>
+        <span className="text-[8px] text-slate-600">{open ? 'Collapse' : 'Expand'}</span>
+      </button>
+      <motion.div
+        initial={false}
+        animate={{ height: open ? 'auto' : 0, opacity: open ? 1 : 0 }}
+        transition={{ duration: 0.2, ease: 'easeInOut' }}
+        className="overflow-hidden"
+      >
+        {children}
+      </motion.div>
+    </div>
+  )
+}
+
+export function EDiscoveryDashboard({ onNavigate, onOpenAI, highlightNext = false }) {
+  const [brushRange, setBrushRange] = useState(null)
+
+  // Concept clusters with activity ranges (bar indices 0-29 they're most active in)
+  const allClusters = useMemo(() => [
+    { id: 1, label: 'Financial Disclosures', size: 45, x: 25, y: 30, color: 'from-teal-400 to-cyan-400', docs: 1234, activeRange: [0, 20] },
+    { id: 2, label: 'Executive Comms', size: 35, x: 55, y: 25, color: 'from-violet-400 to-indigo-400', docs: 892, activeRange: [5, 25] },
+    { id: 3, label: 'Audit Reports', size: 28, x: 70, y: 55, color: 'from-amber-400 to-orange-400', docs: 456, activeRange: [10, 29] },
+    { id: 4, label: 'Legal Holds', size: 22, x: 20, y: 65, color: 'from-rose-400 to-pink-400', docs: 234, activeRange: [0, 12] },
+    { id: 5, label: 'Board Minutes', size: 18, x: 45, y: 70, color: 'from-emerald-400 to-green-400', docs: 189, activeRange: [8, 18] },
+  ], [])
+
+  const allEntities = useMemo(() => [
+    { name: 'John Mitchell', type: 'Custodian', mentions: 847, role: 'CFO', activeRange: [0, 22] },
+    { name: 'Sarah Chen', type: 'Custodian', mentions: 623, role: 'General Counsel', activeRange: [10, 29] },
+    { name: 'Acme Holdings', type: 'Entity', mentions: 1243, role: 'Parent Company', activeRange: [0, 29] },
+    { name: 'Q4 Revenue Report', type: 'Key Doc', mentions: 456, role: 'Key Evidence', activeRange: [15, 29] },
+  ], [])
+
+  const overlaps = useCallback((itemRange, brush) => {
+    if (!brush) return true
+    return itemRange[0] <= brush.end && itemRange[1] >= brush.start
+  }, [])
+
+  const conceptClusters = useMemo(
+    () => allClusters.filter(c => overlaps(c.activeRange, brushRange)),
+    [allClusters, brushRange, overlaps]
+  )
+
+  const entities = useMemo(
+    () => allEntities.filter(e => overlaps(e.activeRange, brushRange)),
+    [allEntities, brushRange, overlaps]
+  )
+
+  const handleBrushChange = useCallback((range) => {
+    setBrushRange(range)
+  }, [])
 
   return (
     <div className="h-full flex bg-slate-950 text-white">
       <EDiscoverySidebar activeView="eca" onNavigate={onNavigate} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
-        {/* Header */}
+        {/* Header with primary CTA */}
         <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
           <div>
             <h1 className="text-sm font-semibold text-white">Early Case Assessment</h1>
-            <p className="text-[10px] text-slate-400">Project Nexus - SEC Investigation • 48,291 documents</p>
+            <p className="text-[10px] text-slate-400">Project Nexus - SEC Investigation • 48,291 document corpus</p>
           </div>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-800 rounded text-[10px]">
@@ -1432,140 +1738,141 @@ export function EDiscoveryDashboard({ onNavigate, onOpenAI, highlightNext = fals
             </div>
             <button 
               onClick={onOpenAI}
-              className="px-3 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-[10px] font-medium text-white flex items-center gap-1.5"
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-[10px] font-medium text-slate-300 flex items-center gap-1.5 transition-colors"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
               </svg>
               Ask AI
             </button>
+            <button 
+              onClick={() => onNavigate('protocol')}
+              className={`relative px-4 py-1.5 bg-teal-500 hover:bg-teal-400 text-slate-900 text-[10px] font-semibold rounded shadow-lg shadow-teal-500/20 transition-all hover:shadow-teal-400/30 flex items-center gap-1.5 ${highlightNext ? 'z-10' : ''}`}
+            >
+              {highlightNext && (
+                <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 z-20">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-300 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-300" />
+                </span>
+              )}
+              Build Review Protocol →
+            </button>
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Left: Concept Map */}
-          <div className="flex-1 p-3 flex flex-col">
-            <div className="bg-slate-900 rounded-lg border border-slate-800 flex-1 flex flex-col">
-              <div className="px-3 py-2 border-b border-slate-800 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <h3 className="text-[11px] font-medium text-white">Document Concept Map</h3>
-                  <span className="px-1.5 py-0.5 bg-teal-500/20 text-teal-400 text-[9px] rounded">AI-Generated</span>
-                </div>
-                <div className="flex items-center gap-1 text-[9px] text-slate-500">
-                  <button className="px-2 py-1 bg-slate-800 rounded hover:bg-slate-700">Zoom</button>
-                  <button className="px-2 py-1 bg-slate-800 rounded hover:bg-slate-700">Filter</button>
-                </div>
-              </div>
-              
-              {/* Concept Map Visualization */}
-              <div className="flex-1 relative p-4">
-                {/* Connection lines */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none">
-                  <line x1="25%" y1="30%" x2="55%" y2="25%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
-                  <line x1="55%" y1="25%" x2="70%" y2="55%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
-                  <line x1="25%" y1="30%" x2="20%" y2="65%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
-                  <line x1="45%" y1="70%" x2="20%" y2="65%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
-                  <line x1="55%" y1="25%" x2="45%" y2="70%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
-                </svg>
-                
-                {/* Concept clusters */}
-                {conceptClusters.map((cluster) => (
-                  <div
-                    key={cluster.id}
-                    className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
-                    style={{ left: `${cluster.x}%`, top: `${cluster.y}%` }}
-                  >
-                    <div 
-                      className={`bg-gradient-to-br ${cluster.color} rounded-full flex items-center justify-center opacity-80 group-hover:opacity-100 transition-all group-hover:scale-110`}
-                      style={{ width: `${cluster.size}px`, height: `${cluster.size}px` }}
-                    >
-                      <span className="text-[8px] font-bold text-slate-900">{cluster.docs}</span>
-                    </div>
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 whitespace-nowrap">
-                      <span className="text-[9px] text-slate-400 group-hover:text-white">{cluster.label}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Sentiment Timeline */}
-            <div className="mt-3 bg-slate-900 rounded-lg border border-slate-800 p-3">
-              <h3 className="text-[10px] font-medium text-slate-400 mb-2">Sentiment Timeline</h3>
-              <div className="h-12 flex items-end gap-0.5">
-                {Array.from({ length: 30 }).map((_, i) => {
-                  const height = 20 + Math.random() * 60
-                  const sentiment = Math.random()
-                  const color = sentiment > 0.7 ? 'bg-rose-400' : sentiment > 0.4 ? 'bg-amber-400' : 'bg-emerald-400'
-                  return <div key={i} className={`flex-1 ${color} rounded-t opacity-70`} style={{ height: `${height}%` }} />
-                })}
-              </div>
-              <div className="flex justify-between mt-1 text-[8px] text-slate-500">
-                <span>Jan 2024</span>
-                <span className="text-rose-400">Peak Activity: Mar 15</span>
-                <span>Jun 2024</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right: Entity Panel */}
-          <div className="w-64 border-l border-slate-800 bg-slate-900/50 flex flex-col">
-            <div className="px-3 py-2 border-b border-slate-800">
-              <h3 className="text-[11px] font-medium text-white">Key Entities Extracted</h3>
-              <p className="text-[9px] text-slate-500">AI-identified from document corpus</p>
-            </div>
+        {/* Modular Dashboard Grid */}
+        <div className="flex-1 overflow-y-auto p-3">
+          <div className="grid grid-cols-12 gap-3 auto-rows-min">
             
-            <div className="flex-1 overflow-y-auto p-2 space-y-2">
-              {entities.map((entity, i) => (
-                <div key={i} className="bg-slate-800/50 rounded-lg p-2 hover:bg-slate-800 cursor-pointer transition-colors">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-medium text-white">{entity.name}</span>
-                    <span className={`text-[8px] px-1.5 py-0.5 rounded ${
-                      entity.type === 'Person' ? 'bg-violet-500/20 text-violet-400' :
-                      entity.type === 'Org' ? 'bg-teal-500/20 text-teal-400' :
-                      'bg-amber-500/20 text-amber-400'
-                    }`}>{entity.type}</span>
-                  </div>
-                  <div className="flex items-center justify-between text-[9px]">
-                    <span className="text-slate-500">{entity.role}</span>
-                    <span className="text-slate-400">{entity.mentions} mentions</span>
-                  </div>
+            {/* Concept Map + Sentiment - spans 8 columns */}
+            <div className="col-span-8 flex flex-col gap-3">
+              <CollapsiblePanel title="Document Concept Map" badge="AI-Generated">
+                <div className="relative p-4" style={{ minHeight: '220px' }}>
+                  {/* Connection lines */}
+                  <svg className="absolute inset-0 w-full h-full pointer-events-none">
+                    <line x1="25%" y1="30%" x2="55%" y2="25%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+                    <line x1="55%" y1="25%" x2="70%" y2="55%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+                    <line x1="25%" y1="30%" x2="20%" y2="65%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+                    <line x1="45%" y1="70%" x2="20%" y2="65%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+                    <line x1="55%" y1="25%" x2="45%" y2="70%" stroke="#334155" strokeWidth="1" strokeDasharray="4" />
+                  </svg>
+                  
+                  {/* Concept clusters */}
+                  <AnimatePresence>
+                  {conceptClusters.map((cluster) => (
+                    <motion.div
+                      key={cluster.id}
+                      initial={{ opacity: 0, scale: 0.6 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.6 }}
+                      transition={{ duration: 0.3 }}
+                      className="absolute transform -translate-x-1/2 -translate-y-1/2 cursor-pointer group"
+                      style={{ left: `${cluster.x}%`, top: `${cluster.y}%` }}
+                    >
+                      <div 
+                        className={`bg-gradient-to-br ${cluster.color} rounded-full flex items-center justify-center opacity-80 group-hover:opacity-100 transition-all group-hover:scale-110`}
+                        style={{ width: `${cluster.size}px`, height: `${cluster.size}px` }}
+                      >
+                        <span className="text-[8px] font-bold text-slate-900">{cluster.docs}</span>
+                      </div>
+                      <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 whitespace-nowrap">
+                        <span className="text-[9px] text-slate-400 group-hover:text-white">{cluster.label}</span>
+                      </div>
+                    </motion.div>
+                  ))}
+                  </AnimatePresence>
                 </div>
-              ))}
+              </CollapsiblePanel>
+
+              {/* Sentiment Brush - always visible since it drives filtering */}
+              <SentimentBrush onBrushChange={handleBrushChange} />
             </div>
 
-            {/* Quick Stats */}
-            <div className="p-3 border-t border-slate-800">
-              <h4 className="text-[9px] font-medium text-slate-400 mb-2">Case Summary</h4>
-              <div className="space-y-1.5">
-                <div className="flex justify-between text-[9px]">
-                  <span className="text-slate-500">Est. Relevant Docs</span>
-                  <span className="text-emerald-400 font-medium">~4,200</span>
+            {/* Right column - spans 4 columns */}
+            <div className="col-span-4 flex flex-col gap-3">
+              {/* Case Summary - default open */}
+              <CollapsiblePanel title="Case Summary">
+                <div className="px-3 pb-3 space-y-1.5">
+                  <div className="flex justify-between text-[9px]">
+                    <span className="text-slate-500">Est. Relevant Docs</span>
+                    <span className="text-emerald-400 font-medium">~4,200</span>
+                  </div>
+                  <div className="flex justify-between text-[9px]">
+                    <span className="text-slate-500">Privileged (Est.)</span>
+                    <span className="text-amber-400 font-medium">~320</span>
+                  </div>
+                  <div className="flex justify-between text-[9px]">
+                    <span className="text-slate-500">Hot Documents</span>
+                    <span className="text-rose-400 font-medium">127</span>
+                  </div>
                 </div>
-                <div className="flex justify-between text-[9px]">
-                  <span className="text-slate-500">Privileged (Est.)</span>
-                  <span className="text-amber-400 font-medium">~320</span>
+              </CollapsiblePanel>
+
+              {/* Entities & Custodians - default open */}
+              <CollapsiblePanel title="Entities &amp; Custodians">
+                <div className="px-2 pb-2 space-y-2">
+                  <AnimatePresence>
+                  {entities.map((entity, i) => (
+                    <motion.div
+                      key={entity.name}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ duration: 0.25, delay: i * 0.05 }}
+                      className="bg-slate-800/50 rounded-lg p-2 hover:bg-slate-800 cursor-pointer transition-colors"
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-[10px] font-medium text-white">{entity.name}</span>
+                        <span className={`text-[8px] px-1.5 py-0.5 rounded ${
+                          entity.type === 'Custodian' ? 'bg-violet-500/20 text-violet-400' :
+                          entity.type === 'Entity' ? 'bg-teal-500/20 text-teal-400' :
+                          'bg-amber-500/20 text-amber-400'
+                        }`}>{entity.type}</span>
+                      </div>
+                      <div className="flex items-center justify-between text-[9px]">
+                        <span className="text-slate-500">{entity.role}</span>
+                        <span className="text-slate-400">{entity.mentions} mentions</span>
+                      </div>
+                    </motion.div>
+                  ))}
+                  </AnimatePresence>
+                  {brushRange && entities.length === 0 && (
+                    <div className="text-center py-4 text-[9px] text-slate-500">No entities in selected range</div>
+                  )}
                 </div>
-                <div className="flex justify-between text-[9px]">
-                  <span className="text-slate-500">Hot Documents</span>
-                  <span className="text-rose-400 font-medium">127</span>
-                </div>
-              </div>
-              <button 
-                onClick={() => onNavigate('protocol')}
-                className={`relative w-full mt-3 px-3 py-2 bg-teal-500 hover:bg-teal-400 text-slate-900 text-[10px] font-medium rounded transition-colors ${highlightNext ? 'z-10' : ''}`}
-              >
-                {highlightNext && (
-                  <>
-                    <div className="absolute inset-0 rounded bg-teal-400/30 animate-pulse" />
-                    <div className="absolute -inset-1 rounded-lg border-2 border-teal-300/60 animate-ping" style={{ animationDuration: '1.5s' }} />
-                    <div className="absolute inset-0 rounded border-2 border-teal-300" />
-                  </>
-                )}
-                <span className="relative z-10">Build Review Protocol →</span>
-              </button>
+              </CollapsiblePanel>
+
+              {/* Corpus Composition - default collapsed */}
+              <CollapsiblePanel title="Corpus Composition" defaultOpen={false}>
+                <DataDistribution />
+              </CollapsiblePanel>
+
+              {/* Ingestion Health - default collapsed */}
+              <CollapsiblePanel title="Ingestion Health" defaultOpen={false}>
+                <ProcessingHealthCard />
+              </CollapsiblePanel>
             </div>
+
           </div>
         </div>
       </div>
@@ -1574,45 +1881,182 @@ export function EDiscoveryDashboard({ onNavigate, onOpenAI, highlightNext = fals
 }
 
 // Screen 2: Protocol Builder - Natural Language Review Instructions
-export function EDiscoveryReviewQueue({ onNavigate, onOpenAI, highlightItem = null }) {
-  const [protocolText, setProtocolText] = useState(`Find all documents that discuss revenue recognition timing, Q4 financial results, or communications with external auditors.\n\nExclude routine operational emails unless they mention "board", "audit committee", or any executive by name.\n\nFlag as privileged any communication involving legal counsel or marked "Attorney-Client Privilege".`)
+export function EDiscoveryReviewQueue({ onNavigate, onOpenAI, highlightNext = false }) {
+  const [protocolText, setProtocolText] = useState('')
+  const [templateLoaded, setTemplateLoaded] = useState(false)
+  const [addedCriteria, setAddedCriteria] = useState([])
+  const [exclusions, setExclusions] = useState([])
+  const [showSubsetTooltip, setShowSubsetTooltip] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
-  const suggestedCriteria = [
-    { id: 1, text: 'Include SEC filing references', confidence: 94 },
-    { id: 2, text: 'Flag merger discussion mentions', confidence: 89 },
-    { id: 3, text: 'Exclude marketing newsletters', confidence: 96 },
-    { id: 4, text: 'Prioritize CFO/CEO communications', confidence: 91 },
+  const templateProtocol = `Find all documents that discuss revenue recognition timing, Q4 financial results, or communications with external auditors.\n\nExclude routine operational emails unless they mention "board", "audit committee", or any executive by name.\n\nFlag as privileged any communication involving legal counsel or marked "Attorney-Client Privilege".`
+
+  // ECA context data
+  const ecaEntities = [
+    { name: 'John Mitchell', type: 'Custodian', role: 'CFO' },
+    { name: 'Sarah Chen', type: 'Custodian', role: 'General Counsel' },
+    { name: 'Acme Holdings', type: 'Entity', role: 'Parent Company' },
+    { name: 'Q4 Revenue Report', type: 'Key Doc', role: 'Key Evidence' },
   ]
 
-  const testResults = {
-    matched: 4847,
-    privileged: 234,
-    excluded: 38291,
-    flagged: 127,
-    processing: false
+  const ecaClusters = [
+    { label: 'Financial Disclosures', docs: 1234, color: 'bg-teal-500/20 text-teal-400 border-teal-500/30' },
+    { label: 'Executive Comms', docs: 892, color: 'bg-violet-500/20 text-violet-400 border-violet-500/30' },
+    { label: 'Audit Reports', docs: 456, color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' },
+    { label: 'Legal Holds', docs: 234, color: 'bg-rose-500/20 text-rose-400 border-rose-500/30' },
+    { label: 'Board Minutes', docs: 189, color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' },
+  ]
+
+  const semanticExpansions = useMemo(() => ({
+    'revenue': { count: 12, terms: ['Earnings', 'GAAP', 'Q4 Reports', 'Revenue Recognition'] },
+    'audit': { count: 8, terms: ['Audit Committee', 'External Auditor', 'SOX Compliance'] },
+    'privilege': { count: 6, terms: ['Attorney-Client', 'Work Product', 'Legal Hold'] },
+    'board': { count: 5, terms: ['Board Minutes', 'Committee Brief', 'Governance'] },
+    'cfo': { count: 4, terms: ['Chief Financial Officer', 'J. Mitchell', 'Finance Exec'] },
+    'sec': { count: 9, terms: ['Securities', 'Filing', 'Investigation', '10-K'] },
+  }), [])
+
+  const defaultExclusions = [
+    'Marketing newsletters',
+    'Calendar invites & scheduling',
+    'Automated system alerts',
+    'Out-of-office replies',
+  ]
+
+  const suggestedCriteria = [
+    { id: 1, text: 'Include SEC filing references', confidence: 94, estDocs: 820 },
+    { id: 2, text: 'Flag merger discussion mentions', confidence: 89, estDocs: 340 },
+    { id: 3, text: 'Exclude marketing newsletters', confidence: 96, estDocs: -1200, isExclusion: true },
+    { id: 4, text: 'Prioritize CFO/CEO communications', confidence: 91, estDocs: 650 },
+  ]
+
+  const templates = [
+    { id: 'sec', name: 'SEC Investigation', description: 'Revenue recognition, executive comms, audit oversight', icon: '🏛️', available: true },
+    { id: 'contract', name: 'Contract Disputes', description: 'Breach of contract, amendment discussions', icon: '📋', available: false },
+    { id: 'employment', name: 'Employment Claims', description: 'HR comms, performance reviews, termination', icon: '👥', available: false },
+  ]
+
+  const loadTemplate = () => {
+    setProtocolText(templateProtocol)
+    setTemplateLoaded(true)
   }
+
+  const resetProtocol = () => {
+    setProtocolText('')
+    setTemplateLoaded(false)
+    setAddedCriteria([])
+    setExclusions([])
+  }
+
+  const injectEntity = (entity) => {
+    const append = `\nSpecifically look for communications involving: ${entity.name} (${entity.role}).`
+    setProtocolText(prev => prev + append)
+    if (!templateLoaded) setTemplateLoaded(true)
+  }
+
+  const injectCluster = (cluster) => {
+    const append = `\nFind all documents related to ${cluster.label.toLowerCase()} (~${cluster.docs.toLocaleString()} documents in corpus).`
+    setProtocolText(prev => prev + append)
+    if (!templateLoaded) setTemplateLoaded(true)
+  }
+
+  const addCriterion = (criterion) => {
+    if (addedCriteria.includes(criterion.id)) return
+    setAddedCriteria(prev => [...prev, criterion.id])
+    if (criterion.isExclusion) {
+      setExclusions(prev => [...prev, criterion.text])
+    }
+    const prefix = criterion.isExclusion ? '\nExclude: ' : '\nInclude: '
+    setProtocolText(prev => prev + prefix + criterion.text + '.')
+    if (!templateLoaded) setTemplateLoaded(true)
+  }
+
+  const toggleExclusion = (excl) => {
+    if (exclusions.includes(excl)) {
+      setExclusions(prev => prev.filter(e => e !== excl))
+    } else {
+      setExclusions(prev => [...prev, excl])
+      setProtocolText(prev => prev + `\nExclude: ${excl}.`)
+      if (!templateLoaded) setTemplateLoaded(true)
+    }
+  }
+
+  const activeExpansions = useMemo(() => {
+    if (!protocolText) return []
+    const lower = protocolText.toLowerCase()
+    return Object.entries(semanticExpansions)
+      .filter(([keyword]) => lower.includes(keyword))
+      .map(([keyword, data]) => ({ keyword, ...data }))
+  }, [protocolText, semanticExpansions])
+
+  const estimatedDocs = useMemo(() => {
+    let base = templateLoaded ? 4200 : 0
+    addedCriteria.forEach(id => {
+      const c = suggestedCriteria.find(s => s.id === id)
+      if (c) base += c.estDocs
+    })
+    return Math.max(0, base)
+  }, [templateLoaded, addedCriteria])
+
+  const conflicts = useMemo(() => {
+    const warnings = []
+    const lower = protocolText.toLowerCase()
+    if (lower.includes('all emails') && lower.includes('exclude') && lower.includes('internal')) {
+      warnings.push({ text: '"Find all emails" may conflict with "Exclude internal comms"', severity: 'warning' })
+    }
+    if (lower.includes('find all') && lower.includes('exclude routine')) {
+      warnings.push({ text: '"Find all" is broad - "exclude routine" may discard relevant documents', severity: 'info' })
+    }
+    if (addedCriteria.length > 6) {
+      warnings.push({ text: 'Complex protocol - consider simplifying for defensibility', severity: 'info' })
+    }
+    return warnings
+  }, [protocolText, addedCriteria])
 
   return (
     <div className="h-full flex bg-slate-950 text-white">
-      <EDiscoverySidebar activeView="protocol" onNavigate={onNavigate} highlightItem={highlightItem} />
+      <EDiscoverySidebar activeView="protocol" onNavigate={onNavigate} />
       
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden relative">
         {/* Header */}
-        <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
-          <div>
-            <h1 className="text-sm font-semibold text-white">Protocol Builder</h1>
-            <p className="text-[10px] text-slate-400">Define review criteria in natural language</p>
+        <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between border-b border-slate-800 z-20 relative">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setDrawerOpen(!drawerOpen)}
+              className={`px-2.5 py-1.5 rounded text-[10px] font-medium flex items-center gap-1.5 transition-colors ${
+                drawerOpen
+                  ? 'bg-teal-500/20 text-teal-400 border border-teal-500/30'
+                  : 'bg-slate-800 text-slate-400 hover:text-white border border-slate-700'
+              }`}
+            >
+              <svg className={`w-3 h-3 transition-transform ${drawerOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h7" />
+              </svg>
+              ECA Context
+            </button>
+            <div>
+              <h1 className="text-sm font-semibold text-white">Protocol Builder</h1>
+              <p className="text-[10px] text-slate-400">Define review criteria in natural language</p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
-            <span className="px-2 py-1 bg-teal-500/20 text-teal-400 text-[10px] rounded flex items-center gap-1">
-              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Auto-saved
-            </span>
+            {templateLoaded && (
+              <>
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-800 rounded text-[10px]">
+                  <span className="text-slate-400">Est. docs:</span>
+                  <span className="text-teal-400 font-medium">{estimatedDocs.toLocaleString()}</span>
+                </div>
+                <span className="px-2 py-1 bg-teal-500/20 text-teal-400 text-[10px] rounded flex items-center gap-1">
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Auto-saved
+                </span>
+              </>
+            )}
             <button 
               onClick={onOpenAI}
-              className="px-3 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-[10px] font-medium text-white flex items-center gap-1.5"
+              className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 rounded text-[10px] font-medium text-slate-300 flex items-center gap-1.5 transition-colors"
             >
               <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
@@ -1622,137 +2066,368 @@ export function EDiscoveryReviewQueue({ onNavigate, onOpenAI, highlightItem = nu
           </div>
         </div>
 
-        {/* Main Content */}
+        {/* Main Content Area */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Protocol Editor */}
-          <div className="flex-1 flex flex-col p-4">
-            <div className="bg-slate-900 rounded-lg border border-slate-800 flex-1 flex flex-col">
-              <div className="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+
+          {/* ECA Context Drawer - slides in from left */}
+          <motion.div
+            initial={false}
+            animate={{ width: drawerOpen ? 220 : 0 }}
+            transition={{ duration: 0.25, ease: 'easeInOut' }}
+            className="overflow-hidden flex-shrink-0 border-r border-slate-800 bg-slate-900/50"
+          >
+            <div className="w-[220px] h-full overflow-y-auto">
+              {/* Key Entities */}
+              <div className="p-3 border-b border-slate-800">
+                <h4 className="text-[9px] font-medium text-slate-500 mb-2 uppercase tracking-wider">Key Entities</h4>
+                <div className="space-y-1.5">
+                  {ecaEntities.map((ent, i) => (
+                    <button
+                      key={i}
+                      onClick={() => injectEntity(ent)}
+                      className="w-full text-left px-2 py-1.5 bg-slate-800/50 hover:bg-slate-800 rounded border border-transparent hover:border-violet-500/30 transition-all group"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] text-slate-300 group-hover:text-white truncate">{ent.name}</span>
+                        <svg className="w-2.5 h-2.5 text-slate-600 group-hover:text-violet-400 flex-shrink-0 ml-1 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                      </div>
+                      <span className="text-[8px] text-slate-600">{ent.type} - {ent.role}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Document Clusters */}
+              <div className="p-3 border-b border-slate-800">
+                <h4 className="text-[9px] font-medium text-slate-500 mb-2 uppercase tracking-wider">Document Clusters</h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {ecaClusters.map((cluster, i) => (
+                    <button
+                      key={i}
+                      onClick={() => injectCluster(cluster)}
+                      className={`px-2 py-1 rounded-full border text-[8px] font-medium hover:opacity-100 opacity-80 transition-opacity ${cluster.color}`}
+                    >
+                      {cluster.label}
+                      <span className="ml-1 opacity-60">{cluster.docs.toLocaleString()}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Exclusion Criteria */}
+              <div className="p-3">
+                <h4 className="text-[9px] font-medium text-slate-500 mb-2 uppercase tracking-wider">Exclusion Criteria</h4>
+                <div className="space-y-1.5">
+                  {defaultExclusions.map((excl, i) => (
+                    <button
+                      key={i}
+                      onClick={() => toggleExclusion(excl)}
+                      className={`w-full text-left px-2 py-1.5 rounded border text-[9px] flex items-center gap-2 transition-all ${
+                        exclusions.includes(excl)
+                          ? 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                          : 'bg-slate-800/30 border-slate-700/30 text-slate-500 hover:text-slate-300 hover:border-slate-600'
+                      }`}
+                    >
+                      <div className={`w-3 h-3 rounded border flex items-center justify-center flex-shrink-0 ${
+                        exclusions.includes(excl) ? 'border-rose-400 bg-rose-500/20' : 'border-slate-600'
+                      }`}>
+                        {exclusions.includes(excl) && (
+                          <svg className="w-2 h-2 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </div>
+                      {excl}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Center: Protocol Editor - hero section */}
+          <div className="flex-1 flex flex-col min-w-0 p-3">
+            <div className="bg-slate-900 rounded-lg border border-slate-800 flex-1 flex flex-col min-h-0">
+              <div className="px-4 py-2.5 border-b border-slate-800 flex items-center justify-between flex-shrink-0">
                 <div>
                   <h3 className="text-[11px] font-medium text-white">Review Instructions</h3>
                   <p className="text-[9px] text-slate-500">Describe what documents to find, include, exclude, and flag</p>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button className="px-2 py-1 bg-slate-800 rounded text-[9px] text-slate-400 hover:text-white">
-                    Load Template
-                  </button>
-                  <button className="px-2 py-1 bg-slate-800 rounded text-[9px] text-slate-400 hover:text-white">
-                    History
-                  </button>
-                </div>
+                {templateLoaded && (
+                  <div className="flex items-center gap-2">
+                    <button className="px-2 py-1 bg-slate-800 rounded text-[9px] text-slate-400 hover:text-white transition-colors">
+                      History
+                    </button>
+                    <button 
+                      onClick={loadTemplate}
+                      className="px-2 py-1 bg-slate-800 rounded text-[9px] text-slate-400 hover:text-white transition-colors"
+                    >
+                      Reset to Template
+                    </button>
+                    <button 
+                      onClick={resetProtocol}
+                      className="px-2 py-1 bg-slate-800 rounded text-[9px] text-rose-400 hover:text-rose-300 transition-colors"
+                    >
+                      Clear All
+                    </button>
+                  </div>
+                )}
               </div>
               
-              <div className="flex-1 p-4">
+              <div className="flex-1 p-4 flex flex-col min-h-0">
+                {/* Semantic Expansion Pills */}
+                {activeExpansions.length > 0 && (
+                  <div className="mb-3 flex flex-wrap gap-1.5 flex-shrink-0">
+                    {activeExpansions.map((exp) => (
+                      <motion.div
+                        key={exp.keyword}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="flex items-center gap-1.5 px-2.5 py-1 bg-violet-500/10 border border-violet-500/20 rounded-full"
+                      >
+                        <svg className="w-2.5 h-2.5 text-violet-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+                        </svg>
+                        <span className="text-[8px] text-violet-300 font-medium whitespace-nowrap">"{exp.keyword}"</span>
+                        <span className="text-[8px] text-violet-400 whitespace-nowrap">+ {exp.count} related</span>
+                        <span className="text-[7px] text-slate-500 whitespace-nowrap">({exp.terms.slice(0, 2).join(', ')}...)</span>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Conflict Warnings */}
+                <AnimatePresence>
+                {conflicts.map((conflict, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className={`mb-2 px-3 py-2 rounded-lg border text-[9px] flex items-center gap-2 flex-shrink-0 ${
+                      conflict.severity === 'warning'
+                        ? 'bg-amber-500/10 border-amber-500/20 text-amber-400'
+                        : 'bg-blue-500/10 border-blue-500/20 text-blue-400'
+                    }`}
+                  >
+                    <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+                    </svg>
+                    {conflict.text}
+                  </motion.div>
+                ))}
+                </AnimatePresence>
+
                 <textarea
                   value={protocolText}
-                  onChange={(e) => setProtocolText(e.target.value)}
-                  className="w-full h-full bg-slate-950 rounded-lg p-4 text-[12px] text-slate-200 leading-relaxed border border-slate-800 focus:border-teal-500/50 focus:outline-none resize-none font-mono"
-                  placeholder="Describe your review criteria in plain English..."
+                  onChange={(e) => { setProtocolText(e.target.value); if (!templateLoaded) setTemplateLoaded(true) }}
+                  onFocus={() => { if (!templateLoaded) loadTemplate() }}
+                  className={`w-full flex-1 bg-slate-950 rounded-lg p-4 text-[12px] text-slate-200 leading-relaxed border focus:border-teal-500/50 focus:outline-none resize-none font-mono min-h-0 ${
+                    templateLoaded ? 'border-slate-800' : 'border-dashed border-slate-700'
+                  }`}
+                  placeholder={"Write your review protocol in plain English...\n\nExample: \"Find all documents discussing revenue\nrecognition timing or communications with\nexternal auditors. Exclude routine emails\nunless they mention the audit committee.\""}
                 />
+
+                {/* Template Selection */}
+                {!templateLoaded && (
+                  <div className="mt-3 flex-shrink-0">
+                    <p className="text-[10px] text-slate-400 mb-2.5 font-medium flex items-center gap-1.5">
+                      <svg className="w-3 h-3 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6z" />
+                      </svg>
+                      Or start from a template:
+                    </p>
+                    <div className="grid grid-cols-3 gap-2">
+                      {templates.map((tmpl) => (
+                        <button
+                          key={tmpl.id}
+                          onClick={tmpl.available ? loadTemplate : undefined}
+                          className={`relative p-2.5 rounded-lg border text-left transition-all overflow-hidden ${
+                            tmpl.available 
+                              ? 'bg-slate-800/50 border-teal-500/30 hover:border-teal-500/60 hover:bg-slate-800 cursor-pointer group' 
+                              : 'bg-slate-800/20 border-slate-700/30 cursor-not-allowed opacity-40'
+                          }`}
+                        >
+                          {tmpl.available && (
+                            <div className="absolute inset-0 rounded-lg bg-teal-400/5 group-hover:bg-teal-400/10 transition-colors" />
+                          )}
+                          <div className="relative">
+                            <div className="flex items-center gap-1.5 mb-1">
+                              <span className="text-xs">{tmpl.icon}</span>
+                              <span className="text-[9px] font-medium text-white truncate">{tmpl.name}</span>
+                            </div>
+                            <p className="text-[8px] text-slate-500 leading-relaxed line-clamp-2">{tmpl.description}</p>
+                            {!tmpl.available && (
+                              <span className="text-[7px] text-slate-600 mt-0.5 block italic">Coming soon</span>
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Action Bar */}
-              <div className="px-4 py-3 border-t border-slate-800 flex items-center justify-between">
+              <div className="px-4 py-2.5 border-t border-slate-800 flex items-center justify-between flex-shrink-0">
                 <div className="flex items-center gap-3">
-                  <span className="text-[9px] text-slate-500">Words: {protocolText.split(/\s+/).length}</span>
-                  <span className="text-[9px] text-slate-500">|</span>
-                  <span className="text-[9px] text-violet-400 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
-                    </svg>
-                    AI parsing active
-                  </span>
+                  {templateLoaded ? (
+                    <>
+                      <span className="text-[9px] text-slate-500">Words: {protocolText.split(/\s+/).filter(Boolean).length}</span>
+                      <span className="text-[9px] text-slate-500">|</span>
+                      <span className="text-[9px] text-violet-400 flex items-center gap-1">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+                        </svg>
+                        AI parsing active
+                      </span>
+                      {exclusions.length > 0 && (
+                        <>
+                          <span className="text-[9px] text-slate-500">|</span>
+                          <span className="text-[9px] text-rose-400">{exclusions.length} exclusion{exclusions.length > 1 ? 's' : ''}</span>
+                        </>
+                      )}
+                    </>
+                  ) : (
+                    <span className="text-[9px] text-slate-500">Write or load a protocol to begin</span>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <button className="px-4 py-2 bg-slate-800 rounded text-[10px] text-slate-300 hover:bg-slate-700">
-                    Test on Subset
-                  </button>
                   <button 
-                    onClick={() => onNavigate('review')}
-                    className="px-4 py-2 bg-teal-500 rounded text-[10px] font-medium text-slate-900"
+                    className="px-4 py-2 bg-slate-800 rounded text-[10px] text-slate-500 cursor-not-allowed"
+                    disabled
+                    title="Run subset test first"
                   >
-                    Apply to Full Corpus →
+                    Apply to Full Corpus
                   </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Test Results Preview */}
-            <div className="mt-3 bg-slate-900 rounded-lg border border-slate-800 p-3">
-              <div className="flex items-center justify-between mb-2">
-                <h4 className="text-[10px] font-medium text-white">Test Results Preview</h4>
-                <span className="text-[9px] text-slate-500">Based on 1,000 doc sample</span>
-              </div>
-              <div className="grid grid-cols-4 gap-2">
-                <div className="bg-slate-800/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold text-teal-400">{testResults.matched.toLocaleString()}</p>
-                  <p className="text-[9px] text-slate-500">Est. Matches</p>
-                </div>
-                <div className="bg-slate-800/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold text-amber-400">{testResults.privileged}</p>
-                  <p className="text-[9px] text-slate-500">Likely Privileged</p>
-                </div>
-                <div className="bg-slate-800/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold text-slate-400">{testResults.excluded.toLocaleString()}</p>
-                  <p className="text-[9px] text-slate-500">Excluded</p>
-                </div>
-                <div className="bg-slate-800/50 rounded p-2 text-center">
-                  <p className="text-lg font-bold text-rose-400">{testResults.flagged}</p>
-                  <p className="text-[9px] text-slate-500">Hot Docs</p>
+                  <div className="relative"
+                    onMouseEnter={() => setShowSubsetTooltip(true)}
+                    onMouseLeave={() => setShowSubsetTooltip(false)}
+                  >
+                    {showSubsetTooltip && templateLoaded && (
+                      <div className="absolute bottom-full right-0 mb-2 w-56 p-2.5 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-30">
+                        <p className="text-[9px] text-slate-300 leading-relaxed">
+                          Runs your protocol against a <span className="text-teal-400 font-medium">statistically significant 1,000-document sample</span> to calculate precision/recall before committing to the full 48,291-document corpus.
+                        </p>
+                        <div className="mt-1.5 flex items-center gap-1 text-[8px] text-slate-500">
+                          <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          Estimated: ~30 seconds
+                        </div>
+                      </div>
+                    )}
+                    <button 
+                      onClick={() => templateLoaded && onNavigate('subset')}
+                      className={`relative px-4 py-2 rounded text-[10px] font-medium transition-colors ${
+                        templateLoaded 
+                          ? 'bg-teal-500 hover:bg-teal-400 text-slate-900' 
+                          : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                      }`}
+                      disabled={!templateLoaded}
+                    >
+                      {highlightNext && templateLoaded && (
+                        <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 z-20">
+                          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-300 opacity-75" />
+                          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-300" />
+                        </span>
+                      )}
+                      <span className="relative z-10">Test on Subset First →</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* AI Suggestions Panel */}
-          <div className="w-72 border-l border-slate-800 bg-slate-900/50 flex flex-col">
-            <div className="px-4 py-3 border-b border-slate-800">
+          {/* Right: AI Suggestions - compact shelf */}
+          <div className="w-56 border-l border-slate-800 bg-slate-900/50 flex flex-col min-h-0">
+            <div className="px-3 py-2 border-b border-slate-800 flex-shrink-0">
               <div className="flex items-center gap-2">
-                <div className="w-5 h-5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded flex items-center justify-center">
-                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <div className="w-4 h-4 bg-gradient-to-r from-violet-500 to-indigo-500 rounded flex items-center justify-center flex-shrink-0">
+                  <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-[11px] font-medium text-white">AI-Suggested Criteria</h3>
-                  <p className="text-[9px] text-slate-500">Based on case type & corpus analysis</p>
+                  <h3 className="text-[10px] font-medium text-white">AI-Suggested Criteria</h3>
+                  <p className="text-[8px] text-slate-500">Based on corpus analysis</p>
                 </div>
               </div>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-3 space-y-2">
-              {suggestedCriteria.map((criteria) => (
-                <div 
-                  key={criteria.id} 
-                  className="bg-slate-800/50 rounded-lg p-3 hover:bg-slate-800 cursor-pointer transition-colors border border-transparent hover:border-teal-500/30"
-                >
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <p className="text-[10px] text-slate-300 leading-relaxed">{criteria.text}</p>
-                    <button className="p-1 hover:bg-slate-700 rounded flex-shrink-0">
-                      <svg className="w-3.5 h-3.5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                      </svg>
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-1 bg-slate-700 rounded-full overflow-hidden">
-                      <div 
-                        className="h-full bg-gradient-to-r from-teal-500 to-cyan-400 rounded-full"
-                        style={{ width: `${criteria.confidence}%` }}
-                      />
+            <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
+              {suggestedCriteria.map((criteria) => {
+                const isAdded = addedCriteria.includes(criteria.id)
+                return (
+                  <div 
+                    key={criteria.id} 
+                    className={`rounded-lg p-2 transition-colors border ${
+                      isAdded 
+                        ? 'bg-teal-500/10 border-teal-500/30' 
+                        : 'bg-slate-800/50 border-transparent hover:bg-slate-800 hover:border-teal-500/30 cursor-pointer'
+                    }`}
+                    onClick={() => !isAdded && addCriterion(criteria)}
+                  >
+                    <div className="flex items-start justify-between gap-1.5 mb-1">
+                      <p className="text-[9px] text-slate-300 leading-relaxed">{criteria.text}</p>
+                      {isAdded ? (
+                        <svg className="w-3 h-3 text-teal-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                      ) : (
+                        <svg className="w-3 h-3 text-slate-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                        </svg>
+                      )}
                     </div>
-                    <span className="text-[9px] text-teal-400 font-medium">{criteria.confidence}%</span>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-1.5 flex-1">
+                        <div className="flex-1 h-1 bg-slate-700 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full ${isAdded ? 'bg-teal-400' : 'bg-gradient-to-r from-teal-500 to-cyan-400'}`}
+                            style={{ width: `${criteria.confidence}%` }}
+                          />
+                        </div>
+                        <span className="text-[8px] text-teal-400 font-medium">{criteria.confidence}%</span>
+                      </div>
+                      <span className={`text-[7px] ml-1.5 whitespace-nowrap ${criteria.estDocs < 0 ? 'text-rose-400' : 'text-slate-500'}`}>
+                        {criteria.estDocs > 0 ? '+' : ''}{criteria.estDocs.toLocaleString()}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                )
+              })}
             </div>
 
-            {/* Tips */}
-            <div className="p-3 border-t border-slate-800">
-              <div className="bg-violet-500/10 rounded-lg p-3 border border-violet-500/20">
-                <p className="text-[9px] text-violet-400 font-medium mb-1">💡 Pro Tip</p>
-                <p className="text-[9px] text-slate-400 leading-relaxed">
-                  Use specific terms like "CFO", "audit committee", or date ranges to improve precision. The AI will interpret intent and expand relevant synonyms.
+            {/* Protocol Stats */}
+            {templateLoaded && (
+              <div className="p-2 border-t border-slate-800 flex-shrink-0">
+                <div className="bg-slate-800/50 rounded-lg p-2 space-y-1">
+                  <div className="flex justify-between text-[8px]">
+                    <span className="text-slate-500">Criteria</span>
+                    <span className="text-white font-medium">{addedCriteria.length}/{suggestedCriteria.length}</span>
+                  </div>
+                  <div className="flex justify-between text-[8px]">
+                    <span className="text-slate-500">Exclusions</span>
+                    <span className="text-rose-400 font-medium">{exclusions.length}</span>
+                  </div>
+                  <div className="flex justify-between text-[8px]">
+                    <span className="text-slate-500">Expansions</span>
+                    <span className="text-violet-400 font-medium">{activeExpansions.length}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Pro Tip */}
+            <div className="p-2 border-t border-slate-800 flex-shrink-0">
+              <div className="bg-violet-500/10 rounded-lg p-2 border border-violet-500/20">
+                <p className="text-[8px] text-violet-400 font-medium mb-0.5">💡 Pro Tip</p>
+                <p className="text-[8px] text-slate-400 leading-relaxed">
+                  Click entity tags from the ECA Context panel to add defensible search terms.
                 </p>
               </div>
             </div>
@@ -1762,300 +2437,46 @@ export function EDiscoveryReviewQueue({ onNavigate, onOpenAI, highlightItem = nu
     </div>
   )
 }
+// Screen 3: Subset Test Results
+export function EDiscoverySubsetResults({ onNavigate, onOpenAI, highlightNext = false }) {
+  const performanceMetrics = [
+    { label: 'Precision', value: '94.2%', description: 'Relevant docs correctly identified', color: 'text-teal-400', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+    { label: 'Recall', value: '91.8%', description: 'All relevant docs captured', color: 'text-cyan-400', icon: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' },
+    { label: 'F1 Score', value: '0.93', description: 'Overall protocol accuracy', color: 'text-violet-400', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+  ]
 
-// Screen 3: Citation-Led Document Viewer
-export function EDiscoveryDocumentReview({ document, onNavigate, onOpenAI, onBack, onComplete, highlightItem = null }) {
-  const [activeTab, setActiveTab] = useState('text')
-  
-  const doc = document || { 
-    id: 1, 
-    title: "RE: Q4 Revenue Discussion", 
-    type: "email", 
-    from: "J. Martinez", 
-    to: "CFO, Controller",
-    date: "Dec 12, 2024 3:47 PM",
-    confidence: 94, 
-    tags: ["Revenue", "Q4", "Executive"], 
+  const sampleResults = [
+    { id: 1, title: 'RE: Q4 Revenue Discussion', type: 'Email', from: 'J. Martinez, CFO', relevance: 96, finding: 'Revenue recognition timing, executive communication', rationale: 'Discusses revised recognition schedule and Q4 cutoff with CFO', tags: ['Revenue', 'Q4'], hot: true },
+    { id: 2, title: 'Board Meeting Minutes - Nov 2024', type: 'Minutes', from: 'Board Secretary', relevance: 92, finding: 'Board-level financial oversight, audit committee', rationale: 'References audit committee review of Q4 revenue projections', tags: ['Board', 'Audit'], hot: false },
+    { id: 3, title: 'FW: Auditor Concerns on Recognition', type: 'Email', from: 'External Auditor', relevance: 94, finding: 'External auditor communications, timing concerns', rationale: 'Direct discussion of auditor concerns about revenue recognition', tags: ['Auditor', 'Revenue'], hot: true },
+    { id: 4, title: 'Draft: Year-End Financial Summary', type: 'Report', from: 'Finance Team', relevance: 87, finding: 'Q4 financial results compilation', rationale: 'Comprehensive Q4 financial data, primarily operational metrics', tags: ['Financial', 'Q4'], hot: false },
+    { id: 5, title: 'Audit Committee Brief - Q3/Q4', type: 'Memo', from: 'S. Chen, Gen. Counsel', relevance: 91, finding: 'Audit committee communications, quarterly review', rationale: 'Committee briefing on financial statement preparation concerns', tags: ['Audit', 'Committee'], hot: false },
+    { id: 6, title: 'RE: Engagement Letter - Outside Counsel', type: 'Email', from: 'Legal Dept', relevance: 89, finding: 'Legal counsel communication', rationale: 'Attorney-client privileged communication regarding SEC inquiry', tags: ['Privileged', 'Legal'], privileged: true, hot: false },
+  ]
+
+  const getRelevanceColor = (score) => {
+    if (score >= 93) return 'text-emerald-400 bg-emerald-500/15 border-emerald-500/30'
+    if (score >= 88) return 'text-teal-400 bg-teal-500/15 border-teal-500/30'
+    return 'text-cyan-400 bg-cyan-500/15 border-cyan-500/30'
   }
 
-  const citations = [
-    { id: 1, text: '"revised recognition schedule"', page: 1, line: 3, relevance: 'High', category: 'Financial' },
-    { id: 2, text: '"Q4 cutoff"', page: 1, line: 5, relevance: 'High', category: 'Timing' },
-    { id: 3, text: '"audit committee"', page: 1, line: 6, relevance: 'Medium', category: 'Oversight' },
-  ]
-
   return (
     <div className="h-full flex bg-slate-950 text-white">
-      <EDiscoverySidebar activeView="review" onNavigate={onNavigate} highlightItem={highlightItem} />
-      
-      <div className="flex-1 flex overflow-hidden">
-        {/* Document Panel (Left) */}
-        <div className="w-3/5 flex flex-col border-r border-slate-800">
-          {/* Header with tabs */}
-          <div className="bg-slate-900 px-3 py-2 border-b border-slate-800">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <button onClick={onBack} className="p-1 hover:bg-slate-800 rounded">
-                  <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <span className="text-[11px] font-medium text-white truncate">{doc.title}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[9px] rounded flex items-center gap-1">
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  Verified
-                </span>
-              </div>
-            </div>
-            
-            {/* Multimodal Tabs */}
-            <div className="flex items-center gap-1">
-              {[
-                { id: 'text', label: 'Text', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-                { id: 'native', label: 'Native', icon: 'M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z' },
-                { id: 'metadata', label: 'Metadata', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' },
-                { id: 'family', label: 'Family', icon: 'M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
-                  className={`px-2 py-1.5 rounded flex items-center gap-1.5 text-[10px] transition-colors ${
-                    activeTab === tab.id 
-                      ? 'bg-teal-500/20 text-teal-400' 
-                      : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'
-                  }`}
-                >
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={tab.icon} />
-                  </svg>
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          
-          {/* Document Content */}
-          <div className="flex-1 overflow-y-auto p-3">
-            <div className="bg-white rounded-lg p-4 text-slate-900 min-h-full text-[11px]">
-              <div className="border-b border-slate-200 pb-2 mb-3">
-                <p><span className="font-medium">From:</span> {doc.from}</p>
-                <p><span className="font-medium">To:</span> {doc.to || 'CFO'}</p>
-                <p><span className="font-medium">Date:</span> {doc.date}</p>
-                <p><span className="font-medium">Subject:</span> {doc.title}</p>
-              </div>
-              <div className="whitespace-pre-wrap leading-relaxed">
-                Per our discussion, I've attached the <span className="bg-amber-200 px-0.5 rounded cursor-pointer hover:bg-amber-300" title="Citation 1">revised recognition schedule</span> for board review.
-                
-                The timing adjustments we discussed should address the auditor's concerns about <span className="bg-violet-200 px-0.5 rounded cursor-pointer hover:bg-violet-300" title="Citation 2">Q4 cutoff</span>. Please confirm before I send to the <span className="bg-teal-200 px-0.5 rounded cursor-pointer hover:bg-teal-300" title="Citation 3">audit committee</span>.
-
-                Best regards,
-                J. Martinez
-              </div>
-            </div>
-          </div>
-
-          {/* Quick Actions Bar */}
-          <div className="bg-slate-900 px-3 py-2 border-t border-slate-800 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <button className="px-2 py-1 bg-rose-500/20 text-rose-400 text-[9px] rounded hover:bg-rose-500/30">
-                Flag Hot
-              </button>
-              <button className="px-2 py-1 bg-amber-500/20 text-amber-400 text-[9px] rounded hover:bg-amber-500/30">
-                Needs Redaction
-              </button>
-            </div>
-            <div className="flex items-center gap-1 text-[9px] text-slate-500">
-              <span>Doc 1 of 127</span>
-              <button className="p-1 hover:bg-slate-800 rounded">
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <button className="p-1 hover:bg-slate-800 rounded">
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* AI Insights Panel (Right) */}
-        <div className="flex-1 flex flex-col bg-slate-900/30">
-          {/* Panel Header */}
-          <div className="px-3 py-2 border-b border-slate-800 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded flex items-center justify-center">
-                <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
-                </svg>
-              </div>
-              <h3 className="text-[11px] font-medium text-white">AI Insights</h3>
-            </div>
-            <div className="flex items-center gap-1">
-              <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-[8px] rounded">
-                No Hallucination Detected
-              </span>
-            </div>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-3 space-y-3">
-            {/* Confidence Meter */}
-            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-[10px] text-slate-400">Relevance Confidence</span>
-                <span className="text-[11px] font-bold text-emerald-400">{doc.confidence}%</span>
-              </div>
-              <div className="h-2 bg-slate-700 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all"
-                  style={{ width: `${doc.confidence}%` }}
-                />
-              </div>
-              <p className="text-[9px] text-slate-500 mt-1.5">Model: Claude 3.5 Sonnet • Calibrated on 10K samples</p>
-            </div>
-
-            {/* AI Rationale */}
-            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-              <h4 className="text-[10px] text-violet-400 font-medium mb-2">AI Rationale</h4>
-              <p className="text-[10px] text-slate-300 leading-relaxed">
-                This document discusses <span className="text-amber-400">revenue recognition timing</span> decisions involving executive leadership. Direct relevance to investigation scope regarding Q4 financial reporting practices.
-              </p>
-            </div>
-
-            {/* Live Citations */}
-            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-              <h4 className="text-[10px] text-violet-400 font-medium mb-2">Live Citations</h4>
-              <div className="space-y-2">
-                {citations.map((cite) => (
-                  <div key={cite.id} className="flex items-start gap-2 p-2 bg-slate-900/50 rounded hover:bg-slate-900 cursor-pointer transition-colors">
-                    <div className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${
-                      cite.relevance === 'High' ? 'bg-rose-400' : 'bg-amber-400'
-                    }`} />
-                    <div className="flex-1 min-w-0">
-                      <p className="text-[10px] text-slate-200 font-mono truncate">{cite.text}</p>
-                      <p className="text-[9px] text-slate-500">Page {cite.page}, Line {cite.line} • {cite.category}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Classification Suggestion */}
-            <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700">
-              <h4 className="text-[10px] text-violet-400 font-medium mb-2">Suggested Classification</h4>
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-slate-400">Responsive</span>
-                  <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[9px] rounded">Yes (94%)</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-slate-400">Privileged</span>
-                  <span className="px-2 py-0.5 bg-slate-700 text-slate-400 text-[9px] rounded">No (98%)</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] text-slate-400">Hot Document</span>
-                  <span className="px-2 py-0.5 bg-amber-500/20 text-amber-400 text-[9px] rounded">Maybe (67%)</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Actions */}
-          <div className="p-3 border-t border-slate-800 space-y-2">
-            <button 
-              onClick={onComplete}
-              className="w-full py-2 bg-teal-500 rounded text-[11px] font-bold text-slate-900 flex items-center justify-center gap-1.5"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
-              Accept & Next
-            </button>
-            <div className="flex gap-2">
-              <button className="flex-1 py-1.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">
-                Override
-              </button>
-              <button className="flex-1 py-1.5 bg-slate-800 border border-slate-700 rounded text-[10px] text-slate-400">
-                Send to QC
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// Screen 4: Automated Privilege Log Workflow
-export function EDiscoveryProduction({ onNavigate, onOpenAI }) {
-  const [selectedDocs, setSelectedDocs] = useState([1, 2, 3])
-  
-  const privilegedDocs = [
-    { 
-      id: 1, 
-      bates: 'NEXUS000234', 
-      title: 'Email: Legal Strategy Discussion', 
-      date: 'Dec 10, 2024',
-      privilege: 'Attorney-Client',
-      aiDescription: 'Communication between in-house counsel and CFO regarding SEC inquiry response strategy and potential disclosure obligations.',
-      approved: true,
-      confidence: 96
-    },
-    { 
-      id: 2, 
-      bates: 'NEXUS000456', 
-      title: 'Memo: Litigation Hold Analysis', 
-      date: 'Dec 8, 2024',
-      privilege: 'Work Product',
-      aiDescription: 'Internal memorandum prepared by legal team analyzing document preservation requirements and potential litigation exposure.',
-      approved: true,
-      confidence: 94
-    },
-    { 
-      id: 3, 
-      bates: 'NEXUS000789', 
-      title: 'Draft: Board Presentation Notes', 
-      date: 'Dec 5, 2024',
-      privilege: 'Attorney-Client',
-      aiDescription: 'Draft presentation materials prepared with input from external counsel regarding regulatory compliance matters.',
-      approved: false,
-      confidence: 87
-    },
-    { 
-      id: 4, 
-      bates: 'NEXUS001012', 
-      title: 'Email: Outside Counsel Engagement', 
-      date: 'Dec 3, 2024',
-      privilege: 'Attorney-Client',
-      aiDescription: 'Engagement letter and scope discussion with external law firm for SEC investigation representation.',
-      approved: true,
-      confidence: 99
-    },
-  ]
-
-  return (
-    <div className="h-full flex bg-slate-950 text-white">
-      <EDiscoverySidebar activeView="privilege" onNavigate={onNavigate} />
+      <EDiscoverySidebar activeView="subset" onNavigate={onNavigate} />
       
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
-          <div>
-            <h1 className="text-sm font-semibold text-white">Privilege Log Generator</h1>
-            <p className="text-[10px] text-slate-400">234 documents flagged as privileged • AI descriptions ready for review</p>
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="text-sm font-semibold text-white">Subset Test Results</h1>
+              <p className="text-[10px] text-slate-400">1,000-document sample from 48,291 total</p>
+            </div>
+            <span className="px-2 py-0.5 bg-amber-500/15 text-amber-400 text-[9px] rounded border border-amber-500/20 font-medium">
+              TEST MODE
+            </span>
           </div>
           <div className="flex items-center gap-2">
-            <button className="px-3 py-1.5 bg-slate-800 rounded text-[10px] text-slate-300 flex items-center gap-1.5 hover:bg-slate-700">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-              Export Log
-            </button>
             <button 
               onClick={onOpenAI}
               className="px-3 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-[10px] font-medium text-white flex items-center gap-1.5"
@@ -2068,131 +2489,804 @@ export function EDiscoveryProduction({ onNavigate, onOpenAI }) {
           </div>
         </div>
 
-        {/* Progress Banner */}
-        <div className="px-4 py-2 bg-slate-900/50 border-b border-slate-800">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-[10px] text-slate-400">Review Progress</span>
-            <span className="text-[10px] text-teal-400">198 / 234 approved (85%)</span>
-          </div>
-          <div className="h-1.5 bg-slate-800 rounded-full overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-teal-500 to-cyan-400 rounded-full" style={{ width: '85%' }} />
-          </div>
-        </div>
-
-        {/* Batch Actions */}
-        <div className="px-4 py-2 bg-slate-800/30 border-b border-slate-800 flex items-center gap-3">
-          <div className="flex items-center gap-2">
-            <input type="checkbox" className="w-3.5 h-3.5 rounded border-slate-600 bg-slate-800 text-teal-500" checked={selectedDocs.length === privilegedDocs.length} readOnly />
-            <span className="text-[10px] text-slate-400">{selectedDocs.length} selected</span>
-          </div>
-          <div className="h-4 w-px bg-slate-700" />
-          <button className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-[9px] rounded hover:bg-emerald-500/30 flex items-center gap-1">
-            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        {/* Protocol Performance Assessment */}
+        <div className="px-4 py-3 bg-slate-900/50 border-b border-slate-800">
+          <div className="flex items-center gap-2 mb-2.5">
+            <svg className="w-3.5 h-3.5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
             </svg>
-            Approve Selected
-          </button>
-          <button className="px-2 py-1 bg-amber-500/20 text-amber-400 text-[9px] rounded hover:bg-amber-500/30">
-            Edit Descriptions
-          </button>
-          <button className="px-2 py-1 bg-rose-500/20 text-rose-400 text-[9px] rounded hover:bg-rose-500/30">
-            Reject Selected
-          </button>
+            <span className="text-[10px] font-semibold text-white">Protocol Performance</span>
+            <span className="text-[9px] text-slate-500 ml-auto">Claude 3.5 Sonnet • 1.2s avg/doc</span>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {performanceMetrics.map((metric, i) => (
+              <div key={i} className="bg-slate-800/40 rounded-lg p-2.5 border border-slate-700/50">
+                <div className="flex items-center gap-2 mb-1">
+                  <svg className={`w-3.5 h-3.5 ${metric.color}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={metric.icon} />
+                  </svg>
+                  <span className="text-[9px] text-slate-400">{metric.label}</span>
+                </div>
+                <p className={`text-lg font-bold ${metric.color}`}>{metric.value}</p>
+                <p className="text-[8px] text-slate-500 mt-0.5">{metric.description}</p>
+              </div>
+            ))}
+          </div>
+          <div className="mt-2.5 flex items-center gap-2">
+            <div className="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+              <div className="h-full bg-gradient-to-r from-teal-500 via-cyan-400 to-violet-400 rounded-full" style={{ width: '93%' }} />
+            </div>
+            <span className="text-[9px] text-teal-400 font-semibold">93% ready</span>
+          </div>
         </div>
 
-        {/* Document List */}
-        <div className="flex-1 overflow-y-auto">
-          {privilegedDocs.map((doc) => (
-            <div 
-              key={doc.id}
-              className={`px-4 py-3 border-b border-slate-800/50 hover:bg-slate-800/20 ${
-                !doc.approved ? 'bg-amber-500/5 border-l-2 border-l-amber-500' : ''
-              }`}
-            >
-              <div className="flex items-start gap-3">
-                {/* Checkbox */}
-                <input 
-                  type="checkbox" 
-                  className="w-3.5 h-3.5 rounded border-slate-600 bg-slate-800 text-teal-500 mt-1" 
-                  checked={selectedDocs.includes(doc.id)}
-                  onChange={() => {
-                    if (selectedDocs.includes(doc.id)) {
-                      setSelectedDocs(selectedDocs.filter(id => id !== doc.id))
-                    } else {
-                      setSelectedDocs([...selectedDocs, doc.id])
-                    }
-                  }}
-                />
-                
-                {/* Main Content */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[9px] font-mono text-slate-500">{doc.bates}</span>
-                    <span className={`px-1.5 py-0.5 text-[8px] rounded ${
-                      doc.privilege === 'Attorney-Client' ? 'bg-violet-500/20 text-violet-400' :
-                      'bg-amber-500/20 text-amber-400'
-                    }`}>{doc.privilege}</span>
-                    <span className="text-[9px] text-slate-500">{doc.date}</span>
+        {/* Sample Document Cards */}
+        <div className="flex-1 overflow-y-auto px-4 py-3">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[10px] text-slate-400 font-medium">Sample Documents • Showing 6 of 94 matched</p>
+            <div className="flex items-center gap-3 text-[9px]">
+              <span className="flex items-center gap-1 text-teal-400"><span className="w-1.5 h-1.5 bg-teal-400 rounded-full inline-block" /> 94 Relevant</span>
+              <span className="flex items-center gap-1 text-amber-400"><span className="w-1.5 h-1.5 bg-amber-400 rounded-full inline-block" /> 8 Privileged</span>
+              <span className="flex items-center gap-1 text-rose-400"><span className="w-1.5 h-1.5 bg-rose-400 rounded-full inline-block" /> 4 Hot</span>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-2.5">
+            {sampleResults.map((doc) => (
+              <div 
+                key={doc.id}
+                className={`rounded-lg border p-3 transition-colors hover:bg-slate-800/40 ${
+                  doc.hot 
+                    ? 'border-rose-500/30 bg-rose-500/[0.04]' 
+                    : doc.privileged 
+                      ? 'border-amber-500/30 bg-amber-500/[0.04]' 
+                      : 'border-slate-700/50 bg-slate-900/50'
+                }`}
+              >
+                <div className="flex items-start justify-between gap-2 mb-2">
+                  <div className="min-w-0 flex-1">
+                    <p className="text-[10px] font-medium text-white truncate">{doc.title}</p>
+                    <p className="text-[8px] text-slate-500 mt-0.5">{doc.type} • {doc.from}</p>
                   </div>
-                  
-                  <h4 className="text-[11px] font-medium text-white mb-1.5">{doc.title}</h4>
-                  
-                  {/* AI-Generated Description */}
-                  <div className="bg-slate-800/50 rounded p-2.5 border border-slate-700">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <svg className="w-3 h-3 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
-                      </svg>
-                      <span className="text-[9px] text-violet-400 font-medium">AI-Drafted Description</span>
-                      <span className="text-[8px] text-slate-500">({doc.confidence}% confidence)</span>
-                    </div>
-                    <p className="text-[10px] text-slate-300 leading-relaxed">{doc.aiDescription}</p>
+                  <span className={`shrink-0 px-2 py-0.5 rounded text-[10px] font-bold border ${getRelevanceColor(doc.relevance)}`}>
+                    {doc.relevance}%
+                  </span>
+                </div>
+                <p className="text-[9px] text-slate-300 leading-relaxed mb-1.5">{doc.finding}</p>
+                <p className="text-[8px] text-slate-500 italic leading-relaxed mb-2">{doc.rationale}</p>
+                <div className="flex items-center gap-1.5">
+                  {doc.hot && (
+                    <span className="px-1.5 py-0.5 bg-rose-500/20 text-rose-400 text-[8px] rounded font-medium">Hot</span>
+                  )}
+                  {doc.privileged && (
+                    <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 text-[8px] rounded font-medium">Privileged</span>
+                  )}
+                  {doc.tags.map((tag, i) => (
+                    <span key={i} className="px-1.5 py-0.5 bg-slate-700/40 text-slate-400 text-[8px] rounded">{tag}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Footer Actions */}
+        <div className="bg-slate-900 px-4 py-3 border-t border-slate-800 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => onNavigate('protocol')}
+              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded text-[10px] text-slate-300 transition-colors flex items-center gap-1.5"
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+              Refine Protocol
+            </button>
+            <span className="text-[9px] text-slate-500">Est. full corpus: ~4.2 hrs for 48,291 docs</span>
+          </div>
+          <button 
+            onClick={() => onNavigate('results')}
+            className="relative px-5 py-2 bg-teal-500 hover:bg-teal-400 rounded text-[10px] font-bold text-slate-900 transition-colors flex items-center gap-2"
+          >
+            {highlightNext && (
+              <span className="absolute -top-1 -right-1 flex h-2.5 w-2.5 z-20">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-300 opacity-75" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-300" />
+              </span>
+            )}
+            <span className="relative z-10 flex items-center gap-2">
+              Apply to Full Corpus
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Screen 4: Full Corpus Review Results Dashboard
+export function EDiscoveryCorpusResults({ onNavigate, onOpenAI }) {
+  const corpusStats = [
+    { label: 'Relevant', value: '4,847', pct: '10.0%', color: 'text-teal-400', gradient: 'from-teal-500/20 to-cyan-500/20', borderColor: 'border-teal-500/30', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
+    { label: 'Not Relevant', value: '43,005', pct: '89.1%', color: 'text-slate-400', gradient: 'from-slate-800/50 to-slate-700/50', borderColor: 'border-slate-700/50', icon: 'M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z' },
+    { label: 'Privileged', value: '312', pct: '0.6%', color: 'text-amber-400', gradient: 'from-amber-500/20 to-orange-500/20', borderColor: 'border-amber-500/30', icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' },
+    { label: 'Hot Docs', value: '127', pct: '0.3%', color: 'text-rose-400', gradient: 'from-rose-500/20 to-pink-500/20', borderColor: 'border-rose-500/30', icon: 'M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z' },
+  ]
+
+  const relevanceDistribution = [
+    { range: '95-100%', count: 847, pct: 17 },
+    { range: '90-94%', count: 1243, pct: 26 },
+    { range: '85-89%', count: 1456, pct: 30 },
+    { range: '80-84%', count: 892, pct: 18 },
+    { range: '75-79%', count: 409, pct: 9 },
+  ]
+
+  const corpusResults = [
+    { id: 1, bates: 'NEXUS000234', title: 'RE: Q4 Revenue Discussion', type: 'Email', from: 'J. Martinez, CFO', relevance: 96, finding: 'Revenue recognition timing', rationale: 'Discusses revised recognition schedule and Q4 cutoff timing with executive leadership', classification: 'Responsive', hot: true },
+    { id: 2, bates: 'NEXUS000456', title: 'Audit Committee Brief - Q3/Q4', type: 'Memo', from: 'S. Chen, Gen. Counsel', relevance: 93, finding: 'Audit committee oversight', rationale: 'Committee briefing on Q4 financial statement preparation and auditor concerns', classification: 'Responsive', hot: false },
+    { id: 3, bates: 'NEXUS000789', title: 'FW: Auditor Concerns on Recognition', type: 'Email', from: 'External Auditor', relevance: 94, finding: 'External auditor communications', rationale: 'Direct auditor concerns about revenue recognition practices and timing decisions', classification: 'Responsive', hot: true },
+    { id: 4, bates: 'NEXUS001012', title: 'Board Meeting Minutes - Nov 2024', type: 'Minutes', from: 'Board Secretary', relevance: 91, finding: 'Board financial oversight', rationale: 'Board-level discussion of Q4 projections and audit committee recommendations', classification: 'Responsive', hot: false },
+    { id: 5, bates: 'NEXUS001234', title: 'CEO-CFO Exchange: Forward Guidance', type: 'Email', from: 'CEO to CFO', relevance: 95, finding: 'Executive financial comms', rationale: 'Forward guidance discussion between executives pre-earnings announcement', classification: 'Responsive', hot: true },
+    { id: 6, bates: 'NEXUS001567', title: 'Draft: Year-End Financial Summary', type: 'Report', from: 'Finance Team', relevance: 87, finding: 'Q4 financial compilation', rationale: 'Comprehensive Q4 financial data with operational metrics and variance analysis', classification: 'Responsive', hot: false },
+    { id: 7, bates: 'NEXUS001890', title: 'Legal Hold Notice - SEC Inquiry', type: 'Memo', from: 'S. Chen, Gen. Counsel', relevance: 88, finding: 'Legal counsel directive', rationale: 'Preservation notice from General Counsel regarding SEC document requests', classification: 'Privileged', privileged: true, hot: false },
+    { id: 8, bates: 'NEXUS002123', title: 'Merger Discussion: Acme Subsidiary', type: 'Email', from: 'VP Corp Dev', relevance: 76, finding: 'Potential M&A activity', rationale: 'Early-stage acquisition discussion with potential financial reporting implications', classification: 'Needs Review', hot: false },
+  ]
+
+  const getRelevanceColor = (score) => {
+    if (score >= 93) return 'text-emerald-400 bg-emerald-500/15'
+    if (score >= 88) return 'text-teal-400 bg-teal-500/15'
+    if (score >= 80) return 'text-cyan-400 bg-cyan-500/15'
+    return 'text-slate-400 bg-slate-500/15'
+  }
+
+  const getRelevanceBarWidth = (score) => `${Math.max(20, ((score - 70) / 30) * 100)}%`
+
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      <EDiscoverySidebar activeView="results" onNavigate={onNavigate} />
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
+          <div>
+            <h1 className="text-sm font-semibold text-white">Review Results</h1>
+            <p className="text-[10px] text-slate-400">Protocol applied to full corpus - 48,291 documents processed</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-[10px] rounded flex items-center gap-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Review Complete
+            </span>
+            <button 
+              onClick={onOpenAI}
+              className="px-3 py-1.5 bg-gradient-to-r from-violet-500 to-indigo-500 rounded text-[10px] font-medium text-white flex items-center gap-1.5"
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z"/>
+              </svg>
+              Ask AI
+            </button>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="px-4 py-3 bg-slate-900/50 border-b border-slate-800">
+          <div className="grid grid-cols-4 gap-3">
+            {corpusStats.map((stat, i) => (
+              <div key={i} className={`bg-gradient-to-br ${stat.gradient} rounded-lg p-3 border ${stat.borderColor}`}>
+                <div className="flex items-center justify-between mb-1">
+                  <svg className={`w-4 h-4 ${stat.color}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={stat.icon} />
+                  </svg>
+                  <span className="text-[9px] text-slate-500">{stat.pct}</span>
+                </div>
+                <p className={`text-xl font-bold ${stat.color}`}>{stat.value}</p>
+                <p className="text-[9px] text-slate-500 mt-0.5">{stat.label}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Relevance Distribution + Processing Info */}
+        <div className="px-4 py-2.5 border-b border-slate-800 flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] text-slate-500 font-medium whitespace-nowrap">Relevance Distribution:</span>
+            <div className="flex items-end gap-0.5 h-6">
+              {relevanceDistribution.map((band, i) => (
+                <div key={i} className="group relative flex flex-col items-center">
+                  <div 
+                    className="w-8 bg-gradient-to-t from-teal-600 to-teal-400 rounded-t opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
+                    style={{ height: `${band.pct}%` }}
+                  />
+                  <div className="absolute -top-6 left-1/2 -translate-x-1/2 hidden group-hover:block bg-slate-800 px-1.5 py-0.5 rounded text-[8px] text-white whitespace-nowrap z-10 border border-slate-700">
+                    {band.range}: {band.count.toLocaleString()}
                   </div>
                 </div>
+              ))}
+            </div>
+            <span className="text-[8px] text-slate-600">75%→100%</span>
+          </div>
+          <div className="h-3 w-px bg-slate-700" />
+          <div className="flex items-center gap-3 text-[9px] text-slate-500">
+            <span>Model: Claude 3.5 Sonnet</span>
+            <span>•</span>
+            <span>Processed in 3.8 hrs</span>
+            <span>•</span>
+            <span>Avg confidence: 89.2%</span>
+          </div>
+        </div>
 
-                {/* Actions */}
-                <div className="flex flex-col items-end gap-2">
-                  {doc.approved ? (
-                    <span className="px-2 py-1 bg-emerald-500/20 text-emerald-400 text-[9px] rounded flex items-center gap-1">
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {/* Results Table */}
+        <div className="flex-1 overflow-y-auto">
+          {/* Table Header */}
+          <div className="sticky top-0 bg-slate-900/95 backdrop-blur px-4 py-2 border-b border-slate-700 text-[9px] font-medium text-slate-500 uppercase tracking-wider z-10">
+            <div className="grid grid-cols-12 gap-2 items-center">
+              <span className="col-span-3">Document</span>
+              <span className="col-span-1 text-center">Score</span>
+              <span className="col-span-3">Key Finding</span>
+              <span className="col-span-3">AI Rationale</span>
+              <span className="col-span-2 text-right">Status</span>
+            </div>
+          </div>
+
+          {/* Table Rows */}
+          {corpusResults.map((doc) => (
+            <div 
+              key={doc.id} 
+              className={`px-4 py-2.5 border-b border-slate-800/40 hover:bg-slate-800/30 transition-colors ${
+                doc.hot ? 'bg-rose-500/[0.03]' : doc.privileged ? 'bg-amber-500/[0.03]' : ''
+              }`}
+            >
+              <div className="grid grid-cols-12 gap-2 items-center">
+                {/* Document */}
+                <div className="col-span-3 min-w-0">
+                  <p className="text-[10px] font-medium text-white truncate">{doc.title}</p>
+                  <p className="text-[8px] text-slate-500">{doc.type} • {doc.from}</p>
+                </div>
+                
+                {/* Relevance Score */}
+                <div className="col-span-1 flex justify-center">
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${getRelevanceColor(doc.relevance)}`}>
+                    {doc.relevance}%
+                  </span>
+                </div>
+                
+                {/* Key Finding */}
+                <p className="col-span-3 text-[9px] text-slate-300 leading-relaxed">{doc.finding}</p>
+                
+                {/* AI Rationale */}
+                <p className="col-span-3 text-[9px] text-slate-400 leading-relaxed italic">{doc.rationale}</p>
+                
+                {/* Status */}
+                <div className="col-span-2 flex justify-end">
+                  {doc.hot ? (
+                    <span className="px-1.5 py-0.5 bg-rose-500/20 text-rose-400 text-[8px] rounded font-medium flex items-center gap-0.5">
+                      <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/>
+                      </svg>
+                      Hot
+                    </span>
+                  ) : doc.privileged ? (
+                    <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 text-[8px] rounded font-medium flex items-center gap-0.5">
+                      <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      Priv.
+                    </span>
+                  ) : doc.classification === 'Needs Review' ? (
+                    <span className="px-1.5 py-0.5 bg-violet-500/20 text-violet-400 text-[8px] rounded">Review</span>
+                  ) : (
+                    <span className="px-1.5 py-0.5 bg-emerald-500/15 text-emerald-400 text-[8px] rounded">
+                      <svg className="w-2.5 h-2.5 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
-                      Approved
-                    </span>
-                  ) : (
-                    <span className="px-2 py-1 bg-amber-500/20 text-amber-400 text-[9px] rounded">
-                      Needs Review
                     </span>
                   )}
-                  <button className="text-[9px] text-slate-500 hover:text-slate-300">Edit</button>
                 </div>
               </div>
             </div>
           ))}
+
+          {/* Show More Indicator */}
+          <div className="px-4 py-3 text-center">
+            <p className="text-[9px] text-slate-600">Showing 8 of 4,847 relevant documents • Scroll or filter to explore more</p>
+          </div>
         </div>
 
         {/* Footer Actions */}
         <div className="bg-slate-900 px-4 py-3 border-t border-slate-800 flex items-center justify-between">
           <div className="flex items-center gap-4 text-[10px]">
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-              <span className="text-slate-400">198 Approved</span>
+              <div className="w-2 h-2 bg-teal-400 rounded-full" />
+              <span className="text-slate-400">4,847 Relevant</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 bg-amber-400 rounded-full" />
-              <span className="text-slate-400">36 Pending</span>
+              <span className="text-slate-400">312 Privileged</span>
             </div>
             <div className="flex items-center gap-1.5">
               <div className="w-2 h-2 bg-rose-400 rounded-full" />
-              <span className="text-slate-400">0 Rejected</span>
+              <span className="text-slate-400">127 Hot</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <div className="w-2 h-2 bg-violet-400 rounded-full" />
+              <span className="text-slate-400">43 Needs Review</span>
             </div>
           </div>
-          <button className="px-4 py-2 bg-teal-500 rounded text-[11px] font-bold text-slate-900 flex items-center gap-1.5">
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Generate Final Log
-          </button>
+          <div className="flex items-center gap-2">
+            <button className="px-3 py-2 bg-slate-800 hover:bg-slate-700 rounded text-[10px] text-slate-300 flex items-center gap-1.5 transition-colors">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              Export Results
+            </button>
+            <button className="px-4 py-2 bg-teal-500 hover:bg-teal-400 rounded text-[10px] font-bold text-slate-900 flex items-center gap-1.5 transition-colors">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Begin Production
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Review Parameters Configuration Screen
+export function EDiscoveryReviewParams({ onNavigate, onOpenAI, highlightNext = false }) {
+  const [confidenceThreshold, setConfidenceThreshold] = useState(75)
+  const [batchSize, setBatchSize] = useState(500)
+  const [selectedPriority, setSelectedPriority] = useState('relevance')
+  const [selectedDedup, setSelectedDedup] = useState('near')
+  const [aiAutonomy, setAiAutonomy] = useState('suggest')
+  const [expandedSection, setExpandedSection] = useState('thresholds')
+
+  const priorityOptions = [
+    { id: 'relevance', label: 'Relevance Score', desc: 'Highest confidence documents first', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+    { id: 'date', label: 'Date Proximity', desc: 'Most recent documents first', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
+    { id: 'hot', label: 'Hot Documents', desc: 'Flagged documents prioritized', icon: 'M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z' },
+    { id: 'custodian', label: 'Key Custodians', desc: 'Priority custodian docs first', icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z' },
+  ]
+
+  const dedupOptions = [
+    { id: 'exact', label: 'Exact Match', desc: 'Identical files only' },
+    { id: 'near', label: 'Near-Duplicate', desc: '≥85% textual similarity' },
+    { id: 'thread', label: 'Email Threading', desc: 'Group by conversation thread' },
+  ]
+
+  const autonomyLevels = [
+    { id: 'flag', label: 'Flag Only', desc: 'AI flags items for human review', color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' },
+    { id: 'suggest', label: 'Suggest', desc: 'AI suggests tags, human confirms', color: 'bg-teal-500/20 text-teal-400 border-teal-500/30' },
+    { id: 'auto', label: 'Auto-Tag', desc: 'AI tags above confidence threshold', color: 'bg-violet-500/20 text-violet-400 border-violet-500/30' },
+  ]
+
+  const reviewerAssignments = [
+    { name: 'Sarah Chen', role: 'Lead Reviewer', expertise: 'Privilege', avatar: 'SC', docs: 0, color: 'from-violet-400 to-indigo-400' },
+    { name: 'James Park', role: 'Senior Associate', expertise: 'Financial', avatar: 'JP', docs: 0, color: 'from-teal-400 to-cyan-400' },
+    { name: 'Maria Lopez', role: 'Associate', expertise: 'General', avatar: 'ML', docs: 0, color: 'from-amber-400 to-orange-400' },
+    { name: 'David Kim', role: 'Contract Reviewer', expertise: 'Responsiveness', avatar: 'DK', docs: 0, color: 'from-emerald-400 to-green-400' },
+  ]
+
+  const sections = [
+    { id: 'thresholds', label: 'Confidence & Thresholds', icon: 'M13 10V3L4 14h7v7l9-11h-7z' },
+    { id: 'priority', label: 'Prioritization Strategy', icon: 'M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12' },
+    { id: 'dedup', label: 'Deduplication', icon: 'M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z' },
+    { id: 'autonomy', label: 'AI Autonomy Level', icon: 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' },
+    { id: 'reviewers', label: 'Reviewer Assignment', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
+  ]
+
+  return (
+    <div className="h-full flex bg-slate-950 text-white">
+      <EDiscoverySidebar activeView="params" onNavigate={onNavigate} />
+      
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Header */}
+        <div className="bg-slate-900 px-4 py-2.5 flex items-center justify-between border-b border-slate-800">
+          <div className="flex items-center gap-3">
+            <div>
+              <h1 className="text-sm font-semibold text-white">Review Parameters</h1>
+              <p className="text-[10px] text-slate-400">Configure how AI processes and routes documents</p>
+            </div>
+            <span className="px-2 py-0.5 bg-teal-500/15 text-teal-400 text-[9px] rounded border border-teal-500/20 font-medium">
+              PRE-REVIEW
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={onOpenAI}
+              className="flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r from-violet-600 to-indigo-600 rounded text-[10px] font-medium hover:from-violet-500 hover:to-indigo-500 transition-all"
+            >
+              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+              </svg>
+              AI Recommend
+            </button>
+            <button
+              onClick={() => onNavigate && onNavigate('subset')}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded text-[10px] font-medium transition-all ${
+                highlightNext
+                  ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/30 animate-pulse'
+                  : 'bg-teal-500/15 text-teal-400 border border-teal-500/20 hover:bg-teal-500/25'
+              }`}
+            >
+              Run Subset Test
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left panel - Section nav */}
+          <div className="w-48 bg-slate-900/50 border-r border-slate-800 p-2 space-y-0.5 overflow-y-auto">
+            {sections.map((section) => (
+              <button
+                key={section.id}
+                onClick={() => setExpandedSection(section.id)}
+                className={`w-full flex items-center gap-2 px-2.5 py-2 rounded-lg text-left transition-all text-[10px] ${
+                  expandedSection === section.id
+                    ? 'bg-teal-500/10 text-teal-400 border border-teal-500/20'
+                    : 'text-slate-400 hover:text-slate-300 hover:bg-slate-800/50 border border-transparent'
+                }`}
+              >
+                <svg className="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d={section.icon} />
+                </svg>
+                {section.label}
+              </button>
+            ))}
+
+            {/* Summary box */}
+            <div className="mt-4 p-2.5 bg-slate-800/50 rounded-lg border border-slate-700/50">
+              <div className="text-[9px] font-semibold text-slate-400 uppercase tracking-wider mb-2">Config Summary</div>
+              <div className="space-y-1.5 text-[9px]">
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Threshold</span>
+                  <span className="text-teal-400 font-medium">{confidenceThreshold}%</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Batch Size</span>
+                  <span className="text-teal-400 font-medium">{batchSize}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Priority</span>
+                  <span className="text-teal-400 font-medium capitalize">{selectedPriority}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">Dedup</span>
+                  <span className="text-teal-400 font-medium capitalize">{selectedDedup}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-500">AI Mode</span>
+                  <span className="text-teal-400 font-medium capitalize">{aiAutonomy}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Main content */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {/* Confidence & Thresholds */}
+            {expandedSection === 'thresholds' && (
+              <div className="space-y-4">
+                <div className="bg-slate-900/60 rounded-xl border border-slate-800 p-4">
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="w-6 h-6 bg-teal-500/15 rounded flex items-center justify-center">
+                      <svg className="w-3.5 h-3.5 text-teal-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-semibold text-white">Minimum Confidence Score</h3>
+                      <p className="text-[9px] text-slate-400">Documents below this score will be flagged for manual review</p>
+                    </div>
+                  </div>
+
+                  {/* Slider */}
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-teal-400">{confidenceThreshold}%</span>
+                      <div className="flex gap-1">
+                        {[50, 65, 75, 85, 95].map(v => (
+                          <button
+                            key={v}
+                            onClick={() => setConfidenceThreshold(v)}
+                            className={`px-2 py-0.5 rounded text-[9px] font-medium transition-all ${
+                              confidenceThreshold === v
+                                ? 'bg-teal-500/20 text-teal-400 border border-teal-500/30'
+                                : 'text-slate-500 hover:text-slate-300 border border-slate-700 hover:border-slate-600'
+                            }`}
+                          >
+                            {v}%
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="relative h-2 bg-slate-800 rounded-full overflow-hidden">
+                      <div
+                        className="absolute inset-y-0 left-0 bg-gradient-to-r from-teal-500 to-cyan-400 rounded-full transition-all duration-300"
+                        style={{ width: `${confidenceThreshold}%` }}
+                      />
+                      <input
+                        type="range"
+                        min={0}
+                        max={100}
+                        value={confidenceThreshold}
+                        onChange={(e) => setConfidenceThreshold(Number(e.target.value))}
+                        className="absolute inset-0 w-full opacity-0 cursor-pointer"
+                      />
+                    </div>
+                    <div className="flex justify-between text-[8px] text-slate-600">
+                      <span>More Coverage</span>
+                      <span>More Precision</span>
+                    </div>
+                  </div>
+
+                  {/* Impact preview */}
+                  <div className="mt-4 grid grid-cols-3 gap-2">
+                    <div className="bg-slate-800/60 rounded-lg p-2.5 border border-slate-700/50">
+                      <div className="text-[9px] text-slate-500 mb-0.5">Auto-Classified</div>
+                      <div className="text-sm font-bold text-emerald-400">{Math.round(48291 * (confidenceThreshold / 100) * 0.7).toLocaleString()}</div>
+                      <div className="text-[8px] text-slate-600">docs above threshold</div>
+                    </div>
+                    <div className="bg-slate-800/60 rounded-lg p-2.5 border border-slate-700/50">
+                      <div className="text-[9px] text-slate-500 mb-0.5">Manual Queue</div>
+                      <div className="text-sm font-bold text-amber-400">{Math.round(48291 * (1 - confidenceThreshold / 100) * 0.9).toLocaleString()}</div>
+                      <div className="text-[8px] text-slate-600">needs human review</div>
+                    </div>
+                    <div className="bg-slate-800/60 rounded-lg p-2.5 border border-slate-700/50">
+                      <div className="text-[9px] text-slate-500 mb-0.5">Est. Time Saved</div>
+                      <div className="text-sm font-bold text-violet-400">{Math.round(confidenceThreshold * 0.8)}%</div>
+                      <div className="text-[8px] text-slate-600">vs. full manual review</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Batch Size */}
+                <div className="bg-slate-900/60 rounded-xl border border-slate-800 p-4">
+                  <div className="flex items-center gap-2 mb-3">
+                    <div className="w-6 h-6 bg-violet-500/15 rounded flex items-center justify-center">
+                      <svg className="w-3.5 h-3.5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="text-xs font-semibold text-white">Batch Size</h3>
+                      <p className="text-[9px] text-slate-400">Documents per reviewer batch assignment</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    {[250, 500, 1000, 2000].map(v => (
+                      <button
+                        key={v}
+                        onClick={() => setBatchSize(v)}
+                        className={`flex-1 py-2 rounded-lg text-[10px] font-semibold transition-all border ${
+                          batchSize === v
+                            ? 'bg-violet-500/15 text-violet-400 border-violet-500/30'
+                            : 'bg-slate-800/50 text-slate-500 border-slate-700/50 hover:text-slate-300 hover:border-slate-600'
+                        }`}
+                      >
+                        {v.toLocaleString()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Prioritization Strategy */}
+            {expandedSection === 'priority' && (
+              <div className="bg-slate-900/60 rounded-xl border border-slate-800 p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-6 h-6 bg-amber-500/15 rounded flex items-center justify-center">
+                    <svg className="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-semibold text-white">Document Prioritization</h3>
+                    <p className="text-[9px] text-slate-400">How documents are ordered in reviewer queues</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {priorityOptions.map(opt => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setSelectedPriority(opt.id)}
+                      className={`flex items-start gap-2.5 p-3 rounded-lg border text-left transition-all ${
+                        selectedPriority === opt.id
+                          ? 'bg-amber-500/10 border-amber-500/30'
+                          : 'bg-slate-800/40 border-slate-700/50 hover:border-slate-600'
+                      }`}
+                    >
+                      <div className={`w-5 h-5 rounded flex items-center justify-center shrink-0 mt-0.5 ${
+                        selectedPriority === opt.id ? 'bg-amber-500/20' : 'bg-slate-700/50'
+                      }`}>
+                        <svg className={`w-3 h-3 ${selectedPriority === opt.id ? 'text-amber-400' : 'text-slate-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={opt.icon} />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className={`text-[10px] font-semibold ${selectedPriority === opt.id ? 'text-amber-300' : 'text-slate-300'}`}>{opt.label}</div>
+                        <div className="text-[9px] text-slate-500">{opt.desc}</div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Deduplication */}
+            {expandedSection === 'dedup' && (
+              <div className="bg-slate-900/60 rounded-xl border border-slate-800 p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-6 h-6 bg-cyan-500/15 rounded flex items-center justify-center">
+                    <svg className="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-semibold text-white">Deduplication Strategy</h3>
+                    <p className="text-[9px] text-slate-400">How duplicate documents are identified and grouped</p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  {dedupOptions.map(opt => (
+                    <button
+                      key={opt.id}
+                      onClick={() => setSelectedDedup(opt.id)}
+                      className={`w-full flex items-center justify-between p-3 rounded-lg border transition-all ${
+                        selectedDedup === opt.id
+                          ? 'bg-cyan-500/10 border-cyan-500/30'
+                          : 'bg-slate-800/40 border-slate-700/50 hover:border-slate-600'
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className={`w-3 h-3 rounded-full border-2 flex items-center justify-center ${
+                          selectedDedup === opt.id ? 'border-cyan-400' : 'border-slate-600'
+                        }`}>
+                          {selectedDedup === opt.id && <div className="w-1.5 h-1.5 rounded-full bg-cyan-400" />}
+                        </div>
+                        <div className="text-left">
+                          <div className={`text-[10px] font-semibold ${selectedDedup === opt.id ? 'text-cyan-300' : 'text-slate-300'}`}>{opt.label}</div>
+                          <div className="text-[9px] text-slate-500">{opt.desc}</div>
+                        </div>
+                      </div>
+                      {selectedDedup === opt.id && (
+                        <svg className="w-3.5 h-3.5 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      )}
+                    </button>
+                  ))}
+                </div>
+                {/* Dedup impact */}
+                <div className="mt-3 p-2.5 bg-slate-800/40 rounded-lg border border-slate-700/30">
+                  <div className="flex items-center justify-between text-[9px]">
+                    <span className="text-slate-500">Estimated duplicates removed</span>
+                    <span className="text-cyan-400 font-bold">{selectedDedup === 'exact' ? '2,341' : selectedDedup === 'near' ? '6,892' : '8,147'}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[9px] mt-1">
+                    <span className="text-slate-500">Remaining unique documents</span>
+                    <span className="text-white font-bold">{selectedDedup === 'exact' ? '45,950' : selectedDedup === 'near' ? '41,399' : '40,144'}</span>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* AI Autonomy Level */}
+            {expandedSection === 'autonomy' && (
+              <div className="bg-slate-900/60 rounded-xl border border-slate-800 p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-6 h-6 bg-violet-500/15 rounded flex items-center justify-center">
+                    <svg className="w-3.5 h-3.5 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-semibold text-white">AI Autonomy Level</h3>
+                    <p className="text-[9px] text-slate-400">How much decision-making power the AI has</p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  {autonomyLevels.map(level => (
+                    <button
+                      key={level.id}
+                      onClick={() => setAiAutonomy(level.id)}
+                      className={`w-full p-3 rounded-lg border text-left transition-all ${
+                        aiAutonomy === level.id
+                          ? level.id === 'flag' ? 'bg-slate-500/10 border-slate-500/30' 
+                            : level.id === 'suggest' ? 'bg-teal-500/10 border-teal-500/30'
+                            : 'bg-violet-500/10 border-violet-500/30'
+                          : 'bg-slate-800/40 border-slate-700/50 hover:border-slate-600'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between mb-1">
+                        <span className={`text-[10px] font-semibold ${
+                          aiAutonomy === level.id
+                            ? level.id === 'flag' ? 'text-slate-300' : level.id === 'suggest' ? 'text-teal-300' : 'text-violet-300'
+                            : 'text-slate-300'
+                        }`}>{level.label}</span>
+                        <span className={`text-[8px] px-1.5 py-0.5 rounded-full border font-medium ${level.color}`}>
+                          {level.id === 'flag' ? 'Conservative' : level.id === 'suggest' ? 'Balanced' : 'Aggressive'}
+                        </span>
+                      </div>
+                      <p className="text-[9px] text-slate-500">{level.desc}</p>
+                    </button>
+                  ))}
+                </div>
+                {/* Visual autonomy scale */}
+                <div className="mt-3 flex items-center gap-1">
+                  <span className="text-[8px] text-slate-600 w-12">Human</span>
+                  <div className="flex-1 flex gap-0.5">
+                    {[...Array(10)].map((_, i) => (
+                      <div
+                        key={i}
+                        className={`h-1.5 flex-1 rounded-full transition-all ${
+                          aiAutonomy === 'flag' ? (i < 3 ? 'bg-slate-400' : 'bg-slate-800')
+                          : aiAutonomy === 'suggest' ? (i < 6 ? 'bg-teal-400' : 'bg-slate-800')
+                          : (i < 9 ? 'bg-violet-400' : 'bg-slate-800')
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-[8px] text-slate-600 w-6 text-right">AI</span>
+                </div>
+              </div>
+            )}
+
+            {/* Reviewer Assignment */}
+            {expandedSection === 'reviewers' && (
+              <div className="bg-slate-900/60 rounded-xl border border-slate-800 p-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-6 h-6 bg-emerald-500/15 rounded flex items-center justify-center">
+                    <svg className="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-semibold text-white">Reviewer Assignment</h3>
+                    <p className="text-[9px] text-slate-400">Expertise-based routing for document batches</p>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  {reviewerAssignments.map((reviewer, ri) => (
+                    <div key={ri} className="flex items-center gap-3 p-2.5 bg-slate-800/40 rounded-lg border border-slate-700/50">
+                      <div className={`w-8 h-8 rounded-full bg-gradient-to-br ${reviewer.color} flex items-center justify-center text-[10px] font-bold text-white shrink-0`}>
+                        {reviewer.avatar}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-semibold text-white">{reviewer.name}</span>
+                          <span className="text-[8px] text-slate-500">{reviewer.role}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mt-0.5">
+                          <span className="text-[8px] px-1.5 py-0.5 rounded bg-slate-700/50 text-slate-400">{reviewer.expertise}</span>
+                          <span className="text-[8px] text-slate-600">Auto-route matching docs</span>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-[10px] font-bold text-teal-400">~{Math.round((48291 / reviewerAssignments.length / batchSize) * batchSize).toLocaleString()}</div>
+                        <div className="text-[8px] text-slate-600">est. docs</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-3 p-2 bg-teal-500/5 rounded-lg border border-teal-500/10">
+                  <div className="flex items-center gap-1.5 text-[9px] text-teal-400">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Privileged documents auto-route to Sarah Chen (Lead Reviewer)
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -2201,11 +3295,9 @@ export function EDiscoveryProduction({ onNavigate, onOpenAI }) {
 
 // Main eDiscovery App Container
 export function EDiscoveryApp({ currentScreen = 0, onScreenChange, showHotspots = false }) {
-  const screenIds = ['eca', 'protocol', 'review', 'privilege']
+  const screenIds = ['eca', 'protocol', 'params', 'subset', 'results']
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false)
-  const [selectedDocument, setSelectedDocument] = useState(null)
 
-  // Map screen index to view name
   const currentView = screenIds[currentScreen] || 'eca'
 
   const handleNavigate = (view) => {
@@ -2213,25 +3305,10 @@ export function EDiscoveryApp({ currentScreen = 0, onScreenChange, showHotspots 
     if (index !== -1 && onScreenChange) {
       onScreenChange(index)
     }
-    setSelectedDocument(null)
   }
 
-  const handleSelectDocument = (doc) => {
-    setSelectedDocument(doc)
-  }
-
-  // Determine which item to highlight based on current screen
-  const getHighlightTarget = () => {
-    if (!showHotspots) return { highlightNext: false, highlightItem: null }
-    switch (currentScreen) {
-      case 0: return { highlightNext: true, highlightItem: null } // Highlight button
-      case 1: return { highlightNext: false, highlightItem: 'review' } // Highlight sidebar
-      case 2: return { highlightNext: false, highlightItem: 'privilege' } // Highlight sidebar
-      default: return { highlightNext: false, highlightItem: null }
-    }
-  }
-
-  const { highlightNext, highlightItem } = getHighlightTarget()
+  // Highlight the primary CTA on screens 0-2 to guide users through the flow
+  const highlightNext = showHotspots && currentScreen < 3
 
   return (
     <div className="h-full relative">
@@ -2246,21 +3323,25 @@ export function EDiscoveryApp({ currentScreen = 0, onScreenChange, showHotspots 
         <EDiscoveryReviewQueue 
           onNavigate={handleNavigate} 
           onOpenAI={() => setAiDrawerOpen(true)}
-          highlightItem={highlightItem}
+          highlightNext={highlightNext}
         />
       )}
-      {currentView === 'review' && (
-        <EDiscoveryDocumentReview 
-          document={selectedDocument}
+      {currentView === 'params' && (
+        <EDiscoveryReviewParams 
           onNavigate={handleNavigate} 
           onOpenAI={() => setAiDrawerOpen(true)}
-          onBack={() => handleNavigate('protocol')}
-          onComplete={() => handleNavigate('protocol')}
-          highlightItem={highlightItem}
+          highlightNext={highlightNext}
         />
       )}
-      {currentView === 'privilege' && (
-        <EDiscoveryProduction 
+      {currentView === 'subset' && (
+        <EDiscoverySubsetResults 
+          onNavigate={handleNavigate} 
+          onOpenAI={() => setAiDrawerOpen(true)}
+          highlightNext={highlightNext}
+        />
+      )}
+      {currentView === 'results' && (
+        <EDiscoveryCorpusResults 
           onNavigate={handleNavigate} 
           onOpenAI={() => setAiDrawerOpen(true)} 
         />
