@@ -1,0 +1,18 @@
+{
+  "actions": [
+    { "agentUtterance": { "text": "Here's Jamie's career timeline:\n\n**Director of UX - Consilio** (Oct 2023 - Aug 2025)\nDirected UX and application development across enterprise eDiscovery platforms. Built global teams of UX designers, engineers, and product managers. Partnered with SVP, CPO, and CTO on AI-driven product roadmaps.\n\n**Lead Product Designer - Vivid Seats** (Sept 2022 - Feb 2023)\nLed a team of 4 Product Designers and UX Architects. Drove Outcome Orientation and design thinking workshops.\n\n**Senior Product Designer - Rewards Network** (Oct 2021 - Feb 2022)\nLed UX for a restaurant portal serving 15,000+ users. Delivered 49% increase in cash advances ($8M+) and 53% increase in user interaction.\n\n**UX/Visual Designer - Booked Out** (Jan 2016 - Feb 2017)\nCore UX and product strategy for a SaaS platform with high-profile clients including Coca Cola, Google, Walmart, Nike, and Samsung.\n\n**Founder - Jamie Lynn Designs** (Oct 2009 - Dec 2023)\nFounded a specialized design agency. Grew team from 1 to 7, produced 12,000+ original designs, increased revenue by 54%.\n\n**Founder - Cake Bite Girl** (Oct 2011 - Feb 2018)\nE-commerce business producing for corporate events and weddings.\n\nJamie holds a Bachelor's of Arts from Bradley University." } }
+  ],
+  "playbookInput": {
+    "precedingConversationSummary": "User asked about Jamie's work history or career timeline.",
+    "actionParameters": { "query": "work experience" }
+  },
+  "playbookOutput": {
+    "executionSummary": "Provided full career timeline from Director of UX to founding her own agencies.",
+    "state": "OK",
+    "actionParameters": { "response_summary": "Covered full career timeline" }
+  },
+  "displayName": "work-experience-timeline",
+  "retrievalStrategy": "STATIC",
+  "conversationState": "OUTPUT_STATE_OK",
+  "languageCode": "en"
+}

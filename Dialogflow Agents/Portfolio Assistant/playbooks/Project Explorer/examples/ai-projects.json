@@ -1,0 +1,18 @@
+{
+  "actions": [
+    { "agentUtterance": { "text": "Jamie has two standout AI projects:\n\n**1. AI Powered Development Workflow**\nJamie implemented agentic AI systems to accelerate the entire SDLC - intelligent code review, automated testing, and smart documentation generation. She demonstrated how AI could compress 12-16 weeks of traditional design process into 3-4 weeks. Results: 40% increase in task completion, 3x more manager visibility.\n\n**2. Conversational Document Review**\nThis is a fascinating project where Jamie designed an AI assistant for legal document review in eDiscovery. She tackled the challenge of making AI trustworthy for skeptical attorneys by building human-in-the-loop systems with explainable AI decisions. The system:\n- Reduced reviewable volume by 90%\n- Saved $2M in contract attorney fees\n- Cut production time from 4 weeks to 72 hours\n- Achieved 96% precision at 89% recall\n\nShe solved complex technical challenges including LLM hallucination prevention using RAG, token limit management, and confidence calibration.\n\nBoth projects have detailed case studies on her portfolio website. Would you like to know more about either one?" } }
+  ],
+  "playbookInput": {
+    "precedingConversationSummary": "User asked specifically about AI-related projects.",
+    "actionParameters": { "query": "AI projects" }
+  },
+  "playbookOutput": {
+    "executionSummary": "Detailed both AI category projects with metrics and technical depth.",
+    "state": "OK",
+    "actionParameters": { "response_summary": "Presented AI category projects" }
+  },
+  "displayName": "ai-projects",
+  "retrievalStrategy": "STATIC",
+  "conversationState": "OUTPUT_STATE_OK",
+  "languageCode": "en"
+}

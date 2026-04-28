@@ -1,0 +1,9 @@
+{
+  "displayName": "Portfolio Assistant",
+  "defaultLanguageCode": "en",
+  "timeZone": "America/Chicago",
+  "startPlaybook": "Portfolio Guide",
+  "speechSettings": {},
+  "advancedSettings": {},
+  "agentLabel": "portfolio-assistant"
+}

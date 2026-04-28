@@ -1,0 +1,18 @@
+{
+  "actions": [
+    { "agentUtterance": { "text": "AI is one of Jamie's strongest areas. Here's what she brings:\n\n- **Agentic AI Systems**: She builds autonomous, multi-step AI workflows that can break down problems, execute code, and iterate based on feedback. She implemented these across multiple teams to amplify human capabilities.\n\n- **LLM Integration**: Jamie designed a conversational AI interface for legal document review that achieved 60% faster review time and 2x documents processed per day. She's solved hard LLM challenges like hallucination prevention (RAG with strict source bounds), token limit management (Map-Reduce chunking), and confidence calibration.\n\n- **AI-Assisted SDLC**: She uses AI tools across the entire development lifecycle - from research synthesis to test generation - achieving 40% reduction in development cycles. She established Director/Verifier patterns for AI-assisted development.\n\n- **Prompt Engineering**: Jamie practices prompt governance as code governance, with version control, regression testing against golden datasets, and formal review processes for system prompts.\n\nShe currently works with Claude, GitHub Copilot, Cursor, and v0 by Vercel as her primary AI tools." } }
+  ],
+  "playbookInput": {
+    "precedingConversationSummary": "User specifically asked about Jamie's AI skills and experience.",
+    "actionParameters": { "query": "AI" }
+  },
+  "playbookOutput": {
+    "executionSummary": "Detailed Jamie's AI & Automation skills with concrete examples and metrics.",
+    "state": "OK",
+    "actionParameters": { "response_summary": "Focused on AI skills with examples" }
+  },
+  "displayName": "ai-skills-deep-dive",
+  "retrievalStrategy": "STATIC",
+  "conversationState": "OUTPUT_STATE_OK",
+  "languageCode": "en"
+}

@@ -12,6 +12,7 @@ import About from './pages/About'
 import Contact from './pages/Contact'
 import CaseStudy from './pages/CaseStudy'
 import Resume from './pages/Resume'
+import Skills from './pages/Skills'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -35,6 +36,7 @@ function App() {
           <Route path="/projects/:slug" element={<CaseStudy />} />
           <Route path="/prototypes" element={<Prototypes />} />
           <Route path="/prototypes/:id" element={<PrototypeView />} />
+          <Route path="/skills" element={<Skills />} />
           {import.meta.env.DEV && (
             <>
               <Route path="/blog" element={<Blog />} />

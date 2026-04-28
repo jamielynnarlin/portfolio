@@ -1,0 +1,18 @@
+{
+  "actions": [
+    { "agentUtterance": { "text": "Jamie has two UX-focused projects that showcase her design expertise:\n\n**1. Restaurant Portal Redesign** (Rewards Network)\nJamie led the UX redesign of a restaurant owner portal serving 15,000+ users across brands like Denny's and Buffalo Wild Wings. Through stakeholder interviews, empathy mapping, and guerrilla-style usability testing, she created an interactive dashboard with dynamic notifications and actionable analytics.\n- 53% increase in user interaction on Reviews page\n- 49% increase in cash advance signups\n- $8M+ cash funded since launch\n- Delivered in 4 months\n\n**2. Rewards Network Marketing Website Redesign**\nRedesigned the earn page to build user trust and streamline signups. Using Hotjar heatmaps and user testing, Jamie identified that users were watching the promo video but not following through with signups. She created a 3-step storytelling signup flow and used 'vibe coding' with GitHub Copilot to compress design iteration from weeks to days.\n- 30% increase in new member signups\n- 10% reduction in bounce rates\n- 6 weeks from concept to launch\n- 75% less dev effort than full rebuild\n\nBoth projects demonstrate Jamie's research-driven approach and her ability to deliver measurable business outcomes through design." } }
+  ],
+  "playbookInput": {
+    "precedingConversationSummary": "User asked about UX or design projects.",
+    "actionParameters": { "query": "UX design projects" }
+  },
+  "playbookOutput": {
+    "executionSummary": "Presented both UX category projects with detailed process and results.",
+    "state": "OK",
+    "actionParameters": { "response_summary": "Covered UX projects with metrics" }
+  },
+  "displayName": "ux-projects",
+  "retrievalStrategy": "STATIC",
+  "conversationState": "OUTPUT_STATE_OK",
+  "languageCode": "en"
+}

@@ -1,0 +1,18 @@
+{
+  "actions": [
+    { "agentUtterance": { "text": "The Conversational Document Review project is one of Jamie's most impactful case studies.\n\n**The Challenge**: A tier-1 eDiscovery provider needed AI-powered document review for litigation. They faced 48,000+ documents per case, attorneys deeply skeptical of AI, court requirements for defensibility, and zero tolerance for errors.\n\n**Jamie's Approach**:\n- Spent 2 weeks embedded with review teams - shadowed 12 reviewers, mapped 23 decision points, interviewed 3 stakeholder groups\n- Discovered the key insight: error rates jumped from 3% to 12% on complex documents - this became the core design target\n- Built a multi-playbook approach: natural language search, citation system for traceability, source inspector for verification, and multimodal review (video 9x faster, audio 7x faster, chat 12x faster)\n\n**Trust-Building Design**: Every feature answered 'why should I trust this?' She mapped attorney fears to specific design responses - 'AI threatens my job' became human-in-the-loop review, 'black box decisions' became explainable reasoning, 'can't defend in court' became complete audit trails.\n\n**Technical Challenges Solved**: Token limits (Map-Reduce chunking), hallucination prevention (RAG with strict source bounds), overconfidence (calibrated 3-tier confidence UI), prompt drift (golden dataset regression testing).\n\n**Results**: 90% volume reduction, $2M saved, 72-hour production time (from 4 weeks), 96% precision at 89% recall.\n\nThe full case study with interactive prototypes is available on Jamie's portfolio." } }
+  ],
+  "playbookInput": {
+    "precedingConversationSummary": "User asked for details about the document review / eDiscovery / LLM project.",
+    "actionParameters": { "query": "conversational document review" }
+  },
+  "playbookOutput": {
+    "executionSummary": "Provided deep dive into the Conversational Document Review project with full process, technical details, and results.",
+    "state": "OK",
+    "actionParameters": { "response_summary": "Full case study detail for document review project" }
+  },
+  "displayName": "document-review-deep-dive",
+  "retrievalStrategy": "STATIC",
+  "conversationState": "OUTPUT_STATE_OK",
+  "languageCode": "en"
+}

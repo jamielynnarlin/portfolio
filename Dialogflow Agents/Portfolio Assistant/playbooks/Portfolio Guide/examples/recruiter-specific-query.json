@@ -1,0 +1,26 @@
+{
+  "actions": [
+    { "userUtterance": { "text": "I'm a recruiter looking for a delivery lead with UX experience" } },
+    { "agentUtterance": { "text": "You've come to the right place! Jamie has a unique combination of delivery leadership and deep UX expertise. Let me walk you through her relevant background." } },
+    {
+      "playbookInvocation": {
+        "playbook": "Background & Experience",
+        "playbookInput": {
+          "precedingConversationSummary": "Recruiter looking for delivery lead with UX experience.",
+          "actionParameters": { "query": "delivery lead UX background" }
+        },
+        "playbookOutput": {
+          "executionSummary": "Highlighted Jamie's career arc from UX Architect to Director of UX and Delivery Lead, emphasizing her hybrid skill set.",
+          "state": "OK",
+          "actionParameters": { "response_summary": "Covered delivery + UX career path" }
+        },
+        "playbookState": "OUTPUT_STATE_OK"
+      }
+    },
+    { "agentUtterance": { "text": "Would you like to see specific projects that demonstrate this combination, explore her detailed skills, or get her contact info to discuss opportunities?" } }
+  ],
+  "displayName": "recruiter-specific-query",
+  "retrievalStrategy": "STATIC",
+  "conversationState": "OUTPUT_STATE_PENDING",
+  "languageCode": "en"
+}

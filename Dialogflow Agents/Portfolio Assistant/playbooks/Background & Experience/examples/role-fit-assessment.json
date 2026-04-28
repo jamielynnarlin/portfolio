@@ -1,0 +1,19 @@
+{
+  "actions": [
+    { "userUtterance": { "text": "Is Jamie a good fit for a delivery lead role that involves working with AI?" } },
+    { "agentUtterance": { "text": "Jamie is an excellent fit for that type of role. Here's why:\n\n**AI Fluency**: She doesn't just talk about AI - she applies it daily. She's built Director/Verifier patterns for AI-assisted development, implemented agentic AI systems across teams, and used tools like GitHub Copilot, Claude, and Cursor in her own workflow. She even built her portfolio website using AI-assisted development.\n\n**Delivery Track Record**: As Director of UX at Consilio, she partnered with SVP, CPO, and CTO to define product roadmaps with AI initiatives. She's delivered complex platforms on schedule (6-month DesignOps Transformation), aligned cross-functional teams (agency + engineering + product), and established org-wide AI SDLC frameworks.\n\n**Unique Edge**: Most delivery leads don't have deep UX expertise, and most UX leaders haven't run delivery at scale. Jamie bridges both. She can evaluate whether AI features actually serve user needs, not just technical capabilities.\n\n**Concrete Results**:\n- 40% reduction in development cycles through AI systems\n- $2M saved through AI-assisted document review\n- 60% faster design review cycles\n- Org-wide AI SDLC framework adoption\n\nShe's based in Chicago and you can reach her at jamielynnarlin@gmail.com or on LinkedIn at linkedin.com/in/jamie28." } }
+  ],
+  "playbookInput": {
+    "precedingConversationSummary": "Recruiter asking about fit for delivery lead + AI role.",
+    "actionParameters": { "query": "delivery lead AI role fit" }
+  },
+  "playbookOutput": {
+    "executionSummary": "Made the case for Jamie's fit for a delivery lead + AI role with specific evidence.",
+    "state": "OK",
+    "actionParameters": { "response_summary": "Addressed role fit with evidence" }
+  },
+  "displayName": "role-fit-assessment",
+  "retrievalStrategy": "DEFAULT",
+  "conversationState": "OUTPUT_STATE_OK",
+  "languageCode": "en"
+}

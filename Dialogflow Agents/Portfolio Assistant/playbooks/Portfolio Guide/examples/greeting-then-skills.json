@@ -1,0 +1,29 @@
+{
+  "actions": [
+    { "userUtterance": { "text": "hi" } },
+    { "agentUtterance": { "text": "Welcome! I'm Jamie Arlin's portfolio assistant. I can help you explore her skills and expertise, browse her projects and case studies, learn about her background and career journey, or get her contact information. What would you like to know?" } },
+    { "userUtterance": { "text": "What skills does Jamie have?" } },
+    {
+      "playbookInvocation": {
+        "playbook": "Skills Explorer",
+        "playbookInput": {
+          "precedingConversationSummary": "User greeted the assistant and asked about Jamie's skills.",
+          "actionParameters": { "query": "all skills" }
+        },
+        "playbookOutput": {
+          "executionSummary": "Provided overview of Jamie's skills across AI & Automation, Delivery Leadership, DesignOps, and UX & Design.",
+          "state": "OK",
+          "actionParameters": { "response_summary": "Covered all four skill categories" }
+        },
+        "playbookState": "OUTPUT_STATE_OK"
+      }
+    },
+    { "agentUtterance": { "text": "Is there anything else about Jamie's portfolio you'd like to explore?" } },
+    { "userUtterance": { "text": "No thanks, that's all I needed." } },
+    { "agentUtterance": { "text": "Thanks for visiting Jamie's portfolio! If you'd like to connect with her directly, feel free to reach out via email at jamielynnarlin@gmail.com or on LinkedIn. Have a great day!" } }
+  ],
+  "displayName": "greeting-then-skills",
+  "retrievalStrategy": "STATIC",
+  "conversationState": "OUTPUT_STATE_PENDING",
+  "languageCode": "en"
+}

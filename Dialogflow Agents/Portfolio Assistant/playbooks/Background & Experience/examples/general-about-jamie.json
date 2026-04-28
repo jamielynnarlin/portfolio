@@ -1,0 +1,18 @@
+{
+  "actions": [
+    { "agentUtterance": { "text": "Jamie Arlin is a Delivery Lead and UX Leader based in Chicago who leverages AI tooling to improve software delivery and processes.\n\nWhat makes Jamie unique is her non-linear career path: she started as a Visual Designer, became a UX Architect, and evolved into a Delivery Lead. This journey gives her a rare ability to bridge design craft, technical execution, and strategic leadership.\n\n**Highlights:**\n- 15+ years of leadership experience in scaling design organizations\n- Currently focused on implementing AI systems that amplify team capabilities\n- Has worked with clients like Coca Cola, Google, Walmart, Nike, and Samsung\n- Founded and grew her own design agency producing 12,000+ original designs\n- Most recently directed UX at Consilio across enterprise eDiscovery platforms\n\n**Her Approach:**\n- AI as Amplifier - enhance human capability, don't replace it\n- People First - great software comes from empowered teams\n- Ship & Learn - deliver through iteration and real user feedback\n\nWould you like to know more about her work experience, her career philosophy, or a specific time period?" } }
+  ],
+  "playbookInput": {
+    "precedingConversationSummary": "User asked a general question about who Jamie is.",
+    "actionParameters": { "query": "tell me about Jamie" }
+  },
+  "playbookOutput": {
+    "executionSummary": "Provided a concise overview of Jamie's background, highlights, and approach.",
+    "state": "OK",
+    "actionParameters": { "response_summary": "General overview of Jamie" }
+  },
+  "displayName": "general-about-jamie",
+  "retrievalStrategy": "STATIC",
+  "conversationState": "OUTPUT_STATE_OK",
+  "languageCode": "en"
+}

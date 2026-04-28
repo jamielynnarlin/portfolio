@@ -1,0 +1,19 @@
+{
+  "actions": [
+    { "userUtterance": { "text": "Does Jamie have any projects with measurable business results?" } },
+    { "agentUtterance": { "text": "Absolutely - Jamie's work consistently delivers quantifiable business impact. Here are the highlights:\n\n**Financial Impact:**\n- $8M+ cash funded through the Restaurant Portal Redesign\n- $2M saved in contract attorney fees via the Conversational Document Review system\n\n**Conversion & Engagement:**\n- 53% increase in user interaction (Restaurant Portal)\n- 49% increase in cash advance signups (Restaurant Portal)\n- 30% increase in new member signups (Rewards Network)\n- 10% reduction in bounce rates (Rewards Network)\n\n**Efficiency & Speed:**\n- 40% reduction in development cycles (AI Powered Workflow)\n- 90% reduction in document review volume (eDiscovery)\n- Production time cut from 4 weeks to 72 hours (eDiscovery)\n- 60% faster design review cycles (DesignOps Transformation)\n\n**Team & Process:**\n- 3 teams aligned: agency, engineering, product (DesignOps)\n- Org-wide AI SDLC framework adopted (DesignOps)\n- 3x more visibility for managers (BookedOut)\n\nJamie approaches every project with measurable outcomes in mind. Would you like details on any specific project?" } }
+  ],
+  "playbookInput": {
+    "precedingConversationSummary": "User wants to see projects with measurable results and business impact.",
+    "actionParameters": { "query": "measurable results business impact" }
+  },
+  "playbookOutput": {
+    "executionSummary": "Aggregated key metrics across all projects showing financial, engagement, efficiency, and team impact.",
+    "state": "OK",
+    "actionParameters": { "response_summary": "Cross-project metrics compilation" }
+  },
+  "displayName": "projects-by-results",
+  "retrievalStrategy": "DEFAULT",
+  "conversationState": "OUTPUT_STATE_OK",
+  "languageCode": "en"
+}

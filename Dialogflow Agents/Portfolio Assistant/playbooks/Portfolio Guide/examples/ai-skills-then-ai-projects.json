@@ -1,0 +1,43 @@
+{
+  "actions": [
+    { "userUtterance": { "text": "Does Jamie have experience with AI?" } },
+    { "agentUtterance": { "text": "Yes! AI is one of Jamie's primary areas of expertise. Let me tell you more about her AI skills." } },
+    {
+      "playbookInvocation": {
+        "playbook": "Skills Explorer",
+        "playbookInput": {
+          "precedingConversationSummary": "User asked about AI experience specifically.",
+          "actionParameters": { "query": "AI" }
+        },
+        "playbookOutput": {
+          "executionSummary": "Detailed Jamie's AI & Automation skills including Agentic AI Systems, LLM Integration, AI-Assisted SDLC, and Prompt Engineering.",
+          "state": "OK",
+          "actionParameters": { "response_summary": "Focused on AI skills category" }
+        },
+        "playbookState": "OUTPUT_STATE_OK"
+      }
+    },
+    { "agentUtterance": { "text": "Would you like to see some of Jamie's AI-related projects as well, or is there something else you'd like to explore?" } },
+    { "userUtterance": { "text": "Yes, show me the AI projects" } },
+    {
+      "playbookInvocation": {
+        "playbook": "Project Explorer",
+        "playbookInput": {
+          "precedingConversationSummary": "User already learned about AI skills, now wants to see AI projects.",
+          "actionParameters": { "query": "AI projects" }
+        },
+        "playbookOutput": {
+          "executionSummary": "Showed AI-related projects including AI Powered Development Workflow and Conversational Document Review.",
+          "state": "OK",
+          "actionParameters": { "response_summary": "Presented AI category projects" }
+        },
+        "playbookState": "OUTPUT_STATE_OK"
+      }
+    },
+    { "agentUtterance": { "text": "Is there anything else about Jamie's portfolio you'd like to explore?" } }
+  ],
+  "displayName": "ai-skills-then-ai-projects",
+  "retrievalStrategy": "STATIC",
+  "conversationState": "OUTPUT_STATE_PENDING",
+  "languageCode": "en"
+}

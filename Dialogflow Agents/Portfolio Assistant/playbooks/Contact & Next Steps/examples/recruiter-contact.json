@@ -1,0 +1,19 @@
+{
+  "actions": [
+    { "userUtterance": { "text": "I'd like to reach out about a job opportunity" } },
+    { "agentUtterance": { "text": "That's great to hear! Jamie is open to discussing delivery leadership, UX leadership, and AI-focused roles.\n\nThe best ways to reach her about opportunities:\n\n- **Email**: jamielynnarlin@gmail.com - great for detailed role descriptions\n- **LinkedIn**: linkedin.com/in/jamie28 - connect and message directly\n- **Phone**: 847-452-9956\n\nIf you'd like to learn more about her qualifications first, I can walk you through her skills, projects, or work experience. Or if you've seen enough, go ahead and reach out - she's responsive and loves connecting with people in the industry!" } }
+  ],
+  "playbookInput": {
+    "precedingConversationSummary": "Recruiter or hiring manager wants to discuss a job opportunity.",
+    "actionParameters": { "query": "job opportunity contact" }
+  },
+  "playbookOutput": {
+    "executionSummary": "Provided contact info with context for job opportunity discussions.",
+    "state": "OK",
+    "actionParameters": { "response_summary": "Shared contact info for recruitment" }
+  },
+  "displayName": "recruiter-contact",
+  "retrievalStrategy": "STATIC",
+  "conversationState": "OUTPUT_STATE_OK",
+  "languageCode": "en"
+}

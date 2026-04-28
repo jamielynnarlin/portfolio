@@ -1,0 +1,26 @@
+{
+  "actions": [
+    { "userUtterance": { "text": "How can I get in touch with Jamie?" } },
+    { "agentUtterance": { "text": "I'd be happy to share Jamie's contact info!" } },
+    {
+      "playbookInvocation": {
+        "playbook": "Contact & Next Steps",
+        "playbookInput": {
+          "precedingConversationSummary": "User wants to contact Jamie.",
+          "actionParameters": { "query": "contact info" }
+        },
+        "playbookOutput": {
+          "executionSummary": "Provided Jamie's email, LinkedIn, and phone.",
+          "state": "OK",
+          "actionParameters": { "response_summary": "Shared all contact methods" }
+        },
+        "playbookState": "OUTPUT_STATE_OK"
+      }
+    },
+    { "agentUtterance": { "text": "Is there anything else about Jamie's portfolio you'd like to explore?" } }
+  ],
+  "displayName": "contact-request",
+  "retrievalStrategy": "STATIC",
+  "conversationState": "OUTPUT_STATE_PENDING",
+  "languageCode": "en"
+}

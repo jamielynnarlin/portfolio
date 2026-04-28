@@ -1,0 +1,43 @@
+{
+  "actions": [
+    { "userUtterance": { "text": "Tell me about Jamie's projects" } },
+    { "agentUtterance": { "text": "Great question! Let me pull up Jamie's project portfolio for you." } },
+    {
+      "playbookInvocation": {
+        "playbook": "Project Explorer",
+        "playbookInput": {
+          "precedingConversationSummary": "User wants to see Jamie's projects.",
+          "actionParameters": { "query": "all projects" }
+        },
+        "playbookOutput": {
+          "executionSummary": "Presented overview of Jamie's 5 key projects spanning AI, delivery leadership, and UX design.",
+          "state": "OK",
+          "actionParameters": { "response_summary": "Listed all projects with brief descriptions" }
+        },
+        "playbookState": "OUTPUT_STATE_OK"
+      }
+    },
+    { "agentUtterance": { "text": "Is there anything else about Jamie's portfolio you'd like to explore?" } },
+    { "userUtterance": { "text": "Can you tell me about her experience?" } },
+    {
+      "playbookInvocation": {
+        "playbook": "Background & Experience",
+        "playbookInput": {
+          "precedingConversationSummary": "User already viewed projects, now asking about experience.",
+          "actionParameters": { "query": "work experience" }
+        },
+        "playbookOutput": {
+          "executionSummary": "Provided Jamie's career history from Director of UX through founding her own agency.",
+          "state": "OK",
+          "actionParameters": { "response_summary": "Covered full career timeline" }
+        },
+        "playbookState": "OUTPUT_STATE_OK"
+      }
+    },
+    { "agentUtterance": { "text": "Is there anything else about Jamie's portfolio you'd like to explore?" } }
+  ],
+  "displayName": "projects-then-experience",
+  "retrievalStrategy": "STATIC",
+  "conversationState": "OUTPUT_STATE_PENDING",
+  "languageCode": "en"
+}

@@ -1,0 +1,10 @@
+{
+  "name": "Default Start Flow",
+  "transitionRoutes": [
+    {
+      "intent": "Default Welcome Intent",
+      "triggerFulfillment": {},
+      "targetPlaybook": "Portfolio Guide"
+    }
+  ]
+}

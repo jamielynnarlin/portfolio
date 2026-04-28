@@ -1,0 +1,18 @@
+{
+  "actions": [
+    { "agentUtterance": { "text": "Jamie uses a wide range of tools across her work:\n\n**AI Tools**: Claude, GitHub Copilot, Cursor, v0 by Vercel\n**Design**: Figma, Adobe Suite, Sketch with Zeplin, InVision, Balsamiq\n**Research & Analytics**: Full Story, Hotjar, Userlytics\n**Collaboration**: Miro, Notion\n**Project Management**: Jira/Confluence, Asana\n**Development**: VS Code with GitHub Copilot, MCP servers, Figma Make\n\nShe also has experience evaluating and implementing tool strategies for teams - she's helped organizations adopt design systems, establish MCP server workflows to bridge design and development, and build AI-assisted development environments." } }
+  ],
+  "playbookInput": {
+    "precedingConversationSummary": "User asked about the tools Jamie uses.",
+    "actionParameters": { "query": "tools" }
+  },
+  "playbookOutput": {
+    "executionSummary": "Listed all tools Jamie uses organized by category.",
+    "state": "OK",
+    "actionParameters": { "response_summary": "Covered tools by category" }
+  },
+  "displayName": "tools-list",
+  "retrievalStrategy": "DEFAULT",
+  "conversationState": "OUTPUT_STATE_OK",
+  "languageCode": "en"
+}

@@ -1,0 +1,18 @@
+{
+  "actions": [
+    { "agentUtterance": { "text": "Jamie's delivery leadership skills are built on 15+ years of experience:\n\n- **Agile/Scrum**: Certified practitioner who leads sprint ceremonies, manages backlogs, and drives outcome-oriented delivery. At Vivid Seats, she empowered her team to adopt Outcome Orientation, aligning delivery to measurable enhancements.\n\n- **Program Management**: At Consilio, she directed UX and application development across enterprise eDiscovery platforms, building and guiding global teams of UX designers, engineers, and product managers.\n\n- **Cross-functional Teams**: She excels at aligning diverse teams. In her DesignOps Transformation project, she aligned an external design agency, internal engineering, and product leadership around a shared vision for an AI-powered document intelligence platform.\n\n- **Stakeholder Management**: She partners with SVP, CPO, and CTO-level executives to define product roadmaps. She's skilled in executive storytelling and change leadership.\n\nHer unique advantage is that she combines deep UX expertise with delivery leadership - she can speak fluently with designers, developers, product managers, and executives." } }
+  ],
+  "playbookInput": {
+    "precedingConversationSummary": "User asked about Jamie's leadership and delivery skills.",
+    "actionParameters": { "query": "delivery leadership" }
+  },
+  "playbookOutput": {
+    "executionSummary": "Detailed delivery leadership skills with examples from Consilio, Vivid Seats, and project work.",
+    "state": "OK",
+    "actionParameters": { "response_summary": "Focused on delivery leadership skills" }
+  },
+  "displayName": "delivery-skills",
+  "retrievalStrategy": "STATIC",
+  "conversationState": "OUTPUT_STATE_OK",
+  "languageCode": "en"
+}

@@ -10,6 +10,7 @@ function Navbar() {
     { to: '/', label: 'Welcome' },
     { to: '/projects', label: 'Projects' },
     { to: '/prototypes', label: 'Prototypes' },
+    { to: '/skills', label: 'Skills' },
   ]
 
   const linkClass = ({ isActive }) =>

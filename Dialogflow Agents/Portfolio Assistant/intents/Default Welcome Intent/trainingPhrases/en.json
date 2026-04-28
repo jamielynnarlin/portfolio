@@ -1,0 +1,14 @@
+{
+  "trainingPhrases": [
+    { "parts": [{ "text": "hi" }], "repeatCount": 1 },
+    { "parts": [{ "text": "hello" }], "repeatCount": 1 },
+    { "parts": [{ "text": "hey" }], "repeatCount": 1 },
+    { "parts": [{ "text": "good morning" }], "repeatCount": 1 },
+    { "parts": [{ "text": "good afternoon" }], "repeatCount": 1 },
+    { "parts": [{ "text": "what can you do" }], "repeatCount": 1 },
+    { "parts": [{ "text": "tell me about Jamie" }], "repeatCount": 1 },
+    { "parts": [{ "text": "I want to learn more" }], "repeatCount": 1 },
+    { "parts": [{ "text": "help" }], "repeatCount": 1 },
+    { "parts": [{ "text": "start" }], "repeatCount": 1 }
+  ]
+}

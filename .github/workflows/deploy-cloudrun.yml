@@ -13,6 +13,7 @@ env:
   REGION: us-central1
   SERVICE: jamie-arlin-portfolio
   IMAGE: us-central1-docker.pkg.dev/arlin-personal/jamie-arlin-portfolio/jamie-arlin-portfolio
+  DIALOGFLOW_AGENT_ID: b7a475ad-6a04-4560-8f6e-0e1b33457e17
 
 jobs:
   deploy:
@@ -55,3 +56,38 @@ jobs:
           flags: >-
             --allow-unauthenticated
             --port=8080
+
+  deploy-agent:
+    name: Deploy Dialogflow CX Agent
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ env.PROJECT_ID }}
+
+      - name: Zip agent export
+        run: |
+          cd "Dialogflow Agents/Portfolio Assistant"
+          zip -r ../../agent-export.zip .
+
+      - name: Restore agent to Dialogflow CX
+        run: |
+          ACCESS_TOKEN=$(gcloud auth print-access-token)
+          AGENT_CONTENT=$(base64 -w0 agent-export.zip)
+          curl -s -f -X POST \
+            "https://${{ env.REGION }}-dialogflow.googleapis.com/v3/projects/${{ env.PROJECT_ID }}/locations/${{ env.REGION }}/agents/${{ env.DIALOGFLOW_AGENT_ID }}:restore" \
+            -H "Authorization: Bearer ${ACCESS_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{\"agentContent\": \"${AGENT_CONTENT}\"}"
+          echo "Dialogflow CX agent restored successfully"

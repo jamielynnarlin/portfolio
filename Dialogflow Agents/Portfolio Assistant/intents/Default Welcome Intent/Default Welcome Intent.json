@@ -1,0 +1,5 @@
+{
+  "displayName": "Default Welcome Intent",
+  "priority": 500000,
+  "isFallback": false
+}
