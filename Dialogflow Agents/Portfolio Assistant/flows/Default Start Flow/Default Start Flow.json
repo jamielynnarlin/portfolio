@@ -1,10 +1,43 @@
 {
-  "name": "Default Start Flow",
+  "name": "00000000-0000-0000-0000-000000000000",
+  "displayName": "Default Start Flow",
+  "description": "A start flow created along with the agent",
   "transitionRoutes": [
     {
       "intent": "Default Welcome Intent",
       "triggerFulfillment": {},
-      "targetPlaybook": "Portfolio Guide"
+      "targetPlaybook": "Portfolio Guide",
+      "name": "a0000001-0001-4000-8000-000000000001"
+    }
+  ],
+  "eventHandlers": [
+    {
+      "event": "sys.no-match-default",
+      "triggerFulfillment": {
+        "messages": [
+          {
+            "text": {
+              "text": ["I didn't get that. Can you say it again?", "I missed what you said. What was that?", "Sorry, could you say that again?"]
+            },
+            "languageCode": "en"
+          }
+        ]
+      },
+      "name": "a0000001-0002-4000-8000-000000000001"
+    },
+    {
+      "event": "sys.no-input-default",
+      "triggerFulfillment": {
+        "messages": [
+          {
+            "text": {
+              "text": ["I didn't get that. Can you say it again?", "I missed what you said. What was that?", "Sorry, could you say that again?"]
+            },
+            "languageCode": "en"
+          }
+        ]
+      },
+      "name": "a0000001-0003-4000-8000-000000000001"
     }
   ]
 }
