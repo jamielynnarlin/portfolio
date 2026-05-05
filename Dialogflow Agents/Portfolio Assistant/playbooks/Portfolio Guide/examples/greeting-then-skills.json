@@ -1,4 +1,5 @@
 {
+  "name": "e1000001-0000-4000-8000-000000000001",
   "actions": [
     { "userUtterance": { "text": "hi" } },
     { "agentUtterance": { "text": "Welcome! I'm Jamie Arlin's portfolio assistant. I can help you explore her skills and expertise, browse her projects and case studies, learn about her background and career journey, or get her contact information. What would you like to know?" } },

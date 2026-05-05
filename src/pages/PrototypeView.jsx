@@ -13,6 +13,7 @@ import {
   DocReviewTagScreen,
   EDiscoveryApp
 } from '../components/PrototypeScreens'
+import RestaurantDashboardApp from '../components/RestaurantDashboardApp'
 
 export default function PrototypeView() {
   const { id } = useParams()
@@ -80,7 +81,7 @@ export default function PrototypeView() {
     goToScreen(2, 'backward')
   }
 
-  const screenLabels = (id === 'document-review' || id === 'ediscovery-ai')
+  const screenLabels = (id === 'document-review' || id === 'ediscovery-ai' || id === 'restaurant-dashboard')
     ? prototype.prototype.screens
     : [
         { label: 'Dashboard', description: 'View upcoming events, stats, and tap the next event to see tasks' },
@@ -93,6 +94,7 @@ export default function PrototypeView() {
   const isInteractivePrototype = id === 'mobile-task-tracker'
   const isDocReviewPrototype = id === 'document-review'
   const isEDiscoveryPrototype = id === 'ediscovery-ai'
+  const isRestaurantDashboard = id === 'restaurant-dashboard'
   const isDesktopPrototype = prototype?.isDesktop === true
 
   return (
@@ -141,7 +143,14 @@ export default function PrototypeView() {
         <div className="flex flex-col lg:flex-row items-start justify-center gap-12">
           {/* Display Frame - Phone or Desktop */}
           <div className="relative">
-            {isEDiscoveryPrototype ? (
+            {isRestaurantDashboard ? (
+              <DesktopFrame url="portal.rewardsnetwork.com/dashboard">
+                <RestaurantDashboardApp
+                  currentScreen={currentScreen}
+                  onScreenChange={(index) => setCurrentScreen(index)}
+                />
+              </DesktopFrame>
+            ) : isEDiscoveryPrototype ? (
               <DesktopFrame>
                 <EDiscoveryApp 
                   currentScreen={currentScreen} 
@@ -248,7 +257,7 @@ export default function PrototypeView() {
                 {screenLabels.map((screen, index) => (
                   <button
                     key={index}
-                    onClick={() => goToScreen(index, index > currentScreen ? 'forward' : 'backward')}
+                    onClick={() => isRestaurantDashboard ? setCurrentScreen(index) : goToScreen(index, index > currentScreen ? 'forward' : 'backward')}
                     className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all text-left ${
                       currentScreen === index
                         ? 'bg-gradient-to-r from-teal-500/10 to-cyan-500/10 border border-teal-500/20'
@@ -269,7 +278,11 @@ export default function PrototypeView() {
               {/* Navigation Buttons */}
               <div className="flex gap-2 mt-4">
                 <button
-                  onClick={isInteractivePrototype && currentScreen === 3 ? handleCameraCancel : prevScreen}
+                  onClick={() => {
+                    if (isInteractivePrototype && currentScreen === 3) handleCameraCancel()
+                    else if (isRestaurantDashboard) setCurrentScreen(prev => Math.max(0, prev - 1))
+                    else prevScreen()
+                  }}
                   disabled={currentScreen === 0}
                   className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-1.5 ${
                     currentScreen === 0
@@ -283,10 +296,10 @@ export default function PrototypeView() {
                   Back
                 </button>
                 <button
-                  onClick={nextScreen}
-                  disabled={isEDiscoveryPrototype ? currentScreen >= 4 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3)}
+                  onClick={() => isRestaurantDashboard ? setCurrentScreen(prev => Math.min(5, prev + 1)) : nextScreen()}
+                  disabled={isRestaurantDashboard ? currentScreen >= 5 : (isEDiscoveryPrototype ? currentScreen >= 4 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3))}
                   className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-1.5 ${
-                    (isEDiscoveryPrototype ? currentScreen >= 4 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3))
+                    (isRestaurantDashboard ? currentScreen >= 5 : (isEDiscoveryPrototype ? currentScreen >= 4 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3)))
                       ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
                       : 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-400 hover:to-cyan-400'
                   }`}

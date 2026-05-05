@@ -93,6 +93,30 @@ export const prototypes = [
         { id: "results", label: "Review Results", description: "Full corpus results with relevance scores, findings, and AI rationale" }
       ]
     }
+  },
+  {
+    id: "restaurant-dashboard",
+    title: "Restaurant Owner Portal",
+    subtitle: "Multi-Location Dashboard & AI Assistant",
+    description: "Explore an interactive restaurant analytics dashboard with multi-location switching, review management with AI-drafted replies, and a conversational data assistant.",
+    caseStudySlug: "restaurant-portal-redesign",
+    caseStudyTitle: "Restaurant Portal Redesign",
+    thumbnail: import.meta.env.BASE_URL + "images/case-studies/restaurant-hero.jpg",
+    tags: ["Desktop App", "Dashboard", "AI Assistant", "Multi-Location"],
+    isDesktop: true,
+    isRestaurantDashboard: true,
+    prototype: {
+      title: "Mario's Trattoria Portal",
+      description: "Navigate the dashboard tabs to explore analytics, reviews, events, and the AI assistant",
+      screens: [
+        { id: "overview", label: "Overview", description: "Notification-driven home with stats, charts, and quick actions" },
+        { id: "reviews", label: "Reviews", description: "Diner review management with AI-generated reply drafts" },
+        { id: "analytics", label: "Analytics", description: "Revenue breakdowns, rating distribution, and peak-hour heatmap" },
+        { id: "events", label: "Events", description: "Manage dining promotions with AI-suggested new events" },
+        { id: "funding", label: "Funding", description: "Merchant cash advance eligibility and history" },
+        { id: "ai", label: "AI Assistant", description: "Ask natural language questions about your restaurant data" }
+      ]
+    }
   }
 ]
 

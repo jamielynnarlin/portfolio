@@ -42,32 +42,47 @@ function About() {
     <div className="py-16 px-4">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
-          <div className="relative order-2 lg:order-1">
-            <div className="bg-gradient-to-br from-primary-100 to-primary-200 dark:from-primary-900/30 dark:to-primary-800/20 rounded-2xl aspect-square flex items-center justify-center">
-              <span className="font-display text-9xl text-primary-600 dark:text-primary-400">JA</span>
-            </div>
-            {/* Geometric accents */}
-            <svg className="absolute -bottom-8 -left-8 w-32 h-32 text-primary-200 dark:text-primary-800/30 -z-10" viewBox="0 0 100 100">
-              <polygon points="0,100 100,100 50,0" fill="currentColor" />
-            </svg>
+        <div className="relative mb-20 rounded-2xl overflow-hidden">
+          {/* Background image with overlay */}
+          <div className="absolute inset-0">
+            <img
+              src="/images/jamie-prof-portrait-2.jpg"
+              alt=""
+              aria-hidden="true"
+              className="w-full h-full object-cover object-top opacity-20 dark:opacity-15 blur-sm scale-110"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-navy-900 via-navy-900/95 to-navy-900/80 dark:from-gray-800 dark:via-gray-800/95 dark:to-gray-800/80" />
           </div>
-          <div className="order-1 lg:order-2">
-            <span className="text-primary-600 dark:text-primary-400 font-medium uppercase tracking-wider text-sm">
-              About Me
-            </span>
-            <h1 className="font-display text-5xl md:text-6xl text-navy-900 dark:text-white mt-2 mb-6 uppercase tracking-wide">
-              Bridging AI, Design & Delivery
-            </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">
-              I'm a Delivery Lead and AI Strategist with deep roots in UX Architecture. Based in Chicago, I help organizations leverage AI to transform how they build products.
-            </p>
-            <p className="text-gray-600 dark:text-gray-300 mb-4">
-              My journey from Visual Designer to UX Architect to Delivery Lead gives me a unique perspective. I understand both the craft of creating great experiences and the systems needed to deliver them at scale.
-            </p>
-            <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Currently, I'm focused on implementing agentic AI systems that amplify team capabilities while maintaining the human-centered approach that makes products truly valuable.
-            </p>
+          {/* Content */}
+          <div className="relative flex flex-col lg:flex-row items-center lg:items-stretch">
+            {/* Photo - flush left on desktop, centered on mobile */}
+            <div className="shrink-0 w-52 lg:w-72 pt-8 lg:pt-0 px-8 lg:pl-12 lg:pr-0">
+              <div className="w-full aspect-[3/4] rounded-xl lg:rounded-none lg:rounded-t-xl overflow-hidden shadow-2xl lg:shadow-none lg:mt-10">
+                <img
+                  src="/images/jamie-prof-portrait-2.jpg"
+                  alt="Jamie Arlin"
+                  className="w-full h-full object-cover object-top scale-[1.4] origin-top translate-y-[5%]"
+                />
+              </div>
+            </div>
+            {/* Text */}
+            <div className="flex-1 p-8 md:p-12 lg:py-12 lg:pr-16">
+              <span className="text-primary-400 font-medium uppercase tracking-wider text-sm">
+                About Me
+              </span>
+              <h1 className="font-display text-5xl md:text-6xl text-white mt-2 mb-6 uppercase tracking-wide">
+                Bridging AI, Design & Delivery
+              </h1>
+              <p className="text-xl text-gray-300 mb-4 leading-relaxed">
+                I'm a Delivery Lead and UX Leader with deep roots in UX Architecture. Based in Chicago, I help organizations leverage AI to transform how they deliver software.
+              </p>
+              <p className="text-gray-400 mb-4">
+                My journey from Visual Designer to UX Architect to Delivery Lead gives me a unique perspective. I understand both the craft of creating great experiences and the systems needed to deliver them at scale.
+              </p>
+              <p className="text-gray-400">
+                Currently, I'm focused on implementing agentic AI systems that amplify team capabilities while maintaining the human-centered approach that makes software delivery truly valuable.
+              </p>
+            </div>
           </div>
         </div>
 

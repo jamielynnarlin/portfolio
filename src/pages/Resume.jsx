@@ -9,6 +9,19 @@ function Resume() {
 
   const experiences = [
     {
+      title: "Delivery Lead",
+      company: "Launch Consulting Group",
+      date: "Apr 2026 - Present",
+      description: "Lead cross-functional teams to architect and ship sophisticated digital products, specializing in agentic and conversational AI systems.",
+      bullets: [
+        "Define UX for agentic AI systems with autonomous, goal-oriented conversational flows",
+        "Oversee end-to-end SDLC, integrating design standards into agile delivery",
+        "Own product roadmap and delivery timelines, translating business goals into requirements",
+        "Shape conversational AI architecture, bridging technical execution and user experience",
+        "Advise clients navigating the transition from traditional interfaces to generative AI"
+      ]
+    },
+    {
       title: "Director of UX",
       company: "Consilio",
       date: "Oct 2023 - Aug 2025",

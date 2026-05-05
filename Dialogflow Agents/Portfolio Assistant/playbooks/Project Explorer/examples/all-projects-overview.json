@@ -1,4 +1,5 @@
 {
+  "name": "e3000001-0000-4000-8000-000000000001",
   "actions": [
     { "agentUtterance": { "text": "Here's an overview of Jamie's key projects:\n\n**AI & Automation:**\n1. **AI Powered Development Workflow** - Implemented agentic AI to accelerate SDLC, achieving 40% reduction in development cycles. Redesigned BookedOut's event staff task management app.\n2. **Conversational Document Review** - Designed an AI assistant for legal document review. $2M saved, 90% volume reduction, and reviewers went from AI skeptics to advocates.\n\n**Delivery Leadership:**\n3. **DesignOps Transformation** - Aligned 3 teams (agency + engineering + product) to deliver an AI-powered document intelligence platform. Introduced MCP + Figma Make workflows.\n\n**UX & Design:**\n4. **Restaurant Portal Redesign** - 53% increase in user interaction, 49% increase in cash advance signups ($8M+ funded).\n5. **Rewards Network Marketing Website** - 30% increase in new member signups using 'vibe coding' with GitHub Copilot.\n\nWould you like to dive deeper into any of these?" } }
   ],

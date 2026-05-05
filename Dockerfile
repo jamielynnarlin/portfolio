@@ -5,12 +5,18 @@ COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
 ARG VITE_BASE=/
+ARG VITE_API_URL=
 ENV VITE_BASE=${VITE_BASE}
+ENV VITE_API_URL=${VITE_API_URL}
 RUN npm run build
 
 # Runtime stage
-FROM nginx:1.27-alpine
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-COPY --from=build /app/dist /usr/share/nginx/html
+FROM node:20-alpine
+WORKDIR /app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev
+COPY server/ ./server/
+COPY --from=build /app/dist ./dist
 EXPOSE 8080
-CMD ["nginx", "-g", "daemon off;"]
+ENV PORT=8080
+CMD ["node", "server/server.js"]

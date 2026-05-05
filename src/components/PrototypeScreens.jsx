@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 // Shared styles
@@ -771,7 +771,51 @@ export function CameraScreen({ onCapture, onCancel }) {
 }
 
 // Desktop Frame Component for web app prototypes
-export function DesktopFrame({ children }) {
+export function DesktopFrame({ children, url = "reviewai.app/project/sec-investigation" }) {
+  const frameRef = useRef(null)
+  const scrollLockRef = useRef(null)
+
+  // Lock scroll position on any interaction inside the prototype frame
+  useEffect(() => {
+    const frame = frameRef.current
+    if (!frame) return
+
+    const lockScroll = () => {
+      scrollLockRef.current = window.scrollY
+    }
+
+    const restoreScroll = () => {
+      if (scrollLockRef.current !== null) {
+        window.scrollTo(window.scrollX, scrollLockRef.current)
+        scrollLockRef.current = null
+      }
+    }
+
+    frame.addEventListener('mousedown', lockScroll, true)
+    frame.addEventListener('focusin', restoreScroll, true)
+
+    // Also restore on any scroll that happens immediately after mousedown
+    let rafId
+    const onScroll = () => {
+      if (scrollLockRef.current !== null) {
+        window.scrollTo(window.scrollX, scrollLockRef.current)
+        scrollLockRef.current = null
+      }
+    }
+    frame.addEventListener('click', () => {
+      window.addEventListener('scroll', onScroll, { once: true, passive: false })
+      rafId = requestAnimationFrame(() => {
+        window.removeEventListener('scroll', onScroll)
+      })
+    }, true)
+
+    return () => {
+      frame.removeEventListener('mousedown', lockScroll, true)
+      frame.removeEventListener('focusin', restoreScroll, true)
+      cancelAnimationFrame(rafId)
+    }
+  }, [])
+
   return (
     <div className="relative">
       {/* Browser window frame */}
@@ -789,11 +833,15 @@ export function DesktopFrame({ children }) {
             <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
-            <span className="text-gray-400 text-xs">reviewai.app/project/sec-investigation</span>
+            <span className="text-gray-400 text-xs">{url}</span>
           </div>
         </div>
         {/* Content area */}
-        <div style={{ width: '900px', height: '560px' }} className="overflow-hidden">
+        <div
+          ref={frameRef}
+          style={{ width: '900px', height: '560px' }}
+          className="overflow-hidden relative"
+        >
           {children}
         </div>
       </div>

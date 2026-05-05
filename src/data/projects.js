@@ -37,6 +37,7 @@ export const projects = [
     category: "ux",
     liveUrl: null,
     caseStudyUrl: "/projects/restaurant-portal-redesign",
+    mvp: true,
   },
   {
     id: 5,

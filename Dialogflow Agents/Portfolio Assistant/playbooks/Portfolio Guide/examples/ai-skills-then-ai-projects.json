@@ -1,4 +1,5 @@
 {
+  "name": "e1000004-0000-4000-8000-000000000004",
   "actions": [
     { "userUtterance": { "text": "Does Jamie have experience with AI?" } },
     { "agentUtterance": { "text": "Yes! AI is one of Jamie's primary areas of expertise. Let me tell you more about her AI skills." } },

@@ -1,4 +1,5 @@
 {
+  "name": "e1000002-0000-4000-8000-000000000002",
   "actions": [
     { "userUtterance": { "text": "Tell me about Jamie's projects" } },
     { "agentUtterance": { "text": "Great question! Let me pull up Jamie's project portfolio for you." } },
