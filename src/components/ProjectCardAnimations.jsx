@@ -700,3 +700,309 @@ export function DocumentReviewAnimation() {
     </div>
   )
 }
+
+
+// =====================================================================
+// Restaurant Portal Redesign
+// Zigzag path: Research → Layout → Alerts → Reviews → Growth
+// Warm amber/orange palette representing the restaurant theme
+// =====================================================================
+
+// Fork/knife icon (Research/Discovery)
+const ForkKnifeIcon = ({ x, y, color }) => (
+  <g transform={`translate(${x}, ${y})`}>
+    <line x1="-4" y1="-7" x2="-4" y2="7" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="-4" y1="-7" x2="-4" y2="-2" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+    <line x1="-6" y1="-7" x2="-6" y2="-2" stroke={color} strokeWidth="1" strokeLinecap="round" />
+    <line x1="-2" y1="-7" x2="-2" y2="-2" stroke={color} strokeWidth="1" strokeLinecap="round" />
+    <path d="M3,-7 C7,-7 7,-1 3,-1 L3,7" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+  </g>
+)
+
+// Dashboard/grid layout icon
+const DashLayoutIcon = ({ x, y, color }) => (
+  <g transform={`translate(${x}, ${y})`}>
+    <rect x="-8" y="-6" width="16" height="12" rx="1.5" fill="none" stroke={color} strokeWidth="1.5" />
+    <line x1="-8" y1="-2" x2="8" y2="-2" stroke={color} strokeWidth="1" />
+    <line x1="-3" y1="-2" x2="-3" y2="6" stroke={color} strokeWidth="1" />
+    <rect x="-6.5" y="0" width="2.5" height="2" rx="0.5" fill={color} opacity="0.6" />
+    <rect x="-6.5" y="3" width="2.5" height="2" rx="0.5" fill={color} opacity="0.4" />
+    <rect x="-1" y="0" width="7" height="4.5" rx="0.5" fill={color} opacity="0.3" />
+  </g>
+)
+
+// Bell/notification icon
+const BellIcon = ({ x, y, color }) => (
+  <g transform={`translate(${x}, ${y})`}>
+    <path d="M0,-7 C4,-7 6,-4 6,0 L6,3 L7,5 L-7,5 L-6,3 L-6,0 C-6,-4 -4,-7 0,-7Z" fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
+    <circle cx="0" cy="7" r="1.5" fill={color} />
+    <circle cx="5" cy="-5" r="2" fill={color} opacity="0.8" />
+  </g>
+)
+
+// Star/review icon
+const StarReviewIcon = ({ x, y, color }) => (
+  <g transform={`translate(${x}, ${y})`}>
+    <path d="M0,-7 L2.2,-2.2 L7.5,-1.5 L3.5,2.5 L4.5,7.5 L0,5 L-4.5,7.5 L-3.5,2.5 L-7.5,-1.5 L-2.2,-2.2 Z" fill={color} opacity="0.9" />
+  </g>
+)
+
+// Trending up/growth icon
+const TrendUpIcon = ({ x, y, color }) => (
+  <g transform={`translate(${x}, ${y})`}>
+    <polyline points="-7,5 -2,0 2,3 7,-5" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <polyline points="3,-5 7,-5 7,-1" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+  </g>
+)
+
+export function RestaurantPortalAnimation() {
+  const { isDark } = useTheme()
+  const color = isDark ? '#f59e0b' : '#d97706'
+  const colorDim = isDark ? '#451a03' : '#fef3c7'
+  const bg1 = isDark ? '#0f172a' : '#fffbeb'
+  const bg2 = isDark ? '#1e293b' : '#fef3c7'
+  const iconColor = isDark ? '#fef3c7' : '#451a03'
+
+  // Central hub
+  const cx = 230
+  const cy = 70
+
+  // Spoke nodes arranged in a semi-circle arc
+  const spokeRadius = 52
+  const spokeNodes = [
+    { angle: -140, icon: (x, y) => <ForkKnifeIcon x={x} y={y} color={iconColor} /> },   // Research
+    { angle: -70,  icon: (x, y) => <DashLayoutIcon x={x} y={y} color={iconColor} /> },  // Dashboard
+    { angle: 0,    icon: (x, y) => <BellIcon x={x} y={y} color={iconColor} /> },         // Notifications
+    { angle: 70,   icon: (x, y) => <StarReviewIcon x={x} y={y} color={iconColor} /> },  // Reviews
+    { angle: 140,  icon: (x, y) => <TrendUpIcon x={x} y={y} color={iconColor} /> },     // Growth
+  ].map(node => ({
+    ...node,
+    x: cx + Math.cos(node.angle * Math.PI / 180) * spokeRadius,
+    y: cy + Math.sin(node.angle * Math.PI / 180) * spokeRadius,
+  }))
+
+  // Timing: each spoke activates in sequence, then all glow together
+  const perSpoke = 0.6
+  const activateStart = 0.8
+  const allGlowStart = activateStart + spokeNodes.length * perSpoke + 0.3
+  const totalLoop = allGlowStart + 3
+
+  return (
+    <div className="w-full h-full relative overflow-hidden" style={{ background: `linear-gradient(135deg, ${bg1}, ${bg2})` }}>
+      <svg viewBox="0 0 460 140" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
+
+        {/* Spoke connection lines (dim, always visible after initial draw) */}
+        {spokeNodes.map((node, i) => (
+          <motion.line
+            key={`spoke-line-${i}`}
+            x1={cx} y1={cy} x2={node.x} y2={node.y}
+            stroke={color} strokeWidth="2" strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={{
+              pathLength: [0, 0, 1, 1, 1, 0],
+              opacity: [0, 0, 0.3, 0.3, 0.3, 0],
+            }}
+            transition={{
+              duration: totalLoop,
+              times: [
+                0,
+                (activateStart + i * perSpoke) / totalLoop,
+                (activateStart + i * perSpoke + 0.3) / totalLoop,
+                (totalLoop - 1.2) / totalLoop,
+                (totalLoop - 0.5) / totalLoop,
+                1,
+              ],
+              repeat: Infinity,
+            }}
+          />
+        ))}
+
+        {/* Spoke pulse traveling from center to node */}
+        {spokeNodes.map((node, i) => (
+          <motion.circle
+            key={`spoke-pulse-${i}`}
+            cx={cx} cy={cy}
+            r="4" fill={color}
+            filter="url(#glow-restaurant)"
+            animate={{
+              cx: [cx, cx, node.x, node.x],
+              cy: [cy, cy, node.y, node.y],
+              opacity: [0, 0.8, 0.8, 0],
+              scale: [0.5, 1, 0.6, 0],
+            }}
+            transition={{
+              duration: totalLoop,
+              times: [
+                0,
+                (activateStart + i * perSpoke) / totalLoop,
+                (activateStart + i * perSpoke + 0.25) / totalLoop,
+                (activateStart + i * perSpoke + 0.4) / totalLoop,
+              ],
+              repeat: Infinity,
+            }}
+          />
+        ))}
+
+        {/* Central hub node */}
+        <motion.circle
+          cx={cx} cy={cy} r="20" fill={colorDim} stroke={color} strokeWidth="2.5"
+          initial={{ scale: 0 }}
+          animate={{ scale: [0, 1, 1, 1, 0] }}
+          transition={{
+            duration: totalLoop,
+            times: [0, 0.5 / totalLoop, (totalLoop - 1) / totalLoop, (totalLoop - 0.3) / totalLoop, 1],
+            repeat: Infinity,
+            ease: 'easeOut',
+          }}
+        />
+
+        {/* Central hub icon - grid/dashboard */}
+        <motion.g
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: [0, 1, 1, 0], scale: [0, 1, 1, 0] }}
+          transition={{
+            duration: totalLoop,
+            times: [0, 0.6 / totalLoop, (totalLoop - 0.5) / totalLoop, 1],
+            repeat: Infinity,
+          }}
+        >
+          <GridIcon x={cx} y={cy} color={iconColor} />
+        </motion.g>
+
+        {/* Central hub pulsing ring */}
+        <motion.circle
+          cx={cx} cy={cy} r="20" fill="none" stroke={color} strokeWidth="1.5"
+          animate={{
+            opacity: [0, 0, 0.5, 0, 0.5, 0, 0],
+            scale: [1, 1, 1.3, 1.5, 1.3, 1.5, 1],
+          }}
+          transition={{
+            duration: totalLoop,
+            times: [0, 0.4 / totalLoop, 0.6 / totalLoop, 0.9 / totalLoop, (activateStart) / totalLoop, (activateStart + 0.3) / totalLoop, (activateStart + 0.6) / totalLoop],
+            repeat: Infinity,
+          }}
+        />
+
+        {/* Spoke nodes - circles appear on activation */}
+        {spokeNodes.map((node, i) => (
+          <motion.g key={`spoke-node-${i}`}>
+            {/* Node background */}
+            <motion.circle
+              cx={node.x} cy={node.y} r="16" fill={colorDim} stroke={color} strokeWidth="2"
+              animate={{
+                opacity: [0, 0, 1, 1, 0],
+                scale: [0, 0, 1, 1, 0],
+              }}
+              transition={{
+                duration: totalLoop,
+                times: [
+                  0,
+                  (activateStart + i * perSpoke + 0.2) / totalLoop,
+                  (activateStart + i * perSpoke + 0.4) / totalLoop,
+                  (totalLoop - 0.5) / totalLoop,
+                  1,
+                ],
+                repeat: Infinity,
+                ease: 'easeOut',
+              }}
+            />
+            {/* Node icon */}
+            <motion.g
+              animate={{
+                opacity: [0, 0, 1, 1, 0],
+                scale: [0.3, 0.3, 1, 1, 0],
+              }}
+              transition={{
+                duration: totalLoop,
+                times: [
+                  0,
+                  (activateStart + i * perSpoke + 0.25) / totalLoop,
+                  (activateStart + i * perSpoke + 0.45) / totalLoop,
+                  (totalLoop - 0.5) / totalLoop,
+                  1,
+                ],
+                repeat: Infinity,
+              }}
+            >
+              {node.icon(node.x, node.y)}
+            </motion.g>
+            {/* Activation pop ring */}
+            <motion.circle
+              cx={node.x} cy={node.y} r="16" fill="none" stroke={color} strokeWidth="2"
+              animate={{
+                opacity: [0, 0, 0.6, 0, 0],
+                scale: [1, 1, 1, 1.6, 1.6],
+              }}
+              transition={{
+                duration: totalLoop,
+                times: [
+                  0,
+                  (activateStart + i * perSpoke + 0.3) / totalLoop,
+                  (activateStart + i * perSpoke + 0.35) / totalLoop,
+                  (activateStart + i * perSpoke + 0.7) / totalLoop,
+                  1,
+                ],
+                repeat: Infinity,
+              }}
+            />
+          </motion.g>
+        ))}
+
+        {/* All-glow phase: lines brighten, nodes pulse together */}
+        {spokeNodes.map((node, i) => (
+          <motion.line
+            key={`glow-line-${i}`}
+            x1={cx} y1={cy} x2={node.x} y2={node.y}
+            stroke={color} strokeWidth="3" strokeLinecap="round"
+            animate={{
+              opacity: [0, 0, 0.7, 0.3, 0.7, 0],
+            }}
+            transition={{
+              duration: totalLoop,
+              times: [
+                0,
+                allGlowStart / totalLoop,
+                (allGlowStart + 0.3) / totalLoop,
+                (allGlowStart + 1.0) / totalLoop,
+                (allGlowStart + 1.5) / totalLoop,
+                (totalLoop - 0.3) / totalLoop,
+              ],
+              repeat: Infinity,
+            }}
+          />
+        ))}
+
+        {/* Sparkle ring during all-glow */}
+        {Array.from({ length: 10 }).map((_, i) => {
+          const angle = (i * 36) * Math.PI / 180
+          const r1 = 30
+          const r2 = 70
+          return (
+            <motion.circle key={`spark-${i}`}
+              r="2" fill={color}
+              initial={{ cx: cx + Math.cos(angle) * r1, cy: cy + Math.sin(angle) * r1, opacity: 0 }}
+              animate={{
+                cx: [cx + Math.cos(angle) * r1, cx + Math.cos(angle) * r1, cx + Math.cos(angle) * r2],
+                cy: [cy + Math.sin(angle) * r1, cy + Math.sin(angle) * r1, cy + Math.sin(angle) * r2],
+                opacity: [0, 0, 0.7, 0],
+                scale: [0, 0, 1.5, 0],
+              }}
+              transition={{
+                duration: totalLoop,
+                times: [0, allGlowStart / totalLoop, (allGlowStart + 0.2) / totalLoop, (allGlowStart + 0.7) / totalLoop],
+                repeat: Infinity,
+              }}
+            />
+          )
+        })}
+
+        <defs>
+          <filter id="glow-restaurant" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+        </defs>
+      </svg>
+    </div>
+  )
+}

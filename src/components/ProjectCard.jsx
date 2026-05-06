@@ -1,12 +1,13 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { WorkflowPipelineAnimation, DesignOpsTransformAnimation, DocumentReviewAnimation } from './ProjectCardAnimations'
+import { WorkflowPipelineAnimation, DesignOpsTransformAnimation, DocumentReviewAnimation, RestaurantPortalAnimation } from './ProjectCardAnimations'
 
 function ProjectCard({ project }) {
   const navigate = useNavigate()
   const isAIPowered = project.title === "AI Powered Development Workflow"
   const isDesignOps = project.title === "DesignOps Transformation"
   const isEDiscovery = project.title === "Conversational Document Review"
-  const hasCustomScreen = isAIPowered || isDesignOps || isEDiscovery
+  const isRestaurant = project.title === "Restaurant Portal Redesign"
+  const hasCustomScreen = isAIPowered || isDesignOps || isEDiscovery || isRestaurant
 
   const handleCardClick = () => {
     if (project.caseStudyUrl) {
@@ -43,6 +44,8 @@ function ProjectCard({ project }) {
               <WorkflowPipelineAnimation />
             ) : isDesignOps ? (
               <DesignOpsTransformAnimation />
+            ) : isRestaurant ? (
+              <RestaurantPortalAnimation />
             ) : (
               <DocumentReviewAnimation />
             )}
