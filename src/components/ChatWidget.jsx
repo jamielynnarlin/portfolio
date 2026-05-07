@@ -24,7 +24,7 @@ const SUGGESTION_RULES = [
   { test: /delivery|agile|scrum|program|cross-functional/i, suggestions: ['What\'s her leadership style?', 'Show me delivery projects', 'What about her UX background?'] },
   { test: /designops|design system|design process/i, suggestions: ['How did she scale design teams?', 'Show me the DesignOps Transformation', 'What tools does she use?'] },
   { test: /UX|user experience|research|usability|design/i, suggestions: ['Show me UX case studies', 'What research methods does she use?', 'Tell me about her AI skills'] },
-  { test: /project|case study|portfolio/i, suggestions: ['Which projects use AI?', 'What results did she achieve?', 'Tell me about her background'] },
+  { test: /project|case study|portfolio/i, suggestions: ['Which projects use AI?', 'Tell me about the DesignOps project', 'Tell me about her background'] },
   { test: /background|career|experience|history|resume/i, suggestions: ['What are her top skills?', 'Show me her projects', 'How can I contact Jamie?'] },
   { test: /contact|email|linkedin|phone|connect/i, suggestions: ['Tell me about her experience', 'What are her skills?', 'Show me her projects'] },
 ]
