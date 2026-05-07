@@ -7,6 +7,7 @@ import {
   DesktopFrame,
   EDiscoveryApp
 } from '../components/PrototypeScreens'
+import RestaurantDashboardApp from '../components/RestaurantDashboardApp'
 
 // Scaled-down phone frame with the actual DashboardScreen
 function MobilePreview() {
@@ -34,8 +35,27 @@ function DesktopPreview() {
   )
 }
 
+// Scaled-down restaurant dashboard preview
+function RestaurantPreview() {
+  return (
+    <div className="flex items-center justify-center h-full py-4 px-4">
+      <div className="pointer-events-none" style={{ transform: 'scale(0.38)', transformOrigin: 'center center' }}>
+        <DesktopFrame>
+          <RestaurantDashboardApp currentScreen={0} onScreenChange={() => {}} />
+        </DesktopFrame>
+      </div>
+    </div>
+  )
+}
+
 function PrototypeCard({ prototype }) {
   const isMobile = !prototype.isDesktop
+
+  const getPreview = () => {
+    if (isMobile) return <MobilePreview />
+    if (prototype.isRestaurantDashboard) return <RestaurantPreview />
+    return <DesktopPreview />
+  }
 
   return (
     <div className="group relative flex flex-col bg-white dark:bg-gray-800/60 rounded-2xl border border-gray-200 dark:border-gray-700/50 overflow-hidden shadow-sm hover:shadow-lg dark:hover:shadow-2xl transition-all duration-300 hover:-translate-y-1">
@@ -46,7 +66,7 @@ function PrototypeCard({ prototype }) {
             ? 'bg-gradient-to-br from-teal-50 via-cyan-50 to-sky-50 dark:from-gray-800/80 dark:via-gray-900 dark:to-gray-950'
             : 'bg-gradient-to-br from-violet-50 via-purple-50 to-indigo-50 dark:from-gray-800/80 dark:via-gray-900 dark:to-gray-950'
         }`}>
-          {isMobile ? <MobilePreview /> : <DesktopPreview />}
+          {getPreview()}
         </div>
       </Link>
 

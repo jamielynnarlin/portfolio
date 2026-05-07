@@ -3550,10 +3550,10 @@ function CaseStudy() {
                             >
                               <div className="absolute -left-4 top-0 bottom-0 w-1 bg-gradient-to-b from-teal-400 to-indigo-500 rounded-full" />
                               <blockquote className="pl-6">
-                                <p className="text-lg md:text-xl italic text-gray-600 dark:text-gray-300 mb-2">
+                                <p className={`text-lg md:text-xl italic mb-2 ${isDark ? 'text-slate-300' : 'text-gray-600 dark:text-gray-300'}`}>
                                   "{section.samPersona.quote.text}"
                                 </p>
-                                <cite className="text-sm text-gray-500 dark:text-gray-400 not-italic font-medium">
+                                <cite className={`text-sm not-italic font-medium ${isDark ? 'text-slate-400' : 'text-gray-500 dark:text-gray-400'}`}>
                                   — {section.samPersona.quote.source}
                                 </cite>
                               </blockquote>
@@ -3571,10 +3571,10 @@ function CaseStudy() {
                         viewport={{ once: true }}
                         transition={{ duration: 0.5, delay: 0.2 }}
                       >
-                        <h3 className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3">
+                        <h3 className={`text-2xl md:text-3xl font-bold mb-3 ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
                           {section.samPersona.journey.headline}
                         </h3>
-                        <p className="text-gray-600 dark:text-gray-400 mb-8">
+                        <p className={`mb-8 ${isDark ? 'text-slate-300' : 'text-gray-600 dark:text-gray-400'}`}>
                           {section.samPersona.journey.subtext}
                         </p>
                         <SamJourneyTimeline journeySteps={section.samPersona.journey.steps} />
@@ -3709,7 +3709,7 @@ function CaseStudy() {
                     {section.content && (
                       <div className="prose prose-lg dark:prose-invert max-w-none mb-8">
                         {section.content.map((paragraph, i) => (
-                          <p key={i} className="text-gray-600 dark:text-gray-300 mb-4 leading-relaxed">{paragraph}</p>
+                          <p key={i} className={`mb-4 leading-relaxed ${isDark ? 'text-slate-300' : 'text-gray-600 dark:text-gray-300'}`}>{paragraph}</p>
                         ))}
                       </div>
                     )}
@@ -3784,7 +3784,7 @@ function CaseStudy() {
                             {item.bullets.map((bullet, j) => (
                               <p 
                                 key={j} 
-                                className="text-lg md:text-xl text-gray-600 dark:text-gray-300 leading-relaxed"
+                                className={`text-lg md:text-xl leading-relaxed ${isDark ? 'text-slate-300' : 'text-gray-600 dark:text-gray-300'}`}
                               >
                                 {bullet}
                               </p>
@@ -3839,8 +3839,8 @@ function CaseStudy() {
                           transition={{ duration: 0.6 }}
                         >
                           {/* Title */}
-                          <div className="text-center max-w-3xl mx-auto">
-                            <h3 className={`text-3xl md:text-4xl lg:text-5xl font-bold ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'} mb-6 leading-tight`}>
+                          <div>
+                            <h3 className={`text-3xl md:text-5xl lg:text-6xl font-black ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'} mb-6 leading-tight`}>
                               {item.title}
                             </h3>
                           </div>
@@ -3869,14 +3869,14 @@ function CaseStudy() {
                   <div className="mt-16">
                     {/* Section Header */}
                     <div className="text-center mb-12">
-                      <span className="inline-block px-4 py-1.5 bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 text-sm font-medium rounded-full mb-4">
+                      <span className={`inline-block px-4 py-1.5 text-sm font-medium rounded-full mb-4 ${isDark ? 'bg-violet-900/30 text-violet-300' : 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300'}`}>
                         {section.tagline}
                       </span>
-                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                      <h3 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
                         {section.headline}
                       </h3>
                       {section.intro && (
-                        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                        <p className={`text-lg max-w-3xl mx-auto ${isDark ? 'text-slate-300' : 'text-gray-600 dark:text-gray-400'}`}>
                           {section.intro}
                         </p>
                       )}
@@ -3958,10 +3958,10 @@ function CaseStudy() {
                   <div className="mt-16">
                     {/* Section Header */}
                     <div className="text-center mb-12">
-                      <span className="inline-block px-4 py-1.5 bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-sm font-medium rounded-full mb-4">
+                      <span className={`inline-block px-4 py-1.5 text-sm font-medium rounded-full mb-4 ${isDark ? 'bg-amber-900/30 text-amber-300' : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300'}`}>
                         {section.tagline}
                       </span>
-                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
+                      <h3 className={`text-3xl md:text-4xl lg:text-5xl font-bold ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
                         {section.headline}
                       </h3>
                     </div>
@@ -4042,10 +4042,10 @@ function CaseStudy() {
                   <div className="mt-16">
                     {/* Section Header */}
                     <div className="text-center mb-12">
-                      <span className="inline-block px-4 py-1.5 bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 text-sm font-medium rounded-full mb-4">
+                      <span className={`inline-block px-4 py-1.5 text-sm font-medium rounded-full mb-4 ${isDark ? 'bg-cyan-900/30 text-cyan-300' : 'bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300'}`}>
                         {section.tagline}
                       </span>
-                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
+                      <h3 className={`text-3xl md:text-4xl lg:text-5xl font-bold ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
                         {section.headline}
                       </h3>
                     </div>
@@ -4116,14 +4116,14 @@ function CaseStudy() {
                   <div className="mt-16">
                     {/* Section Header */}
                     <div className="text-center mb-8">
-                      <span className="inline-block px-4 py-1.5 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-sm font-medium rounded-full mb-4">
+                      <span className={`inline-block px-4 py-1.5 text-sm font-medium rounded-full mb-4 ${isDark ? 'bg-indigo-900/30 text-indigo-300' : 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300'}`}>
                         {section.tagline}
                       </span>
-                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+                      <h3 className={`text-3xl md:text-4xl lg:text-5xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
                         {section.headline}
                       </h3>
                       {section.insight && (
-                        <p className="text-lg text-gray-600 dark:text-gray-400 max-w-3xl mx-auto">
+                        <p className={`text-lg max-w-3xl mx-auto ${isDark ? 'text-slate-300' : 'text-gray-600 dark:text-gray-400'}`}>
                           {section.insight}
                         </p>
                       )}
@@ -4195,10 +4195,10 @@ function CaseStudy() {
                   <div className="mt-16">
                     {/* Section Header */}
                     <div className="text-center mb-12">
-                      <span className="inline-block px-4 py-1.5 bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300 text-sm font-medium rounded-full mb-4">
+                      <span className={`inline-block px-4 py-1.5 text-sm font-medium rounded-full mb-4 ${isDark ? 'bg-emerald-900/30 text-emerald-300' : 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300'}`}>
                         {section.tagline}
                       </span>
-                      <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white">
+                      <h3 className={`text-3xl md:text-4xl lg:text-5xl font-bold ${isDark ? 'text-white' : 'text-gray-900 dark:text-white'}`}>
                         {section.headline}
                       </h3>
                     </div>
@@ -6814,7 +6814,7 @@ function CaseStudy() {
                             {/* Header */}
                             <div className="text-center">
                               <h4 className="text-xl font-bold text-white mb-2">{section.aiPainPoints.title}</h4>
-                              <p className="text-sm text-gray-400">{section.aiPainPoints.description}</p>
+                              <p className="text-sm text-gray-300">{section.aiPainPoints.description}</p>
                             </div>
 
                             {/* Source Cards */}
@@ -6860,8 +6860,8 @@ function CaseStudy() {
                                         {/* Source Info */}
                                         <div className="flex items-center gap-2 mb-2">
                                           <span className="text-sm font-semibold text-white">{source.label}</span>
-                                          <span className="text-xs text-gray-500">•</span>
-                                          <span className="text-xs text-gray-400">{source.timestamp}</span>
+                                          <span className="text-xs text-gray-400">•</span>
+                                          <span className="text-xs text-gray-300">{source.timestamp}</span>
                                         </div>
                                         {/* Quote */}
                                         <p className="text-sm text-gray-300 italic mb-3">"{source.quote}"</p>
@@ -7193,7 +7193,7 @@ function CaseStudy() {
                     viewport={{ once: true }}
                   >
                     {section.introText && (
-                      <p className="text-lg text-gray-600 dark:text-gray-200 mb-8 leading-relaxed">{section.introText}</p>
+                      <p className={`text-lg mb-8 leading-relaxed ${isDark ? 'text-slate-300' : 'text-gray-600 dark:text-gray-200'}`}>{section.introText}</p>
                     )}
                     
                     {/* AI-Accelerated Product Design Visual Cards */}
