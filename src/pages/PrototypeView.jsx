@@ -120,7 +120,7 @@ export default function PrototypeView() {
             Back to Prototypes
           </Link>
           
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mb-4">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent mb-4 pb-1">
             {prototype.title}
           </h1>
           <p className="text-gray-400 text-lg max-w-2xl mx-auto mb-4">
@@ -306,9 +306,9 @@ export default function PrototypeView() {
                 </button>
                 <button
                   onClick={() => isRestaurantDashboard ? setCurrentScreen(prev => Math.min(5, prev + 1)) : nextScreen()}
-                  disabled={isRestaurantDashboard ? currentScreen >= 5 : (isEDiscoveryPrototype ? currentScreen >= 4 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3))}
+                  disabled={isRestaurantDashboard ? currentScreen >= 5 : (isEDiscoveryPrototype ? currentScreen >= 4 : (isInvestigation ? currentScreen >= 2 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3)))}
                   className={`flex-1 py-2 px-3 rounded-lg font-medium text-sm transition-all flex items-center justify-center gap-1.5 ${
-                    (isRestaurantDashboard ? currentScreen >= 5 : (isEDiscoveryPrototype ? currentScreen >= 4 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3)))
+                    (isRestaurantDashboard ? currentScreen >= 5 : (isEDiscoveryPrototype ? currentScreen >= 4 : (isInvestigation ? currentScreen >= 2 : (isDocReviewPrototype ? currentScreen >= 2 : currentScreen >= 3))))
                       ? 'bg-gray-800 text-gray-600 cursor-not-allowed'
                       : 'bg-gradient-to-r from-teal-500 to-cyan-500 text-white hover:from-teal-400 hover:to-cyan-400'
                   }`}
@@ -355,6 +355,29 @@ export default function PrototypeView() {
                     <li className="flex items-start gap-2">
                       <span className="text-teal-400 mt-0.5">•</span>
                       Navigate using sidebar icons
+                    </li>
+                  </>
+                ) : isInvestigation ? (
+                  <>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Click example queries to trigger AI search
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      View source citations via slide-out panel
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Toggle AI context panel on verify screen
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Highlighted passages show AI evidence
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-teal-400 mt-0.5">•</span>
+                      Navigate screens via top tab bar
                     </li>
                   </>
                 ) : isDocReviewPrototype ? (
