@@ -3451,6 +3451,20 @@ export function InvestigationApp({ currentScreen = 0, onScreenChange }) {
               {sid === 'search' ? 'Search' : sid === 'results' ? 'Results' : 'Verify'}
             </button>
           ))}
+          {currentView === 'verify' && (
+            <>
+              <div className="w-px h-4 bg-slate-700/50 mx-1" />
+              <button 
+                onClick={() => setShowContext(!showContext)}
+                className={`px-2 py-1 rounded text-[9px] font-medium transition-all flex items-center gap-1 ${
+                  showContext ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'
+                }`}
+              >
+                Context
+              </button>
+              <button className="px-2 py-1 bg-amber-500 text-slate-900 rounded text-[9px] font-semibold">Add to Report</button>
+            </>
+          )}
         </div>
       </div>
 
@@ -3758,17 +3772,6 @@ function InvestigationVerifyScreen({ showContext, setShowContext }) {
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-1.5">
-            <button 
-              onClick={() => setShowContext(!showContext)}
-              className={`px-2 py-1 rounded text-[9px] font-medium transition-all flex items-center gap-1 ${
-                showContext ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'
-              }`}
-            >
-              Context
-            </button>
-            <button className="px-2 py-1 bg-amber-500 text-slate-900 rounded text-[9px] font-semibold">Add to Report</button>
-          </div>
         </div>
 
         {/* Email Metadata */}
@@ -3813,8 +3816,8 @@ function InvestigationVerifyScreen({ showContext, setShowContext }) {
               Flag
             </button>
           </div>
-          <div className="flex items-center gap-2 text-[9px] text-slate-500">
-            <span>Source 1 of 3</span>
+          <div className="flex items-center gap-2">
+            <span className="text-[9px] text-slate-500">Source 1 of 3</span>
             <div className="flex items-center gap-0.5">
               <div className="w-3.5 h-3.5 bg-slate-800 rounded flex items-center justify-center cursor-pointer hover:bg-slate-700">
                 <svg className="w-2 h-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
