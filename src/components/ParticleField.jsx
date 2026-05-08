@@ -1,9 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { useTheme } from '../context/ThemeContext'
 
-const COUNT = 140
-const REPEL_RADIUS = 160
-const CONNECT_DIST = 100
+const COUNT = 180
+const REPEL_RADIUS = 220
+const CONNECT_DIST = 140
 const COLORS = [
   [94, 234, 212],   // teal-300
   [153, 246, 228],  // teal-200
@@ -15,7 +15,7 @@ function initParticles() {
   return Array.from({ length: COUNT }, () => ({
     fx: Math.random(),
     fy: Math.random(),
-    size: 0.8 + Math.random() * 2,
+    size: 1.2 + Math.random() * 2.5,
     color: COLORS[Math.floor(Math.random() * COLORS.length)],
     alpha: 0.3 + Math.random() * 0.5,
     phaseX: Math.random() * Math.PI * 2,
@@ -84,7 +84,7 @@ export default function ParticleField() {
       // Cursor glow halo
       if (active) {
         const gr = ctx.createRadialGradient(mx, my, 0, mx, my, REPEL_RADIUS)
-        gr.addColorStop(0, `rgba(94,234,212,${isDark ? 0.12 : 0.07})`)
+        gr.addColorStop(0, `rgba(94,234,212,${isDark ? 0.08 : 0.04})`)
         gr.addColorStop(1, 'rgba(94,234,212,0)')
         ctx.fillStyle = gr
         ctx.beginPath()
@@ -110,15 +110,15 @@ export default function ParticleField() {
           const ddy = ty + p.dy - my
           const dist = Math.sqrt(ddx * ddx + ddy * ddy)
           if (dist < REPEL_RADIUS && dist > 1) {
-            const s = ((1 - dist / REPEL_RADIUS) ** 2) * 50 * 0.03
-            p.dx += (ddx / dist) * s
-            p.dy += (ddy / dist) * s
+            const force = ((1 - dist / REPEL_RADIUS) ** 1.5) * 8
+            p.dx += (ddx / dist) * force
+            p.dy += (ddy / dist) * force
           }
         }
 
         // Spring damping
-        p.dx *= 0.94
-        p.dy *= 0.94
+        p.dx *= 0.92
+        p.dy *= 0.92
 
         const rx = tx + p.dx
         const ry = ty + p.dy
@@ -130,7 +130,7 @@ export default function ParticleField() {
         if (active) {
           const cd = Math.sqrt((rx - mx) ** 2 + (ry - my) ** 2)
           if (cd < REPEL_RADIUS * 2) {
-            boost = (1 - cd / (REPEL_RADIUS * 2)) * 0.5
+            boost = (1 - cd / (REPEL_RADIUS * 2)) * 0.35
             nearby.push(p)
           }
         }
@@ -139,9 +139,9 @@ export default function ParticleField() {
         const [cr, cg, cb] = p.color
 
         // Glow halo per particle
-        const gs = p.size * 4
+        const gs = p.size * 3
         const g = ctx.createRadialGradient(rx, ry, 0, rx, ry, gs)
-        g.addColorStop(0, `rgba(${cr},${cg},${cb},${(a * 0.35).toFixed(3)})`)
+        g.addColorStop(0, `rgba(${cr},${cg},${cb},${(a * 0.2).toFixed(3)})`)
         g.addColorStop(1, `rgba(${cr},${cg},${cb},0)`)
         ctx.fillStyle = g
         ctx.beginPath()
@@ -157,13 +157,13 @@ export default function ParticleField() {
 
       // Connection lines near cursor (neural network effect)
       if (active && nearby.length > 1) {
-        ctx.lineWidth = 0.5
+        ctx.lineWidth = 0.8
         for (let i = 0; i < nearby.length; i++) {
           for (let j = i + 1; j < nearby.length; j++) {
             const a = nearby[i], b = nearby[j]
             const d = Math.sqrt((a.renderX - b.renderX) ** 2 + (a.renderY - b.renderY) ** 2)
             if (d < CONNECT_DIST) {
-              const lineAlpha = (1 - d / CONNECT_DIST) * (isDark ? 0.2 : 0.12)
+              const lineAlpha = (1 - d / CONNECT_DIST) * (isDark ? 0.35 : 0.18)
               ctx.strokeStyle = `rgba(94,234,212,${lineAlpha.toFixed(3)})`
               ctx.beginPath()
               ctx.moveTo(a.renderX, a.renderY)
