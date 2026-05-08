@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useTheme } from '../context/ThemeContext'
 
-const COUNT = 180
+const COUNT = 240
 const REPEL_RADIUS = 220
 const CONNECT_DIST = 140
 const COLORS = [
@@ -15,9 +15,9 @@ function initParticles() {
   return Array.from({ length: COUNT }, () => ({
     fx: Math.random(),
     fy: Math.random(),
-    size: 1.2 + Math.random() * 2.5,
+    size: 1.8 + Math.random() * 3,
     color: COLORS[Math.floor(Math.random() * COLORS.length)],
-    alpha: 0.3 + Math.random() * 0.5,
+    alpha: 0.5 + Math.random() * 0.4,
     phaseX: Math.random() * Math.PI * 2,
     phaseY: Math.random() * Math.PI * 2,
     speedX: 0.0003 + Math.random() * 0.0008,
@@ -104,21 +104,22 @@ export default function ParticleField() {
         const tx = bx + ox
         const ty = by + oy
 
-        // Mouse repulsion
+        // Mouse attraction - particles gather toward cursor
         if (active) {
-          const ddx = tx + p.dx - mx
-          const ddy = ty + p.dy - my
+          const ddx = mx - (tx + p.dx)
+          const ddy = my - (ty + p.dy)
           const dist = Math.sqrt(ddx * ddx + ddy * ddy)
-          if (dist < REPEL_RADIUS && dist > 1) {
-            const force = ((1 - dist / REPEL_RADIUS) ** 1.5) * 8
+          if (dist < REPEL_RADIUS && dist > 8) {
+            // Force scales linearly with distance - weaker when close to prevent overshoot
+            const force = (dist / REPEL_RADIUS) * 1.2
             p.dx += (ddx / dist) * force
             p.dy += (ddy / dist) * force
           }
         }
 
         // Spring damping
-        p.dx *= 0.92
-        p.dy *= 0.92
+        p.dx *= 0.88
+        p.dy *= 0.88
 
         const rx = tx + p.dx
         const ry = ty + p.dy
@@ -135,7 +136,7 @@ export default function ParticleField() {
           }
         }
 
-        const a = Math.min(1, (isDark ? p.alpha : p.alpha * 0.55) + boost)
+        const a = Math.min(1, (isDark ? p.alpha : p.alpha * 0.9) + boost)
         const [cr, cg, cb] = p.color
 
         // Glow halo per particle
