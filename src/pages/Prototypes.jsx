@@ -5,7 +5,8 @@ import {
   PhoneFrame,
   DashboardScreen,
   DesktopFrame,
-  EDiscoveryApp
+  EDiscoveryApp,
+  InvestigationApp
 } from '../components/PrototypeScreens'
 import RestaurantDashboardApp from '../components/RestaurantDashboardApp'
 
@@ -48,12 +49,26 @@ function RestaurantPreview() {
   )
 }
 
+// Scaled-down investigation platform preview
+function InvestigationPreview() {
+  return (
+    <div className="flex items-center justify-center h-full py-4 px-4">
+      <div className="pointer-events-none" style={{ transform: 'scale(0.38)', transformOrigin: 'center center' }}>
+        <DesktopFrame url="investigate.ai">
+          <InvestigationApp currentScreen={1} onScreenChange={() => {}} />
+        </DesktopFrame>
+      </div>
+    </div>
+  )
+}
+
 function PrototypeCard({ prototype }) {
   const isMobile = !prototype.isDesktop
 
   const getPreview = () => {
     if (isMobile) return <MobilePreview />
     if (prototype.isRestaurantDashboard) return <RestaurantPreview />
+    if (prototype.isInvestigation) return <InvestigationPreview />
     return <DesktopPreview />
   }
 

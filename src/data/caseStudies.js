@@ -985,27 +985,27 @@ export const caseStudies = {
               "Investigators begin with a blank canvas and a simple prompt",
               "Plain English queries replace complex boolean syntax",
               "Example queries guide users toward effective search patterns",
-              "AI processes natural language to understand investigator intent"
+              "Active case context shows document count and last update"
             ]
           },
           {
             component: "NLPDocumentSearchScreen",
-            title: "Results with Relevance Scoring",
+            title: "Results with AI-Generated Analysis",
             bullets: [
               "Auto extracted search chips let users refine without retyping",
               "Document list shows relevance percentages for quick scanning",
-              "Selecting a document reveals AI generated summary with key findings",
-              "Inline citation markers show exactly where each conclusion originated"
+              "AI analysis surfaces key findings with numbered citations",
+              "Slide-out panel shows source excerpts without leaving the results view"
             ]
           },
           {
             component: "SourceInspectorScreen",
             title: "Verify Any AI Conclusion",
             bullets: [
-              "One click on any citation opens the source document",
-              "Highlighted excerpts show exactly where the AI found its answer",
-              "Confidence scoring and document context build investigator trust",
-              "Confirm or Flag actions feed back into AI accuracy over time"
+              "Full document view with highlighted passages from AI citations",
+              "Togglable context panel slides in with entities and thread history",
+              "Confirm or Flag actions feed back into AI accuracy over time",
+              "Navigate between sources without returning to the results list"
             ]
           }
         ]

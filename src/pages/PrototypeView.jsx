@@ -11,7 +11,8 @@ import {
   DocReviewQueueScreen,
   DocReviewAIFilterScreen,
   DocReviewTagScreen,
-  EDiscoveryApp
+  EDiscoveryApp,
+  InvestigationApp
 } from '../components/PrototypeScreens'
 import RestaurantDashboardApp from '../components/RestaurantDashboardApp'
 
@@ -81,7 +82,7 @@ export default function PrototypeView() {
     goToScreen(2, 'backward')
   }
 
-  const screenLabels = (id === 'document-review' || id === 'ediscovery-ai' || id === 'restaurant-dashboard')
+  const screenLabels = (id === 'document-review' || id === 'ediscovery-ai' || id === 'restaurant-dashboard' || id === 'investigation-platform')
     ? prototype.prototype.screens
     : [
         { label: 'Dashboard', description: 'View upcoming events, stats, and tap the next event to see tasks' },
@@ -95,6 +96,7 @@ export default function PrototypeView() {
   const isDocReviewPrototype = id === 'document-review'
   const isEDiscoveryPrototype = id === 'ediscovery-ai'
   const isRestaurantDashboard = id === 'restaurant-dashboard'
+  const isInvestigation = id === 'investigation-platform'
   const isDesktopPrototype = prototype?.isDesktop === true
 
   return (
@@ -146,6 +148,13 @@ export default function PrototypeView() {
             {isRestaurantDashboard ? (
               <DesktopFrame url="portal.rewardsnetwork.com/dashboard">
                 <RestaurantDashboardApp
+                  currentScreen={currentScreen}
+                  onScreenChange={(index) => setCurrentScreen(index)}
+                />
+              </DesktopFrame>
+            ) : isInvestigation ? (
+              <DesktopFrame url="investigate.ai">
+                <InvestigationApp
                   currentScreen={currentScreen}
                   onScreenChange={(index) => setCurrentScreen(index)}
                 />

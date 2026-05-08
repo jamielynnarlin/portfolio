@@ -1137,7 +1137,7 @@ export function BrowserFrame({ children, size = "small" }) {
 }
 
 // Large Desktop Browser Frame for case study galleries
-export function DesktopBrowserFrame({ children, url = "investigateandreview.com" }) {
+export function DesktopBrowserFrame({ children, url = "investigate.ai" }) {
   return (
     <div className="relative w-full">
       {/* Browser outer frame */}
@@ -1305,165 +1305,190 @@ export function EmptySearchScreen() {
   )
 }
 
-// NLP Document Search Desktop Screen - Interactive search interface
+// NLP Document Search Desktop Screen - Modern data-rich interface
 export function NLPDocumentSearchScreen() {
-  const [filter, setFilter] = useState('90')
   const [selectedDoc, setSelectedDoc] = useState(0)
+  const [showDetail, setShowDetail] = useState(false)
   
-  // All documents with relevancy scores
-  const allDocuments = [
-    { id: 0, title: 'Q4 Revenue Memo', type: 'Email', date: 'Dec 15, 2024', relevancy: 98, source: 'CFO → CEO', color: 'amber' },
+  const documents = [
+    { id: 0, title: 'Q4 Revenue Memo', type: 'Email', date: 'Dec 15', relevancy: 98, source: 'CFO → CEO', color: 'amber' },
     { id: 1, title: 'Policy Update Draft', type: 'Document', date: 'Nov 28', relevancy: 94, source: 'Finance', color: 'indigo' },
     { id: 2, title: 'Board Minutes Q4', type: 'Minutes', date: 'Dec 1', relevancy: 91, source: 'Board', color: 'emerald' },
-    { id: 3, title: 'Audit Committee Notes', type: 'Minutes', date: 'Dec 8', relevancy: 90, source: 'Audit', color: 'rose' },
-    { id: 4, title: 'CFO Budget Review', type: 'Presentation', date: 'Nov 15', relevancy: 87, source: 'Finance', color: 'violet' },
-    { id: 5, title: 'Q3 Comparison Analysis', type: 'Spreadsheet', date: 'Oct 30', relevancy: 84, source: 'Accounting', color: 'cyan' },
+    { id: 3, title: 'Audit Committee Notes', type: 'Minutes', date: 'Dec 8', relevancy: 88, source: 'Audit', color: 'rose' },
+    { id: 4, title: 'CFO Budget Review', type: 'Slides', date: 'Nov 15', relevancy: 84, source: 'Finance', color: 'violet' },
   ]
-  
-  // Filter documents based on selected threshold
-  const filteredDocs = allDocuments.filter(doc => {
-    if (filter === '90') return doc.relevancy >= 90
-    if (filter === '75') return doc.relevancy >= 75
-    return true // 'all'
-  })
-  
-  const colorMap = {
-    amber: { bg: 'bg-amber-500/20', text: 'text-amber-400' },
-    indigo: { bg: 'bg-indigo-500/20', text: 'text-indigo-400' },
-    emerald: { bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
-    rose: { bg: 'bg-rose-500/20', text: 'text-rose-400' },
-    violet: { bg: 'bg-violet-500/20', text: 'text-violet-400' },
-    cyan: { bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
-  }
 
   return (
-    <div className="flex flex-col h-[580px] bg-slate-950 text-white">
-      {/* Compact Search Header */}
-      <div className="px-4 py-3 border-b border-slate-800 bg-slate-900/80">
+    <div className="flex flex-col h-[580px] bg-slate-950 text-white relative overflow-hidden">
+      {/* Compact Search Bar */}
+      <div className="px-5 py-3 border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-sm">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-gradient-to-r from-violet-500 to-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0">
-            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+          <div className="flex items-center gap-2 flex-1 bg-slate-800/80 rounded-lg px-3 py-2 border border-slate-700/50">
+            <svg className="w-4 h-4 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
+            <span className="text-sm text-slate-200">"Show communications about revenue recognition in Q4"</span>
           </div>
-          <div className="flex-1">
-            <p className="text-sm text-white">"Show all communications about revenue recognition adjustments in Q4 involving executives"</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded-lg">revenue recognition</span>
-            <span className="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded-lg">Q4</span>
-            <span className="px-2 py-1 bg-slate-700 text-slate-300 text-xs rounded-lg">executives</span>
+          <div className="flex items-center gap-1.5">
+            <span className="px-2 py-1 bg-amber-500/15 text-amber-300 text-[10px] font-medium rounded border border-amber-500/20">revenue</span>
+            <span className="px-2 py-1 bg-amber-500/15 text-amber-300 text-[10px] font-medium rounded border border-amber-500/20">Q4</span>
+            <span className="px-2 py-1 bg-amber-500/15 text-amber-300 text-[10px] font-medium rounded border border-amber-500/20">executives</span>
           </div>
         </div>
       </div>
 
-      {/* Main Content - Side by side */}
+      {/* Main Content */}
       <div className="flex-1 flex min-h-0">
-        {/* Left: Document List (fixed width, scrolls) */}
-        <div className="w-72 border-r border-slate-800 flex flex-col">
-          {/* Results Header with Filter */}
-          <div className="px-3 py-2 border-b border-slate-800 bg-slate-900/50">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-semibold text-white">847 Results</span>
-              <span className="text-xs text-slate-500">By relevance</span>
-            </div>
-            <div className="flex items-center gap-1">
-              {['90', '75', 'all'].map((f) => (
-                <button 
-                  key={f}
-                  onClick={() => setFilter(f)}
-                  className={`px-2 py-1 text-xs font-medium rounded transition-all ${
-                    filter === f 
-                      ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30' 
-                      : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                  }`}
-                >
-                  {f === 'all' ? 'All' : `${f}%+`}
-                </button>
-              ))}
+        {/* Left: Results List */}
+        <div className="w-[260px] border-r border-slate-800/60 flex flex-col bg-slate-900/40">
+          <div className="px-3 py-2.5 border-b border-slate-800/60 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-semibold text-white">847 results</span>
+              <span className="text-[10px] text-slate-500">sorted by relevance</span>
             </div>
           </div>
           
-          {/* Scrollable Document List */}
-          <div className="flex-1 overflow-y-auto p-2 space-y-1.5">
-            {filteredDocs.map((doc) => (
+          {/* Document cards - no inner scroll, fits in view */}
+          <div className="flex-1 p-2 space-y-1">
+            {documents.map((doc) => (
               <div 
                 key={doc.id}
-                onClick={() => setSelectedDoc(doc.id)}
-                className={`rounded-lg p-2.5 cursor-pointer transition-all ${
+                onClick={() => { setSelectedDoc(doc.id); setShowDetail(false) }}
+                className={`rounded-lg px-3 py-2 cursor-pointer transition-all ${
                   selectedDoc === doc.id 
-                    ? 'bg-amber-500/10 border border-amber-500/30' 
-                    : 'bg-slate-800/50 border border-transparent hover:bg-slate-800'
+                    ? 'bg-slate-800 border border-slate-700' 
+                    : 'hover:bg-slate-800/50 border border-transparent'
                 }`}
               >
-                <div className="flex items-start gap-2">
-                  <div className={`w-8 h-10 ${colorMap[doc.color].bg} rounded flex items-center justify-center flex-shrink-0`}>
-                    <svg className={`w-4 h-4 ${colorMap[doc.color].text}`} fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zm4 18H6V4h7v5h5v11z"/>
-                    </svg>
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="text-xs font-semibold text-white truncate">{doc.title}</h4>
-                    <p className="text-[10px] text-slate-400">{doc.type} • {doc.date}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded ${
-                        doc.relevancy >= 90 ? 'bg-emerald-500/20 text-emerald-300' :
-                        doc.relevancy >= 75 ? 'bg-amber-500/20 text-amber-300' :
-                        'bg-slate-600/20 text-slate-400'
-                      }`}>{doc.relevancy}%</span>
-                      <span className="text-[10px] text-slate-500">{doc.source}</span>
-                    </div>
-                  </div>
+                <div className="flex items-center justify-between">
+                  <h4 className="text-xs font-medium text-white truncate">{doc.title}</h4>
+                  <span className={`text-[10px] font-bold ml-2 ${doc.relevancy >= 90 ? 'text-emerald-400' : 'text-amber-400'}`}>{doc.relevancy}%</span>
+                </div>
+                <div className="flex items-center gap-2 mt-0.5">
+                  <span className="text-[10px] text-slate-500">{doc.type}</span>
+                  <span className="text-[10px] text-slate-600">·</span>
+                  <span className="text-[10px] text-slate-500">{doc.date}</span>
+                  <span className="text-[10px] text-slate-600">·</span>
+                  <span className="text-[10px] text-slate-500">{doc.source}</span>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Right: AI Summary Panel (fills remaining, no scroll) */}
-        <div className="flex-1 flex flex-col bg-slate-900/30">
-          {/* Panel Header */}
-          <div className="px-4 py-3 border-b border-slate-800 flex items-center gap-2">
-            <div className="w-6 h-6 bg-violet-500/30 rounded flex items-center justify-center">
-              <svg className="w-3.5 h-3.5 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
+        {/* Right: AI Summary - main panel */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* AI Summary Header */}
+          <div className="px-5 py-3 border-b border-slate-800/60 flex items-center gap-2">
+            <div className="w-5 h-5 bg-gradient-to-br from-violet-500 to-indigo-500 rounded flex items-center justify-center">
+              <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
               </svg>
             </div>
-            <h3 className="text-sm font-semibold text-violet-300">AI Generated Summary</h3>
-            <span className="ml-auto text-[10px] text-slate-500 italic">Sample output for demo purposes</span>
+            <span className="text-xs font-semibold text-slate-200">AI Analysis</span>
+            <span className="text-[10px] text-slate-500 ml-auto">4 citations found</span>
           </div>
-          
-          {/* Summary Content - Fixed height sections */}
-          <div className="flex-1 p-4 flex flex-col gap-3">
-            <div className="bg-slate-800/50 rounded-lg p-3">
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Analysis of <span className="text-amber-400 font-semibold">847 documents</span> reveals coordinated discussions about revenue recognition timing. Key findings:
+
+          {/* Summary Body */}
+          <div className="flex-1 p-5 flex flex-col gap-4">
+            {/* Overview card */}
+            <div className="bg-slate-800/40 rounded-xl p-4 border border-slate-700/40">
+              <p className="text-sm text-slate-300 leading-relaxed">
+                Analysis of <span className="text-amber-400 font-medium">847 documents</span> reveals coordinated executive discussions about revenue recognition timing adjustments in Q4 2024.
               </p>
             </div>
 
-            {/* Key Findings - Compact cards */}
-            <div className="flex-1 grid grid-cols-1 gap-2">
-              <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/50">
-                <h4 className="text-xs font-semibold text-white mb-1">Timing Adjustments</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">CFO requested acceleration of Q4 revenue recognition for Acme contract, citing "competitive pressure"<sup className="text-violet-400 ml-0.5">[1]</sup></p>
+            {/* Key Findings - Clean cards with citation buttons */}
+            <div className="flex-1 space-y-3">
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/20 border border-slate-800/60 hover:border-slate-700/80 transition-colors">
+                <div className="w-5 h-5 rounded bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[10px] font-bold text-violet-400">1</span>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-xs font-semibold text-white mb-1">Revenue Acceleration Request</h4>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">CFO requested acceleration of Q4 revenue recognition for Acme contract, citing "competitive pressure"</p>
+                </div>
+                <button onClick={() => setShowDetail(true)} className="px-2 py-1 text-[10px] font-medium text-violet-300 bg-violet-500/10 border border-violet-500/20 rounded hover:bg-violet-500/20 transition-colors flex-shrink-0">
+                  View source →
+                </button>
               </div>
 
-              <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/50">
-                <h4 className="text-xs font-semibold text-white mb-1">Approval Chain</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">Board approved modified recognition criteria on Dec 1<sup className="text-violet-400 ml-0.5">[2]</sup> with CEO signature required<sup className="text-violet-400 ml-0.5">[3]</sup></p>
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/20 border border-slate-800/60 hover:border-slate-700/80 transition-colors">
+                <div className="w-5 h-5 rounded bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[10px] font-bold text-violet-400">2</span>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-xs font-semibold text-white mb-1">Board Approval</h4>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">Board approved modified recognition criteria on Dec 1 with CEO signature required</p>
+                </div>
+                <button className="px-2 py-1 text-[10px] font-medium text-slate-400 bg-slate-800/50 border border-slate-700/50 rounded hover:bg-slate-700/50 transition-colors flex-shrink-0">
+                  View source →
+                </button>
               </div>
 
-              <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/50">
-                <h4 className="text-xs font-semibold text-white mb-1">Internal Concerns</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">Controller expressed reservations: "may not align with GAAP guidance"<sup className="text-violet-400 ml-0.5">[4]</sup></p>
+              <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-800/20 border border-slate-800/60 hover:border-slate-700/80 transition-colors">
+                <div className="w-5 h-5 rounded bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[10px] font-bold text-violet-400">3</span>
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-xs font-semibold text-white mb-1">Internal Concerns</h4>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">Controller expressed reservations: "may not align with GAAP guidance"</p>
+                </div>
+                <button className="px-2 py-1 text-[10px] font-medium text-slate-400 bg-slate-800/50 border border-slate-700/50 rounded hover:bg-slate-700/50 transition-colors flex-shrink-0">
+                  View source →
+                </button>
               </div>
             </div>
 
-            {/* Citation Footer */}
-            <div className="flex items-center justify-between pt-2 border-t border-slate-800">
-              <span className="text-[10px] text-slate-500">4 citations • Click to verify source</span>
-              <button className="px-2.5 py-1 bg-amber-500 text-slate-900 rounded text-[10px] font-semibold">Export</button>
+            {/* Footer */}
+            <div className="flex items-center justify-between pt-3 border-t border-slate-800/60">
+              <div className="flex items-center gap-3">
+                <span className="text-[10px] text-slate-500">4 citations · 847 docs analyzed</span>
+              </div>
+              <button className="px-3 py-1.5 bg-amber-500 text-slate-900 rounded-md text-[10px] font-semibold">Export Report</button>
             </div>
+          </div>
+        </div>
+
+        {/* Slide-out Source Panel */}
+        <div className={`absolute top-[45px] right-0 bottom-0 w-[340px] bg-slate-900 border-l border-slate-700/80 flex flex-col shadow-2xl transition-transform duration-300 ${showDetail ? 'translate-x-0' : 'translate-x-full'}`}>
+          <div className="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-5 h-5 bg-violet-500 rounded flex items-center justify-center">
+                <span className="text-[10px] font-bold text-white">1</span>
+              </div>
+              <span className="text-xs font-semibold text-white">Source Document</span>
+            </div>
+            <button onClick={() => setShowDetail(false)} className="w-6 h-6 rounded bg-slate-800 flex items-center justify-center hover:bg-slate-700">
+              <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex-1 p-4 space-y-3">
+            <div className="bg-slate-800/60 rounded-lg p-3">
+              <h4 className="text-xs font-semibold text-white">Q4 Revenue Memo</h4>
+              <p className="text-[10px] text-slate-400 mt-1">Email · Dec 15, 2024 · J. Roberts → M. Chen</p>
+              <span className="inline-block mt-1.5 px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-medium rounded">98% relevant</span>
+            </div>
+            <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/40">
+              <p className="text-[11px] text-slate-300 leading-relaxed">
+                "...After reviewing the terms, <span className="bg-amber-500/25 text-amber-200 px-0.5 rounded">I believe we should accelerate the recognition of revenue for this contract into Q4</span>. The deliverables are substantially complete..."
+              </p>
+            </div>
+            <div className="bg-slate-800/30 rounded-lg p-3 border border-slate-700/40">
+              <p className="text-[11px] text-slate-300 leading-relaxed">
+                "<span className="bg-amber-500/25 text-amber-200 px-0.5 rounded">Given the competitive pressure and analyst expectations for the quarter, this timing adjustment would be beneficial.</span>"
+              </p>
+            </div>
+            <div className="bg-violet-500/10 border border-violet-500/20 rounded-lg p-3">
+              <p className="text-[10px] text-violet-300 font-medium mb-1">AI Confidence: High</p>
+              <p className="text-[10px] text-slate-400">Direct evidence of revenue timing request with stated motivation.</p>
+            </div>
+          </div>
+          <div className="px-4 py-3 border-t border-slate-800 flex items-center gap-2">
+            <button className="flex-1 px-3 py-1.5 bg-emerald-500/20 text-emerald-300 rounded-md text-[10px] font-semibold">Confirm</button>
+            <button className="flex-1 px-3 py-1.5 bg-rose-500/20 text-rose-300 rounded-md text-[10px] font-semibold">Flag</button>
           </div>
         </div>
       </div>
@@ -1471,238 +1496,201 @@ export function NLPDocumentSearchScreen() {
   )
 }
 
-// Source Inspector Desktop Screen - Document verification interface
+// Source Inspector Desktop Screen - Modern document verification with slide-out context
 export function SourceInspectorScreen() {
+  const [showContext, setShowContext] = useState(true)
+
   return (
-    <div className="flex h-[580px] bg-slate-950 text-white">
-      {/* Left Panel - Document List */}
-      <div className="w-72 bg-slate-900 border-r border-slate-800 flex flex-col">
-        {/* Header */}
-        <div className="px-4 py-4 border-b border-slate-800">
-          <div className="flex items-center gap-2 mb-3">
-            <button className="w-8 h-8 bg-slate-800 rounded-lg flex items-center justify-center">
-              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <div className="flex h-[580px] bg-slate-950 text-white relative overflow-hidden">
+      {/* Main Document View - Full Width */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Document Header */}
+        <div className="px-5 py-3 border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-sm flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <button className="w-7 h-7 bg-slate-800 rounded-lg flex items-center justify-center hover:bg-slate-700 transition-colors">
+              <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
             </button>
-            <span className="text-sm font-semibold text-white">Source Inspector</span>
+            <div>
+              <h2 className="text-sm font-semibold text-white">Q4 Revenue Memo - CFO Review</h2>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className="text-[10px] text-slate-500">Email</span>
+                <span className="text-[10px] text-slate-600">·</span>
+                <span className="text-[10px] text-slate-500">Dec 15, 2024</span>
+                <span className="text-[10px] text-slate-600">·</span>
+                <span className="px-1.5 py-0.5 bg-emerald-500/15 text-emerald-300 text-[10px] font-medium rounded border border-emerald-500/20">98% relevant</span>
+              </div>
+            </div>
           </div>
-          <div className="bg-slate-800 rounded-lg p-3">
-            <p className="text-xs text-slate-400">Verifying citation from:</p>
-            <p className="text-sm text-white mt-1 font-medium">AI Summary Finding #1</p>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setShowContext(!showContext)}
+              className={`px-2.5 py-1.5 rounded-lg text-[10px] font-medium transition-all flex items-center gap-1.5 ${
+                showContext ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'
+              }`}
+            >
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Context
+            </button>
+            <button className="px-2.5 py-1.5 bg-amber-500 text-slate-900 rounded-lg text-[10px] font-semibold">Add to Report</button>
           </div>
         </div>
 
-        {/* Source List */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-2">
-          <p className="text-xs text-slate-500 uppercase tracking-wide px-2 mb-2">Referenced Documents</p>
-          
-          {/* Source 1 - Selected */}
-          <div className="bg-violet-500/10 border border-violet-500/30 rounded-xl p-3">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 bg-violet-500 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-xs">1</span>
-              </div>
-              <span className="text-xs text-violet-300 font-medium">Primary Source</span>
-            </div>
-            <h4 className="text-sm font-semibold text-white">Q4 Revenue Memo</h4>
-            <p className="text-xs text-slate-400 mt-1">Email • Dec 15, 2024</p>
-            <p className="text-xs text-slate-400">J. Roberts → M. Chen</p>
-          </div>
-
-          {/* Source 2 */}
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 hover:bg-slate-800 cursor-pointer">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 bg-slate-700 rounded-lg flex items-center justify-center">
-                <span className="text-slate-300 font-bold text-xs">2</span>
-              </div>
-              <span className="text-xs text-slate-400">Supporting</span>
-            </div>
-            <h4 className="text-sm font-semibold text-white">Board Minutes</h4>
-            <p className="text-xs text-slate-400 mt-1">Minutes • Dec 1, 2024</p>
-          </div>
-
-          {/* Source 3 */}
-          <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-3 hover:bg-slate-800 cursor-pointer">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 bg-slate-700 rounded-lg flex items-center justify-center">
-                <span className="text-slate-300 font-bold text-xs">3</span>
-              </div>
-              <span className="text-xs text-slate-400">Supporting</span>
-            </div>
-            <h4 className="text-sm font-semibold text-white">Controller Memo</h4>
-            <p className="text-xs text-slate-400 mt-1">Memo • Dec 10, 2024</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Document View */}
-      <div className="flex-1 flex flex-col">
-        {/* Document Header */}
-        <div className="px-6 py-4 border-b border-slate-800 bg-slate-900/50">
-          <div>
-            <h2 className="text-lg font-bold text-white">Q4 Revenue Memo - CFO Review</h2>
-            <div className="flex items-center gap-4 mt-2">
-              <span className="text-sm text-slate-400">Email Communication</span>
-              <span className="text-sm text-slate-400">•</span>
-              <span className="text-sm text-slate-400">December 15, 2024</span>
-              <span className="text-sm text-slate-400">•</span>
-              <span className="px-2 py-0.5 bg-violet-500/20 text-violet-300 text-xs font-medium rounded">98% Relevant</span>
-            </div>
+        {/* Email Metadata Bar */}
+        <div className="px-5 py-2.5 border-b border-slate-800/50 bg-slate-900/30">
+          <div className="flex items-center gap-6 text-[11px]">
+            <div><span className="text-slate-500">From</span> <span className="text-white ml-1.5">James Roberts (CFO)</span></div>
+            <div><span className="text-slate-500">To</span> <span className="text-white ml-1.5">Michael Chen (CEO)</span></div>
+            <div><span className="text-slate-500">Subject</span> <span className="text-white ml-1.5">RE: Q4 Revenue Recognition</span></div>
           </div>
         </div>
 
-        {/* Document Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          {/* Email Header */}
-          <div className="bg-slate-800/30 rounded-xl p-4 mb-4 border border-slate-700/50">
-            <div className="grid grid-cols-2 gap-4 text-sm">
-              <div>
-                <span className="text-slate-500">From:</span>
-                <span className="text-white ml-2">James Roberts (CFO)</span>
-              </div>
-              <div>
-                <span className="text-slate-500">To:</span>
-                <span className="text-white ml-2">Michael Chen (CEO)</span>
-              </div>
-              <div>
-                <span className="text-slate-500">Date:</span>
-                <span className="text-white ml-2">Dec 15, 2024 3:47 PM</span>
-              </div>
-              <div>
-                <span className="text-slate-500">Subject:</span>
-                <span className="text-white ml-2">RE: Q4 Revenue Recognition</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Document Body with Highlights */}
-          <div className="bg-slate-900/50 rounded-xl p-6 border border-slate-700/50">
-            <div className="prose prose-invert prose-sm max-w-none">
-              <p className="text-slate-300 leading-relaxed">Michael,</p>
-              <p className="text-slate-300 leading-relaxed mt-4">Following up on our discussion yesterday regarding the Acme Technologies contract.</p>
-              <p className="text-slate-300 leading-relaxed mt-4">
-                After reviewing the terms, <span className="bg-amber-500/30 text-amber-200 px-1 rounded">I believe we should accelerate the recognition of revenue for this contract into Q4</span>. The deliverables are substantially complete and we have verbal confirmation from their team that acceptance is imminent.
+        {/* Document Body */}
+        <div className="flex-1 p-5">
+          <div className="max-w-2xl">
+            <div className="space-y-4 text-[12px] text-slate-300 leading-relaxed">
+              <p>Michael,</p>
+              <p>Following up on our discussion yesterday regarding the Acme Technologies contract.</p>
+              <p>
+                After reviewing the terms, <span className="bg-amber-500/25 text-amber-100 px-1 py-0.5 rounded border-b border-amber-500/50 cursor-pointer">I believe we should accelerate the recognition of revenue for this contract into Q4</span>. The deliverables are substantially complete and we have verbal confirmation from their team that acceptance is imminent.
               </p>
-              <p className="text-slate-300 leading-relaxed mt-4">
-                <span className="bg-amber-500/30 text-amber-200 px-1 rounded">Given the competitive pressure and analyst expectations for the quarter, this timing adjustment would be beneficial.</span> I've already spoken with Sarah in Accounting and she's prepared to process the entries once we have your approval.
+              <p>
+                <span className="bg-amber-500/25 text-amber-100 px-1 py-0.5 rounded border-b border-amber-500/50 cursor-pointer">Given the competitive pressure and analyst expectations for the quarter, this timing adjustment would be beneficial.</span> I've already spoken with Sarah in Accounting and she's prepared to process the entries once we have your approval.
               </p>
-              <p className="text-slate-300 leading-relaxed mt-4">
-                The contract value is $2.4M. Under our current policy, we would normally recognize this in Q1 upon formal acceptance, but I believe we have sufficient basis to accelerate.
-              </p>
-              <p className="text-slate-300 leading-relaxed mt-4">Please advise if you'd like to discuss before the board meeting on the 18th.</p>
-              <p className="text-slate-300 mt-4">Best,<br/>James</p>
+              <p>The contract value is $2.4M. Under our current policy, we would normally recognize this in Q1 upon formal acceptance, but I believe we have sufficient basis to accelerate.</p>
+              <p>Please advise if you'd like to discuss before the board meeting on the 18th.</p>
+              <p className="text-slate-400">Best,<br/>James</p>
             </div>
-          </div>
-
-          {/* AI Analysis */}
-          <div className="mt-4 bg-violet-500/10 border border-violet-500/30 rounded-xl p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="w-6 h-6 bg-violet-500/30 rounded-lg flex items-center justify-center">
-                <svg className="w-4 h-4 text-violet-400" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
-                </svg>
-              </div>
-              <h4 className="text-sm font-semibold text-violet-300">Why AI Cited This Document</h4>
-            </div>
-            <p className="text-sm text-slate-300 leading-relaxed">
-              This email directly supports Finding #1: <span className="text-white font-medium">"CFO requested acceleration of Q4 revenue recognition"</span>. The highlighted passages show explicit discussion of timing adjustments and competitive pressures motivating the change.
-            </p>
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="px-6 py-3 border-t border-slate-800 bg-slate-900/50">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button className="px-3 py-1.5 bg-emerald-500/20 text-emerald-400 rounded-lg text-xs font-semibold flex items-center gap-1">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+        <div className="px-5 py-2.5 border-t border-slate-800/60 bg-slate-900/40 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <button className="px-2.5 py-1.5 bg-emerald-500/15 text-emerald-300 rounded-md text-[10px] font-semibold border border-emerald-500/20 flex items-center gap-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Confirm Citation
+            </button>
+            <button className="px-2.5 py-1.5 bg-rose-500/15 text-rose-300 rounded-md text-[10px] font-semibold border border-rose-500/20 flex items-center gap-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              Flag Issue
+            </button>
+          </div>
+          <div className="flex items-center gap-3 text-[10px] text-slate-500">
+            <span>Source 1 of 3</span>
+            <div className="flex items-center gap-1">
+              <div className="w-4 h-4 bg-slate-800 rounded flex items-center justify-center hover:bg-slate-700 cursor-pointer">
+                <svg className="w-2.5 h-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                Confirm Citation
-              </button>
-              <button className="px-3 py-1.5 bg-red-500/20 text-red-400 rounded-lg text-xs font-semibold flex items-center gap-1">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </div>
+              <div className="w-4 h-4 bg-slate-800 rounded flex items-center justify-center hover:bg-slate-700 cursor-pointer">
+                <svg className="w-2.5 h-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-                Flag Issue
-              </button>
+              </div>
             </div>
-            <button className="px-4 py-1.5 bg-amber-500 text-slate-900 rounded-lg text-xs font-semibold">Add to Report</button>
           </div>
         </div>
       </div>
 
-      {/* Right Panel - Context */}
-      <div className="w-64 bg-slate-900 border-l border-slate-800 flex flex-col">
-        <div className="px-4 py-4 border-b border-slate-800">
-          <h3 className="text-sm font-semibold text-white">Document Context</h3>
+      {/* Slide-out Context Panel */}
+      <div className={`absolute top-0 right-0 bottom-0 w-[280px] bg-slate-900 border-l border-slate-700/80 flex flex-col shadow-2xl transition-transform duration-300 ${showContext ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+          <span className="text-xs font-semibold text-white">AI Context</span>
+          <button onClick={() => setShowContext(false)} className="w-5 h-5 rounded bg-slate-800 flex items-center justify-center hover:bg-slate-700">
+            <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Confidence Score</p>
-            <div className="flex items-center gap-2">
-              <div className="flex-1 h-2 bg-slate-800 rounded-full overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-violet-500 to-indigo-500 rounded-full" style={{ width: '98%' }} />
-              </div>
-              <span className="text-sm font-bold text-violet-400">98%</span>
-            </div>
+        <div className="flex-1 p-4 space-y-4">
+          {/* Why cited */}
+          <div className="bg-violet-500/10 border border-violet-500/20 rounded-lg p-3">
+            <p className="text-[10px] font-semibold text-violet-300 mb-1.5">Why AI Cited This</p>
+            <p className="text-[10px] text-slate-300 leading-relaxed">
+              Directly supports Finding #1: "CFO requested acceleration of Q4 revenue recognition." Highlighted passages show explicit timing adjustment discussion.
+            </p>
           </div>
 
+          {/* Key Entities */}
           <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Key Entities</p>
-            <div className="space-y-1">
-              <div className="flex items-center gap-2 text-sm">
-                <div className="w-6 h-6 bg-amber-500/20 rounded flex items-center justify-center">
-                  <svg className="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+            <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-2 font-medium">Key Entities</p>
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 px-2 py-1.5 bg-slate-800/50 rounded-lg">
+                <div className="w-4 h-4 bg-amber-500/20 rounded flex items-center justify-center">
+                  <svg className="w-2.5 h-2.5 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                   </svg>
                 </div>
-                <span className="text-slate-300">James Roberts</span>
+                <span className="text-[10px] text-slate-300">James Roberts (CFO)</span>
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <div className="w-6 h-6 bg-indigo-500/20 rounded flex items-center justify-center">
-                  <svg className="w-3 h-3 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-2 px-2 py-1.5 bg-slate-800/50 rounded-lg">
+                <div className="w-4 h-4 bg-indigo-500/20 rounded flex items-center justify-center">
+                  <svg className="w-2.5 h-2.5 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                   </svg>
                 </div>
-                <span className="text-slate-300">Michael Chen</span>
+                <span className="text-[10px] text-slate-300">Michael Chen (CEO)</span>
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <div className="w-6 h-6 bg-emerald-500/20 rounded flex items-center justify-center">
-                  <svg className="w-3 h-3 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center gap-2 px-2 py-1.5 bg-slate-800/50 rounded-lg">
+                <div className="w-4 h-4 bg-emerald-500/20 rounded flex items-center justify-center">
+                  <svg className="w-2.5 h-2.5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
                   </svg>
                 </div>
-                <span className="text-slate-300">Acme Technologies</span>
+                <span className="text-[10px] text-slate-300">Acme Technologies</span>
               </div>
             </div>
           </div>
 
+          {/* Related Sources */}
           <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Related Topics</p>
-            <div className="flex flex-wrap gap-1">
-              <span className="px-2 py-1 bg-slate-800 text-slate-300 text-xs rounded">Revenue</span>
-              <span className="px-2 py-1 bg-slate-800 text-slate-300 text-xs rounded">Q4</span>
-              <span className="px-2 py-1 bg-slate-800 text-slate-300 text-xs rounded">Contract</span>
-              <span className="px-2 py-1 bg-slate-800 text-slate-300 text-xs rounded">Timing</span>
+            <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-2 font-medium">Other Sources</p>
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 px-2 py-1.5 bg-slate-800/50 rounded-lg cursor-pointer hover:bg-slate-800 transition-colors">
+                <div className="w-4 h-4 bg-slate-700 rounded flex items-center justify-center">
+                  <span className="text-[8px] font-bold text-slate-300">2</span>
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-300">Board Minutes</p>
+                  <p className="text-[9px] text-slate-500">Dec 1 · 91%</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 px-2 py-1.5 bg-slate-800/50 rounded-lg cursor-pointer hover:bg-slate-800 transition-colors">
+                <div className="w-4 h-4 bg-slate-700 rounded flex items-center justify-center">
+                  <span className="text-[8px] font-bold text-slate-300">3</span>
+                </div>
+                <div>
+                  <p className="text-[10px] text-slate-300">Controller Memo</p>
+                  <p className="text-[9px] text-slate-500">Dec 10 · 88%</p>
+                </div>
+              </div>
             </div>
           </div>
 
+          {/* Thread History */}
           <div>
-            <p className="text-xs text-slate-500 uppercase tracking-wide mb-2">Thread History</p>
-            <div className="space-y-2">
-              <div className="text-xs text-slate-400 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 bg-slate-600 rounded-full" />
-                Dec 14 - Initial discussion
+            <p className="text-[10px] text-slate-500 uppercase tracking-wide mb-2 font-medium">Thread</p>
+            <div className="space-y-1.5 pl-2 border-l border-slate-800">
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-slate-600 rounded-full -ml-[11px]" />
+                <span className="text-[9px] text-slate-500">Dec 14 - Initial discussion</span>
               </div>
-              <div className="text-xs text-slate-400 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 bg-violet-500 rounded-full" />
-                Dec 15 - This email
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-violet-500 rounded-full -ml-[11px]" />
+                <span className="text-[9px] text-violet-300">Dec 15 - This email</span>
               </div>
-              <div className="text-xs text-slate-400 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 bg-slate-600 rounded-full" />
-                Dec 16 - CEO reply
+              <div className="flex items-center gap-2">
+                <div className="w-1.5 h-1.5 bg-slate-600 rounded-full -ml-[11px]" />
+                <span className="text-[9px] text-slate-500">Dec 16 - CEO reply</span>
               </div>
             </div>
           </div>

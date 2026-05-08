@@ -117,6 +117,27 @@ export const prototypes = [
         { id: "ai", label: "AI Assistant", description: "Ask natural language questions about your restaurant data" }
       ]
     }
+  },
+  {
+    id: "investigation-platform",
+    title: "AI Investigation Platform",
+    subtitle: "NLP-Powered Document Search & Verification",
+    description: "Explore how AI transforms corporate investigations with natural language search, automated source verification, and slide-out citation inspection.",
+    caseStudySlug: "enterprise-designops-transformation",
+    caseStudyTitle: "DesignOps Transformation",
+    thumbnail: import.meta.env.BASE_URL + "images/case-studies/ediscovery-hero.jpg",
+    tags: ["Desktop App", "AI/ML", "Legal Tech", "NLP Search"],
+    isDesktop: true,
+    isInvestigation: true,
+    prototype: {
+      title: "Investigate.ai Platform",
+      description: "Navigate through the AI-powered investigation workflow - from search to source verification",
+      screens: [
+        { id: "search", label: "AI Search", description: "Natural language search interface with example queries and case context" },
+        { id: "results", label: "Results & Analysis", description: "Document results with AI-generated summary, citations, and slide-out source viewer" },
+        { id: "verify", label: "Source Verification", description: "Full document view with highlighted passages and contextual AI panel" }
+      ]
+    }
   }
 ]
 

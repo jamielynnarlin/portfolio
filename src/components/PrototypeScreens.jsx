@@ -3399,3 +3399,523 @@ export function EDiscoveryApp({ currentScreen = 0, onScreenChange, showHotspots 
     </div>
   )
 }
+
+// ===== Investigation Platform App =====
+export function InvestigationApp({ currentScreen = 0, onScreenChange }) {
+  const screenIds = ['search', 'results', 'verify']
+  const [selectedDoc, setSelectedDoc] = useState(0)
+  const [showDetail, setShowDetail] = useState(false)
+  const [showContext, setShowContext] = useState(true)
+
+  const currentView = screenIds[currentScreen] || 'search'
+
+  const handleNavigate = (view) => {
+    const index = screenIds.indexOf(view)
+    if (index !== -1 && onScreenChange) {
+      onScreenChange(index)
+    }
+  }
+
+  const documents = [
+    { id: 0, title: 'Q4 Revenue Memo', type: 'Email', date: 'Dec 15', relevancy: 98, source: 'CFO → CEO' },
+    { id: 1, title: 'Policy Update Draft', type: 'Document', date: 'Nov 28', relevancy: 94, source: 'Finance' },
+    { id: 2, title: 'Board Minutes Q4', type: 'Minutes', date: 'Dec 1', relevancy: 91, source: 'Board' },
+    { id: 3, title: 'Audit Committee Notes', type: 'Minutes', date: 'Dec 8', relevancy: 88, source: 'Audit' },
+    { id: 4, title: 'CFO Budget Review', type: 'Slides', date: 'Nov 15', relevancy: 84, source: 'Finance' },
+  ]
+
+  return (
+    <div className="h-full flex flex-col bg-slate-950 text-white">
+      {/* Top Navigation Bar */}
+      <div className="px-4 py-2 border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-sm flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-6 h-6 bg-gradient-to-br from-amber-400 to-amber-600 rounded flex items-center justify-center">
+            <svg className="w-3.5 h-3.5 text-slate-900" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+            </svg>
+          </div>
+          <span className="text-xs font-semibold text-white">Investigate.ai</span>
+          <span className="text-[10px] text-slate-500 ml-2">SEC Investigation · 42,847 docs</span>
+        </div>
+        <div className="flex items-center gap-1">
+          {screenIds.map((sid, i) => (
+            <button
+              key={sid}
+              onClick={() => handleNavigate(sid)}
+              className={`px-2.5 py-1 rounded text-[10px] font-medium transition-all ${
+                currentView === sid 
+                  ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' 
+                  : 'text-slate-400 hover:text-white hover:bg-slate-800'
+              }`}
+            >
+              {sid === 'search' ? 'Search' : sid === 'results' ? 'Results' : 'Verify'}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Screen Content */}
+      <div className="flex-1 min-h-0">
+        {currentView === 'search' && (
+          <InvestigationSearchScreen onSearch={() => handleNavigate('results')} />
+        )}
+        {currentView === 'results' && (
+          <InvestigationResultsScreen 
+            documents={documents}
+            selectedDoc={selectedDoc}
+            setSelectedDoc={setSelectedDoc}
+            showDetail={showDetail}
+            setShowDetail={setShowDetail}
+            onViewSource={() => handleNavigate('verify')}
+          />
+        )}
+        {currentView === 'verify' && (
+          <InvestigationVerifyScreen 
+            showContext={showContext}
+            setShowContext={setShowContext}
+          />
+        )}
+      </div>
+    </div>
+  )
+}
+
+// Investigation Search Screen (interactive version)
+function InvestigationSearchScreen({ onSearch }) {
+  return (
+    <div className="flex h-full">
+      {/* Left Sidebar */}
+      <div className="w-48 bg-slate-900 border-r border-slate-800 flex flex-col">
+        <div className="flex-1 py-3 px-2 space-y-0.5">
+          <button className="w-full flex items-center gap-2 px-2.5 py-2 bg-amber-500/20 text-amber-400 rounded-lg text-[11px] font-medium">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            AI Search
+          </button>
+          <button className="w-full flex items-center gap-2 px-2.5 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg text-[11px]">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+            </svg>
+            Documents
+          </button>
+          <button className="w-full flex items-center gap-2 px-2.5 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg text-[11px]">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
+            </svg>
+            Saved
+          </button>
+          <button className="w-full flex items-center gap-2 px-2.5 py-2 text-slate-400 hover:text-white hover:bg-slate-800 rounded-lg text-[11px]">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Reports
+          </button>
+        </div>
+        <div className="p-2 border-t border-slate-800">
+          <div className="bg-slate-800/50 rounded-lg p-2">
+            <span className="px-1.5 py-0.5 bg-amber-500/20 text-amber-400 text-[9px] font-bold rounded">ACTIVE</span>
+            <p className="text-[10px] font-medium text-white mt-1">SEC Investigation</p>
+            <p className="text-[9px] text-slate-500">42,847 documents</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content - Empty State */}
+      <div className="flex-1 flex flex-col">
+        <div className="px-5 py-3 border-b border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 bg-slate-800 rounded-lg p-3 flex items-center gap-2">
+              <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <span className="text-[11px] text-slate-500 italic">Ask a question in plain English...</span>
+            </div>
+            <button className="px-3 py-2.5 bg-slate-700 text-slate-500 rounded-lg text-[10px] font-medium cursor-not-allowed">Search</button>
+          </div>
+        </div>
+
+        <div className="flex-1 flex flex-col items-center justify-center px-6">
+          <div className="w-14 h-14 bg-gradient-to-br from-amber-500/10 to-amber-600/10 border border-amber-500/20 rounded-xl flex items-center justify-center mb-4 relative">
+            <svg className="w-7 h-7 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
+            </svg>
+          </div>
+          
+          <h2 className="text-sm font-bold text-white mb-1">AI Powered Document Search</h2>
+          <p className="text-[10px] text-slate-400 text-center max-w-xs mb-4">
+            Ask questions in plain English. AI will find relevant documents and summarize findings.
+          </p>
+
+          <div className="w-full max-w-sm space-y-1.5">
+            <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-2">Try asking:</p>
+            <button onClick={onSearch} className="w-full text-left px-3 py-2 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 rounded-lg text-[10px] text-slate-300 transition-colors">
+              "Show communications about revenue recognition in Q4"
+            </button>
+            <button onClick={onSearch} className="w-full text-left px-3 py-2 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 rounded-lg text-[10px] text-slate-300 transition-colors">
+              "Find emails between executives regarding contract timing"
+            </button>
+            <button onClick={onSearch} className="w-full text-left px-3 py-2 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 rounded-lg text-[10px] text-slate-300 transition-colors">
+              "Which documents mention audit concerns?"
+            </button>
+          </div>
+        </div>
+
+        <div className="px-5 py-2 border-t border-slate-800 flex items-center justify-between text-[9px] text-slate-500">
+          <span>42,847 documents indexed</span>
+          <span>Last updated: 2 hours ago</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Investigation Results Screen (interactive version)
+function InvestigationResultsScreen({ documents, selectedDoc, setSelectedDoc, showDetail, setShowDetail, onViewSource }) {
+  return (
+    <div className="flex flex-col h-full relative overflow-hidden">
+      {/* Search Bar */}
+      <div className="px-4 py-2.5 border-b border-slate-800/80 bg-slate-900/60">
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-1 bg-slate-800/80 rounded-lg px-3 py-1.5 border border-slate-700/50">
+            <svg className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <span className="text-[10px] text-slate-200">"Show communications about revenue recognition in Q4"</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="px-1.5 py-0.5 bg-amber-500/15 text-amber-300 text-[9px] font-medium rounded border border-amber-500/20">revenue</span>
+            <span className="px-1.5 py-0.5 bg-amber-500/15 text-amber-300 text-[9px] font-medium rounded border border-amber-500/20">Q4</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex min-h-0">
+        {/* Left: Results List */}
+        <div className="w-[220px] border-r border-slate-800/60 flex flex-col bg-slate-900/40">
+          <div className="px-2.5 py-2 border-b border-slate-800/60 flex items-center justify-between">
+            <span className="text-[10px] font-semibold text-white">847 results</span>
+            <span className="text-[9px] text-slate-500">by relevance</span>
+          </div>
+          <div className="flex-1 p-1.5 space-y-0.5">
+            {documents.map((doc) => (
+              <div 
+                key={doc.id}
+                onClick={() => { setSelectedDoc(doc.id); setShowDetail(false) }}
+                className={`rounded-md px-2.5 py-1.5 cursor-pointer transition-all ${
+                  selectedDoc === doc.id 
+                    ? 'bg-slate-800 border border-slate-700' 
+                    : 'hover:bg-slate-800/50 border border-transparent'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <h4 className="text-[10px] font-medium text-white truncate">{doc.title}</h4>
+                  <span className={`text-[9px] font-bold ml-1.5 ${doc.relevancy >= 90 ? 'text-emerald-400' : 'text-amber-400'}`}>{doc.relevancy}%</span>
+                </div>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="text-[9px] text-slate-500">{doc.type}</span>
+                  <span className="text-[9px] text-slate-600">·</span>
+                  <span className="text-[9px] text-slate-500">{doc.date}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Right: AI Summary */}
+        <div className="flex-1 flex flex-col min-w-0">
+          <div className="px-4 py-2 border-b border-slate-800/60 flex items-center gap-2">
+            <div className="w-4 h-4 bg-gradient-to-br from-violet-500 to-indigo-500 rounded flex items-center justify-center">
+              <svg className="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L13.09 8.26L19 7L14.74 11.27L21 12L14.74 12.73L19 17L13.09 15.74L12 22L10.91 15.74L5 17L9.26 12.73L3 12L9.26 11.27L5 7L10.91 8.26L12 2Z" />
+              </svg>
+            </div>
+            <span className="text-[10px] font-semibold text-slate-200">AI Analysis</span>
+            <span className="text-[9px] text-slate-500 ml-auto">4 citations</span>
+          </div>
+
+          <div className="flex-1 p-4 flex flex-col gap-2.5">
+            <div className="bg-slate-800/40 rounded-lg p-2.5 border border-slate-700/40">
+              <p className="text-[10px] text-slate-300 leading-relaxed">
+                Analysis of <span className="text-amber-400 font-medium">847 documents</span> reveals coordinated executive discussions about revenue recognition.
+              </p>
+            </div>
+
+            <div className="flex-1 space-y-2">
+              <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-slate-800/20 border border-slate-800/60 hover:border-slate-700/80 transition-colors">
+                <div className="w-4 h-4 rounded bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[8px] font-bold text-violet-400">1</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-[10px] font-semibold text-white mb-0.5">Revenue Acceleration Request</h4>
+                  <p className="text-[9px] text-slate-400 leading-relaxed">CFO requested acceleration citing "competitive pressure"</p>
+                </div>
+                <button onClick={() => setShowDetail(true)} className="px-1.5 py-0.5 text-[8px] font-medium text-violet-300 bg-violet-500/10 border border-violet-500/20 rounded hover:bg-violet-500/20 transition-colors flex-shrink-0">
+                  View →
+                </button>
+              </div>
+
+              <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-slate-800/20 border border-slate-800/60">
+                <div className="w-4 h-4 rounded bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[8px] font-bold text-violet-400">2</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-[10px] font-semibold text-white mb-0.5">Board Approval</h4>
+                  <p className="text-[9px] text-slate-400 leading-relaxed">Modified criteria approved Dec 1 with CEO signature</p>
+                </div>
+                <button className="px-1.5 py-0.5 text-[8px] font-medium text-slate-400 bg-slate-800/50 border border-slate-700/50 rounded flex-shrink-0">
+                  View →
+                </button>
+              </div>
+
+              <div className="flex items-start gap-2.5 p-2.5 rounded-lg bg-slate-800/20 border border-slate-800/60">
+                <div className="w-4 h-4 rounded bg-violet-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <span className="text-[8px] font-bold text-violet-400">3</span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="text-[10px] font-semibold text-white mb-0.5">Internal Concerns</h4>
+                  <p className="text-[9px] text-slate-400 leading-relaxed">Controller: "may not align with GAAP guidance"</p>
+                </div>
+                <button className="px-1.5 py-0.5 text-[8px] font-medium text-slate-400 bg-slate-800/50 border border-slate-700/50 rounded flex-shrink-0">
+                  View →
+                </button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-slate-800/60">
+              <span className="text-[9px] text-slate-500">4 citations · 847 docs</span>
+              <button onClick={onViewSource} className="px-2.5 py-1 bg-amber-500 text-slate-900 rounded text-[9px] font-semibold">Verify Sources</button>
+            </div>
+          </div>
+        </div>
+
+        {/* Slide-out Source Panel */}
+        <div className={`absolute top-[33px] right-0 bottom-0 w-[280px] bg-slate-900 border-l border-slate-700/80 flex flex-col shadow-2xl transition-transform duration-300 ${showDetail ? 'translate-x-0' : 'translate-x-full'}`}>
+          <div className="px-3 py-2 border-b border-slate-800 flex items-center justify-between">
+            <div className="flex items-center gap-1.5">
+              <div className="w-4 h-4 bg-violet-500 rounded flex items-center justify-center">
+                <span className="text-[8px] font-bold text-white">1</span>
+              </div>
+              <span className="text-[10px] font-semibold text-white">Source Document</span>
+            </div>
+            <button onClick={() => setShowDetail(false)} className="w-5 h-5 rounded bg-slate-800 flex items-center justify-center hover:bg-slate-700">
+              <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <div className="flex-1 p-3 space-y-2">
+            <div className="bg-slate-800/60 rounded-lg p-2.5">
+              <h4 className="text-[10px] font-semibold text-white">Q4 Revenue Memo</h4>
+              <p className="text-[9px] text-slate-400 mt-0.5">Email · Dec 15 · J. Roberts → M. Chen</p>
+              <span className="inline-block mt-1 px-1.5 py-0.5 bg-emerald-500/20 text-emerald-300 text-[9px] font-medium rounded">98% relevant</span>
+            </div>
+            <div className="bg-slate-800/30 rounded-lg p-2.5 border border-slate-700/40">
+              <p className="text-[9px] text-slate-300 leading-relaxed">
+                "...<span className="bg-amber-500/25 text-amber-200 px-0.5 rounded">I believe we should accelerate the recognition of revenue for this contract into Q4</span>..."
+              </p>
+            </div>
+            <div className="bg-slate-800/30 rounded-lg p-2.5 border border-slate-700/40">
+              <p className="text-[9px] text-slate-300 leading-relaxed">
+                "<span className="bg-amber-500/25 text-amber-200 px-0.5 rounded">Given the competitive pressure and analyst expectations...</span>"
+              </p>
+            </div>
+            <div className="bg-violet-500/10 border border-violet-500/20 rounded-lg p-2.5">
+              <p className="text-[9px] text-violet-300 font-medium mb-0.5">AI Confidence: High</p>
+              <p className="text-[9px] text-slate-400">Direct evidence of revenue timing request.</p>
+            </div>
+          </div>
+          <div className="px-3 py-2 border-t border-slate-800 flex items-center gap-2">
+            <button onClick={onViewSource} className="flex-1 px-2 py-1 bg-emerald-500/20 text-emerald-300 rounded text-[9px] font-semibold">Open Full Doc</button>
+            <button className="flex-1 px-2 py-1 bg-rose-500/20 text-rose-300 rounded text-[9px] font-semibold">Flag</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Investigation Verify Screen (interactive version)
+function InvestigationVerifyScreen({ showContext, setShowContext }) {
+  return (
+    <div className="flex h-full relative overflow-hidden">
+      {/* Main Document View */}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* Document Header */}
+        <div className="px-4 py-2.5 border-b border-slate-800/80 bg-slate-900/60 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <button className="w-6 h-6 bg-slate-800 rounded flex items-center justify-center hover:bg-slate-700">
+              <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <div>
+              <h2 className="text-[11px] font-semibold text-white">Q4 Revenue Memo - CFO Review</h2>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="text-[9px] text-slate-500">Email · Dec 15, 2024</span>
+                <span className="px-1.5 py-0.5 bg-emerald-500/15 text-emerald-300 text-[9px] font-medium rounded border border-emerald-500/20">98%</span>
+              </div>
+            </div>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <button 
+              onClick={() => setShowContext(!showContext)}
+              className={`px-2 py-1 rounded text-[9px] font-medium transition-all flex items-center gap-1 ${
+                showContext ? 'bg-violet-500/20 text-violet-300 border border-violet-500/30' : 'bg-slate-800 text-slate-400 border border-slate-700'
+              }`}
+            >
+              Context
+            </button>
+            <button className="px-2 py-1 bg-amber-500 text-slate-900 rounded text-[9px] font-semibold">Add to Report</button>
+          </div>
+        </div>
+
+        {/* Email Metadata */}
+        <div className="px-4 py-2 border-b border-slate-800/50 bg-slate-900/30">
+          <div className="flex items-center gap-4 text-[9px]">
+            <div><span className="text-slate-500">From</span> <span className="text-white ml-1">James Roberts (CFO)</span></div>
+            <div><span className="text-slate-500">To</span> <span className="text-white ml-1">Michael Chen (CEO)</span></div>
+            <div><span className="text-slate-500">Subject</span> <span className="text-white ml-1">RE: Q4 Revenue Recognition</span></div>
+          </div>
+        </div>
+
+        {/* Document Body */}
+        <div className="flex-1 p-4">
+          <div className="max-w-xl space-y-3 text-[10px] text-slate-300 leading-relaxed">
+            <p>Michael,</p>
+            <p>Following up on our discussion yesterday regarding the Acme Technologies contract.</p>
+            <p>
+              After reviewing the terms, <span className="bg-amber-500/25 text-amber-100 px-0.5 py-0.5 rounded border-b border-amber-500/50">I believe we should accelerate the recognition of revenue for this contract into Q4</span>. The deliverables are substantially complete.
+            </p>
+            <p>
+              <span className="bg-amber-500/25 text-amber-100 px-0.5 py-0.5 rounded border-b border-amber-500/50">Given the competitive pressure and analyst expectations for the quarter, this timing adjustment would be beneficial.</span>
+            </p>
+            <p>The contract value is $2.4M. Under our current policy, we would normally recognize this in Q1 upon formal acceptance.</p>
+            <p>Please advise before the board meeting on the 18th.</p>
+            <p className="text-slate-500">Best, James</p>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div className="px-4 py-2 border-t border-slate-800/60 bg-slate-900/40 flex items-center justify-between">
+          <div className="flex items-center gap-1.5">
+            <button className="px-2 py-1 bg-emerald-500/15 text-emerald-300 rounded text-[9px] font-semibold border border-emerald-500/20 flex items-center gap-1">
+              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+              Confirm
+            </button>
+            <button className="px-2 py-1 bg-rose-500/15 text-rose-300 rounded text-[9px] font-semibold border border-rose-500/20 flex items-center gap-1">
+              <svg className="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01" />
+              </svg>
+              Flag
+            </button>
+          </div>
+          <div className="flex items-center gap-2 text-[9px] text-slate-500">
+            <span>Source 1 of 3</span>
+            <div className="flex items-center gap-0.5">
+              <div className="w-3.5 h-3.5 bg-slate-800 rounded flex items-center justify-center cursor-pointer hover:bg-slate-700">
+                <svg className="w-2 h-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                </svg>
+              </div>
+              <div className="w-3.5 h-3.5 bg-slate-800 rounded flex items-center justify-center cursor-pointer hover:bg-slate-700">
+                <svg className="w-2 h-2 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Slide-out Context Panel */}
+      <div className={`absolute top-0 right-0 bottom-0 w-[230px] bg-slate-900 border-l border-slate-700/80 flex flex-col shadow-2xl transition-transform duration-300 ${showContext ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className="px-3 py-2 border-b border-slate-800 flex items-center justify-between">
+          <span className="text-[10px] font-semibold text-white">AI Context</span>
+          <button onClick={() => setShowContext(false)} className="w-4 h-4 rounded bg-slate-800 flex items-center justify-center hover:bg-slate-700">
+            <svg className="w-2.5 h-2.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div className="flex-1 p-3 space-y-3">
+          <div className="bg-violet-500/10 border border-violet-500/20 rounded-lg p-2.5">
+            <p className="text-[9px] font-semibold text-violet-300 mb-1">Why AI Cited This</p>
+            <p className="text-[9px] text-slate-300 leading-relaxed">
+              Directly supports Finding #1: "CFO requested acceleration of Q4 revenue recognition."
+            </p>
+          </div>
+
+          <div>
+            <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-1.5 font-medium">Entities</p>
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-800/50 rounded">
+                <div className="w-3 h-3 bg-amber-500/20 rounded flex items-center justify-center">
+                  <svg className="w-2 h-2 text-amber-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                  </svg>
+                </div>
+                <span className="text-[9px] text-slate-300">James Roberts (CFO)</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-800/50 rounded">
+                <div className="w-3 h-3 bg-indigo-500/20 rounded flex items-center justify-center">
+                  <svg className="w-2 h-2 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                  </svg>
+                </div>
+                <span className="text-[9px] text-slate-300">Michael Chen (CEO)</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-800/50 rounded">
+                <div className="w-3 h-3 bg-emerald-500/20 rounded flex items-center justify-center">
+                  <svg className="w-2 h-2 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/>
+                  </svg>
+                </div>
+                <span className="text-[9px] text-slate-300">Acme Technologies</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-1.5 font-medium">Other Sources</p>
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-800/50 rounded cursor-pointer hover:bg-slate-800">
+                <div className="w-3 h-3 bg-slate-700 rounded flex items-center justify-center">
+                  <span className="text-[7px] font-bold text-slate-300">2</span>
+                </div>
+                <span className="text-[9px] text-slate-300">Board Minutes · 91%</span>
+              </div>
+              <div className="flex items-center gap-1.5 px-2 py-1 bg-slate-800/50 rounded cursor-pointer hover:bg-slate-800">
+                <div className="w-3 h-3 bg-slate-700 rounded flex items-center justify-center">
+                  <span className="text-[7px] font-bold text-slate-300">3</span>
+                </div>
+                <span className="text-[9px] text-slate-300">Controller Memo · 88%</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <p className="text-[9px] text-slate-500 uppercase tracking-wide mb-1.5 font-medium">Thread</p>
+            <div className="space-y-1 pl-1.5 border-l border-slate-800">
+              <div className="flex items-center gap-1.5">
+                <div className="w-1 h-1 bg-slate-600 rounded-full -ml-[7px]" />
+                <span className="text-[8px] text-slate-500">Dec 14 - Initial</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-1 h-1 bg-violet-500 rounded-full -ml-[7px]" />
+                <span className="text-[8px] text-violet-300">Dec 15 - This email</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <div className="w-1 h-1 bg-slate-600 rounded-full -ml-[7px]" />
+                <span className="text-[8px] text-slate-500">Dec 16 - CEO reply</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
