@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import ProjectCard from '../components/ProjectCard'
 import BlogCard from '../components/BlogCard'
 import ParticleField from '../components/ParticleField'
+import { TextReveal, LineReveal } from '../components/TextReveal'
 import { mvpProjects } from '../data/projects'
 import { blogPosts } from '../data/blogPosts'
 
@@ -206,26 +207,34 @@ function Home() {
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="w-full">
-            <p className="text-gray-600 dark:text-gray-400 mb-4 tracking-wide">
-              Jamie Arlin is a Delivery Lead & UX Leader driving AI-enabled software delivery
-            </p>
-            <h1 className="font-display text-5xl md:text-7xl lg:text-8xl text-navy-900 dark:text-white mb-8 uppercase tracking-wide leading-tight">
-              I transform teams with AI to shape human experiences.
-            </h1>
-            <div className="flex flex-wrap gap-4 mt-8">
-              <Link to="/projects" className="btn-primary">
-                View My Work
-              </Link>
-              <Link to="/resume" className="btn-secondary">
-                View Resume
-              </Link>
-            </div>
+            <LineReveal>
+              <p className="text-gray-600 dark:text-gray-400 mb-4 tracking-wide">
+                Jamie Arlin is a Delivery Lead & UX Leader driving AI-enabled software delivery
+              </p>
+            </LineReveal>
+            <TextReveal
+              text="I transform teams with AI to shape human experiences."
+              as="h1"
+              className="font-display text-5xl md:text-7xl lg:text-8xl text-navy-900 dark:text-white mb-8 uppercase tracking-wide leading-tight"
+              delay={0.2}
+              staggerDelay={0.05}
+            />
+            <LineReveal delay={0.8}>
+              <div className="flex flex-wrap gap-4 mt-8">
+                <Link to="/projects" className="btn-primary">
+                  View My Work
+                </Link>
+                <Link to="/resume" className="btn-secondary">
+                  View Resume
+                </Link>
+              </div>
+            </LineReveal>
           </div>
         </div>
       </section>
 
       {/* Skills Section */}
-      <section className="py-20 px-4 border-t border-gray-200 dark:border-gray-700">
+      <section data-section="skills" className="py-20 px-4 border-t border-gray-200 dark:border-gray-700">
         <div className="max-w-7xl mx-auto">
           <div className="grid md:grid-cols-3 gap-12">
             {skills.map((skill, index) => (
@@ -246,16 +255,20 @@ function Home() {
       </section>
 
       {/* Featured Projects */}
-      <section className="py-20 px-4 bg-gray-50 dark:bg-gray-800/50">
+      <section data-section="projects" className="py-20 px-4 bg-gray-50 dark:bg-gray-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-end mb-12">
             <div>
-              <h2 className="font-display text-4xl md:text-5xl text-navy-900 dark:text-white uppercase tracking-wide">
-                Featured Work
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mt-2">
-                Selected projects showcasing AI integration, delivery leadership, and UX strategy
-              </p>
+              <TextReveal
+                text="Featured Work"
+                as="h2"
+                className="font-display text-4xl md:text-5xl text-navy-900 dark:text-white uppercase tracking-wide"
+              />
+              <LineReveal delay={0.2}>
+                <p className="text-gray-600 dark:text-gray-400 mt-2">
+                  Selected projects showcasing AI integration, delivery leadership, and UX strategy
+                </p>
+              </LineReveal>
             </div>
             <Link to="/projects" className="text-primary-600 dark:text-primary-400 hover:underline font-medium hidden md:block">
               View All Projects →
@@ -273,12 +286,14 @@ function Home() {
       </section>
 
       {/* AI Focus Section */}
-      <section className="py-20 px-4">
+      <section data-section="ai-focus" className="py-20 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-4xl mx-auto">
-            <h2 className="font-display text-4xl md:text-5xl text-navy-900 dark:text-white mb-6 uppercase tracking-wide text-center">
-              AI-Powered Delivery
-            </h2>
+            <TextReveal
+              text="AI-Powered Delivery"
+              as="h2"
+              className="font-display text-4xl md:text-5xl text-navy-900 dark:text-white mb-6 uppercase tracking-wide text-center"
+            />
             <div className="max-w-2xl mx-auto">
               <p className="text-gray-600 dark:text-gray-300 mb-4 text-lg leading-relaxed text-center">
                 I'm passionate about leveraging AI agents and automation to transform how teams build software. From intelligent code review to automated testing pipelines, I help organizations adopt AI tools that amplify human creativity.
@@ -360,9 +375,11 @@ function Home() {
       <section className="py-20 px-4 bg-gray-50 dark:bg-gray-800/50">
         <div className="max-w-7xl mx-auto">
           <div className="mb-12">
-            <h2 className="font-display text-4xl md:text-5xl text-navy-900 dark:text-white uppercase tracking-wide">
-              Insights
-            </h2>
+            <TextReveal
+              text="Insights"
+              as="h2"
+              className="font-display text-4xl md:text-5xl text-navy-900 dark:text-white uppercase tracking-wide"
+            />
             <p className="text-gray-600 dark:text-gray-400 mt-2">
               Thoughts on AI, leadership, and building great products
             </p>
@@ -379,9 +396,11 @@ function Home() {
       <section className="py-20 px-4 relative overflow-hidden">
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-teal-100 via-cyan-50 to-primary-100 dark:from-teal-900/30 dark:via-gray-900 dark:to-primary-900/30" />
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="font-display text-4xl md:text-5xl text-navy-900 dark:text-white mb-4 uppercase tracking-wide">
-            Let's Build Something Great
-          </h2>
+          <TextReveal
+            text="Let's Build Something Great"
+            as="h2"
+            className="font-display text-4xl md:text-5xl text-navy-900 dark:text-white mb-4 uppercase tracking-wide"
+          />
           <p className="text-gray-600 dark:text-gray-300 mb-8 text-lg">
             Looking for a leader who can bridge AI, design, and delivery? Let's talk about how I can help your team ship better products faster.
           </p>

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>LinkedIn Post Preview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f4f2ee; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; justify-content: center; padding: 40px 16px; }
+  .feed { width: 100%; max-width: 555px; }
+  .post { background: #fff; border: 1px solid #e0dfdc; border-radius: 8px; overflow: hidden; }
+  .post-header { display: flex; align-items: flex-start; padding: 12px 16px 8px; }
+  .avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #0a66c2, #004182); display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 18px; flex-shrink: 0; }
+  .header-info { margin-left: 8px; flex: 1; }
+  .header-name { font-weight: 600; font-size: 14px; color: rgba(0,0,0,0.9); }
+  .header-title { font-size: 12px; color: rgba(0,0,0,0.6); line-height: 1.3; }
+  .header-time { font-size: 12px; color: rgba(0,0,0,0.6); margin-top: 2px; }
+  .post-body { padding: 0 16px 12px; font-size: 14px; color: rgba(0,0,0,0.9); line-height: 1.5; white-space: pre-wrap; }
+  .post-body a { color: #0a66c2; text-decoration: none; }
+  .post-image { width: 100%; display: block; }
+  .post-stats { padding: 8px 16px; display: flex; align-items: center; font-size: 12px; color: rgba(0,0,0,0.6); border-bottom: 1px solid #e0dfdc; }
+  .post-stats span { margin-right: 4px; }
+  .post-actions { display: flex; padding: 4px 8px; }
+  .action-btn { flex: 1; display: flex; align-items: center; justify-content: center; gap: 4px; padding: 12px 8px; border: none; background: none; font-size: 14px; font-weight: 600; color: rgba(0,0,0,0.6); border-radius: 4px; cursor: pointer; }
+  .action-btn:hover { background: rgba(0,0,0,0.08); }
+  .action-btn svg { width: 24px; height: 24px; fill: currentColor; }
+</style>
+</head>
+<body>
+<div class="feed">
+  <div class="post">
+    <div class="post-header">
+      <div class="avatar">JA</div>
+      <div class="header-info">
+        <div class="header-name">Jamie Arlin</div>
+        <div class="header-title">Delivery Lead & UX Leader | Leveraging AI to improve software delivery</div>
+        <div class="header-time">Just now - <svg style="width:12px;height:12px;vertical-align:middle;fill:rgba(0,0,0,0.6)" viewBox="0 0 16 16"><path d="M8 1a7 7 0 107 7A7 7 0 008 1zM3 8a5 5 0 015-5 4.94 4.94 0 012.88.93L4.93 10.88A4.94 4.94 0 013 8zm5 5a4.94 4.94 0 01-2.88-.93l6.95-6.95A4.94 4.94 0 0113 8a5 5 0 01-5 5z"/></svg></div>
+      </div>
+    </div>
+    <div class="post-body">I added a chatbot to my portfolio - and it changed how I think about portfolio design.
+
+Instead of hoping someone clicks the right page at the right time, visitors can now ask questions and get answers instantly:
+
+"What's your experience with design systems?"
+"Tell me about the DesignOps project."
+"What tools do you use?"
+
+It pulls from my real project data, case studies, and background - no generic responses. It turns a static portfolio into an interactive conversation.
+
+For anyone building a portfolio right now: think about how people actually want to consume your information. Sometimes the best UX improvement is removing the navigation entirely.
+
+<a href="https://jamie-arlin-portfolio-npilnrnspa-uc.a.run.app">Try it out here</a>
+
+#UX #AI #PortfolioDesign #Chatbot #SoftwareDelivery</div>
+    <img class="post-image" src="linkedin-chatbot-animated.gif" alt="Animated chatbot graphic">
+    <div class="post-stats">
+      <span>👍</span><span>❤️</span><span>💡</span> 24
+    </div>
+    <div class="post-actions">
+      <button class="action-btn"><svg viewBox="0 0 24 24"><path d="M19.46 11l-3.91-3.91a7 7 0 01-1.69-2.74l-.49-1.47A2.76 2.76 0 0010.76 1 2.75 2.75 0 008 3.74v1.12a9.19 9.19 0 00.46 2.85L8.89 9H4.12A2.12 2.12 0 002 11.12a2.16 2.16 0 00.92 1.76A2.11 2.11 0 002 14.62a2.14 2.14 0 001.28 2 2 2 0 00-.28 1 2.12 2.12 0 002 2.12v.14A2.12 2.12 0 007.12 22h7.49a8.08 8.08 0 003.58-.84l.31-.16H21V11zM19.5 19.61h-.85l-.71.36A6.09 6.09 0 0114.61 21H7.12a.62.62 0 01-.62-.62v-.14h.47a.75.75 0 000-1.5H5a.62.62 0 01-.62-.62.63.63 0 01.62-.63h1.44a.75.75 0 000-1.5H4.81a.62.62 0 01-.56-1 .76.76 0 00.56-.25H7a.75.75 0 000-1.5H4.12a.62.62 0 01-.62-.62A.63.63 0 014.12 10.5h5.66l-1-2.9A7.67 7.67 0 018.5 4.86V3.74A1.25 1.25 0 0110.76 2.5a1.27 1.27 0 011.2.87l.49 1.47a8.48 8.48 0 002.06 3.35l3.91 3.91h1.08z"/></svg> Like</button>
+      <button class="action-btn"><svg viewBox="0 0 24 24"><path d="M7 9h10v1.5H7zm0 4h7v1.5H7z"/><path d="M20.5 2h-17A1.5 1.5 0 002 3.5v17A1.5 1.5 0 003.5 22h17a1.5 1.5 0 001.5-1.5v-17A1.5 1.5 0 0020.5 2zm0 18.5h-17v-17h17z"/></svg> Comment</button>
+      <button class="action-btn"><svg viewBox="0 0 24 24"><path d="M23.44 12.06l-8.94 8.44a.75.75 0 01-1.25-.56V16h-.5C6 16 2 11.37 2 6.18A11.49 11.49 0 012.64 3.5a.49.49 0 01.88-.11C5.59 6.53 9.21 8.5 13.25 8.5h.5V4.56a.75.75 0 011.25-.56l8.44 7.5a.76.76 0 010 .56z"/></svg> Repost</button>
+      <button class="action-btn"><svg viewBox="0 0 24 24"><path d="M21 3L0 10l7.66 4.26L20 6 11.74 18.34 16 26l5-23z"/></svg> Send</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>

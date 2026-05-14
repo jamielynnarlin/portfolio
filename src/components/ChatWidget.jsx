@@ -1,9 +1,52 @@
 import { useState, useRef, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTheme } from '../context/ThemeContext'
 
 const API_URL = import.meta.env.VITE_API_URL || ''
+
+// Context-aware welcome messages and suggestions based on which page the user opens the chat from
+const PAGE_CONTEXT = [
+  { route: '/projects/mobile-task-tracker', prefix: false, welcome: "I see you're checking out the AI Powered Development Workflow project. Want me to walk you through the details?", suggestions: ['How was AI used in the development workflow?', 'What was the impact of the AI workflow?', 'Show me other projects'] },
+  { route: '/projects/enterprise-designops-transformation', prefix: false, welcome: "I see you're looking at the DesignOps Transformation. Want me to tell you more about how Jamie scaled design operations?", suggestions: ['How did Jamie scale the design teams?', 'What tools were used for DesignOps?', 'Show me other projects'] },
+  { route: '/projects/llm-integration-strategy', prefix: false, welcome: "I see you're viewing the Conversational Document Review project. Want to know how Jamie designed the AI assistant?", suggestions: ['How does the document review AI work?', 'What was the impact of the LLM integration?', 'Show me other projects'] },
+  { route: '/projects/restaurant-portal-redesign', prefix: false, welcome: "I see you're looking at the Restaurant Portal Redesign. Want to know more about how Jamie led this UX transformation?", suggestions: ['What research methods were used for the Restaurant Portal?', 'What were the results of the redesign?', 'Show me other projects'] },
+  { route: '/projects/rewards-network-marketing-website', prefix: false, welcome: "I see you're checking out the Rewards Network Redesign. Want to know how Jamie improved conversion rates?", suggestions: ['How were signups increased for Rewards Network?', 'How did Jamie redesign the Rewards Network site?', 'Show me other projects'] },
+  { route: '/projects/', prefix: true, welcome: "I see you're exploring a project. I can answer any questions about Jamie's work, process, or impact.", suggestions: ['What did Jamie do on this project?', 'What are Jamie\'s top skills?', 'Show me other projects'] },
+  { route: '/projects', prefix: false, welcome: "Browsing Jamie's projects? I can help you find the most relevant ones or answer questions about any of them.", suggestions: ['Which projects use AI?', 'Tell me about the DesignOps project', 'Show me the Restaurant Portal project'] },
+  { route: '/skills', prefix: false, welcome: "Looking at Jamie's skills? I can go deeper into how she applies any of these in real projects.", suggestions: ['How does Jamie use AI in delivery?', 'Tell me about her UX expertise', 'Show me her projects'] },
+  { route: '/resume', prefix: false, welcome: "Reviewing Jamie's resume? I can provide more context about her experience or answer specific questions.", suggestions: ['What\'s her background?', 'Tell me about her leadership experience', 'Show me her projects'] },
+  { route: '/contact', prefix: false, welcome: "Want to get in touch? I can tell you more about Jamie's work so you know exactly what to ask about.", suggestions: ['What are Jamie\'s top skills?', 'Tell me about her projects', 'Where has Jamie worked?'] },
+  { route: '/prototypes', prefix: false, welcome: "Exploring the interactive prototypes? I can walk you through Jamie's design process and thinking.", suggestions: ['Tell me about her design process', 'What tools does she use?', 'Show me her projects'] },
+]
+
+const DEFAULT_WELCOME = "Hi! I'm Jamie's portfolio assistant. Ask me about her skills, projects, or experience."
+const DEFAULT_OPEN_SUGGESTIONS = ['What are Jamie\'s top skills?', 'Show me her projects', 'Tell me about Jamie']
+
+function getPageContext(pathname) {
+  const match = PAGE_CONTEXT.find((p) => {
+    return p.prefix ? pathname.startsWith(p.route) : pathname === p.route
+  })
+  return match || null
+}
+
+// Human-readable page labels for navigation dividers
+function getPageLabel(pathname) {
+  const labels = {
+    '/': 'Welcome',
+    '/projects': 'Projects',
+    '/projects/mobile-task-tracker': 'AI Powered Development Workflow',
+    '/projects/enterprise-designops-transformation': 'DesignOps Transformation',
+    '/projects/llm-integration-strategy': 'Conversational Document Review',
+    '/projects/restaurant-portal-redesign': 'Restaurant Portal Redesign',
+    '/projects/rewards-network-marketing-website': 'Rewards Network Redesign',
+    '/skills': 'Skills',
+    '/resume': 'Resume',
+    '/contact': 'Contact',
+    '/prototypes': 'Prototypes',
+  }
+  return labels[pathname] || pathname.split('/').pop().replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+}
 
 // Map keywords in agent responses to portfolio routes
 const PORTFOLIO_LINKS = [
@@ -21,15 +64,29 @@ const PORTFOLIO_LINKS = [
 const SUGGESTION_RULES = [
   { test: /welcome|hello|hi|greet|portfolio assistant/i, suggestions: ['What are Jamie\'s top skills?', 'Show me her projects', 'Tell me about Jamie'] },
   { test: /AI|automation|LLM|machine learning|agentic/i, suggestions: ['Show me her AI projects', 'What AI tools does she use?', 'How does she apply AI to delivery?'] },
-  { test: /delivery|agile|scrum|program|cross-functional/i, suggestions: ['What\'s her leadership style?', 'Show me delivery projects', 'What about her UX background?'] },
+  { test: /delivery|agile|scrum|program|cross-functional/i, suggestions: ['How many teams has she led?', 'Show me delivery projects', 'What about her UX background?'] },
   { test: /designops|design system|design process/i, suggestions: ['How did she scale design teams?', 'Show me the DesignOps Transformation', 'What tools does she use?'] },
   { test: /UX|user experience|research|usability|design/i, suggestions: ['Show me UX case studies', 'What research methods does she use?', 'Tell me about her AI skills'] },
   { test: /project|case study|portfolio/i, suggestions: ['Which projects use AI?', 'Tell me about the DesignOps project', 'Tell me about her background'] },
   { test: /background|career|experience|history|resume/i, suggestions: ['What are her top skills?', 'Show me her projects', 'How can I contact Jamie?'] },
-  { test: /contact|email|linkedin|phone|connect/i, suggestions: ['Tell me about her experience', 'What are her skills?', 'Show me her projects'] },
+  { test: /contact|email|linkedin|phone|connect/i, suggestions: ['Where has Jamie worked?', 'What are Jamie\'s top skills?', 'Show me her projects'] },
 ]
 
 const DEFAULT_SUGGESTIONS = ['What are Jamie\'s skills?', 'Browse her projects', 'Tell me about her background']
+
+// Suggestion chips that navigate directly instead of sending to the bot
+const SUGGESTION_ROUTES = {
+  'Show me her projects': '/projects',
+  'Show me other projects': '/projects',
+  'Show me her AI projects': '/projects',
+  'Show me delivery projects': '/projects',
+  'Show me UX case studies': '/projects',
+  'Show me the DesignOps Transformation': '/projects/enterprise-designops-transformation',
+  'Show me the Restaurant Portal project': '/projects/restaurant-portal-redesign',
+  'Tell me about her projects': '/projects',
+  'Browse her projects': '/projects',
+  'How can I contact Jamie?': '/contact',
+}
 
 function getSuggestions(text) {
   for (const rule of SUGGESTION_RULES) {
@@ -150,13 +207,34 @@ function PortfolioLinks({ text, onNavigate, darkMode }) {
 function ChatWidget() {
   const { darkMode } = useTheme()
   const navigate = useNavigate()
+  const location = useLocation()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [sessionId, setSessionId] = useState(null)
+  const [openSuggestions, setOpenSuggestions] = useState(null)
+  const prevPathRef = useRef(location.pathname)
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
+
+  // Detect navigation while chat is open and inject a context divider
+  useEffect(() => {
+    if (!isOpen || location.pathname === prevPathRef.current) {
+      prevPathRef.current = location.pathname
+      return
+    }
+    prevPathRef.current = location.pathname
+
+    const label = getPageLabel(location.pathname)
+    const ctx = getPageContext(location.pathname)
+    const botMsg = ctx?.welcome || `I see you're now viewing ${label}. Want to know more?`
+    setMessages((prev) => [
+      ...prev,
+      { role: 'bot', text: botMsg },
+    ])
+    setOpenSuggestions(ctx?.suggestions || DEFAULT_OPEN_SUGGESTIONS)
+  }, [location.pathname, isOpen])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -184,6 +262,14 @@ function ChatWidget() {
   }
 
   const getWelcome = async (sid) => {
+    // Use contextual welcome if available, otherwise fetch from backend
+    const ctx = getPageContext(location.pathname)
+    if (ctx) {
+      setMessages([{ role: 'bot', text: ctx.welcome }])
+      setOpenSuggestions(ctx.suggestions)
+      return
+    }
+
     try {
       const res = await fetch(`${API_URL}/api/chat/welcome`, {
         method: 'POST',
@@ -193,13 +279,9 @@ function ChatWidget() {
       const data = await res.json()
       setMessages([{ role: 'bot', text: data.reply }])
     } catch {
-      setMessages([
-        {
-          role: 'bot',
-          text: "Hi! I'm Jamie's portfolio assistant. Ask me about her skills, projects, or experience.",
-        },
-      ])
+      setMessages([{ role: 'bot', text: DEFAULT_WELCOME }])
     }
+    setOpenSuggestions(DEFAULT_OPEN_SUGGESTIONS)
   }
 
   const handleOpen = async () => {
@@ -209,12 +291,9 @@ function ChatWidget() {
       if (sid) {
         await getWelcome(sid)
       } else {
-        setMessages([
-          {
-            role: 'bot',
-            text: "Hi! I'm Jamie's portfolio assistant. Ask me about her skills, projects, or experience.",
-          },
-        ])
+        const ctx = getPageContext(location.pathname)
+        setMessages([{ role: 'bot', text: ctx?.welcome || DEFAULT_WELCOME }])
+        setOpenSuggestions(ctx?.suggestions || DEFAULT_OPEN_SUGGESTIONS)
       }
     }
   }
@@ -222,6 +301,7 @@ function ChatWidget() {
   const handleNewChat = async () => {
     setMessages([])
     setInput('')
+    setOpenSuggestions(null)
     const sid = await initSession()
     if (sid) {
       await getWelcome(sid)
@@ -232,6 +312,9 @@ function ChatWidget() {
     if (e) e.preventDefault()
     const text = (suggestionText || input).trim()
     if (!text || loading) return
+
+    // Clear one-time open suggestions after first user message
+    setOpenSuggestions(null)
 
     setMessages((prev) => [...prev, { role: 'user', text }])
     if (!suggestionText) setInput('')
@@ -268,7 +351,6 @@ function ChatWidget() {
           whileTap={{ scale: 0.95 }}
           aria-label="Ask me anything"
         >
-          {/* Sparkle / AI icon */}
           <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z" />
             <path d="M20 3v4" /><path d="M22 5h-4" />
@@ -299,7 +381,7 @@ function ChatWidget() {
             <div className="w-2 h-2 rounded-full bg-primary-500 animate-pulse" />
             <span className={`text-xs font-medium tracking-wide uppercase ${
               darkMode ? 'text-gray-400' : 'text-gray-500'
-            }`}>Ask me anything</span>
+            }`}>AI Portfolio Guide</span>
           </div>
           <div className="flex items-center gap-0.5">
             <button
@@ -352,7 +434,7 @@ function ChatWidget() {
               )}
             </div>
           </motion.div>
-        ))}
+          ))}
         {loading && (
           <motion.div
             initial={{ opacity: 0 }}
@@ -384,19 +466,27 @@ function ChatWidget() {
             transition={{ delay: 0.15 }}
             className="flex flex-wrap gap-1.5 pt-1"
           >
-            {getSuggestions(messages[messages.length - 1].text).map((s) => (
+            {(openSuggestions || getSuggestions(messages[messages.length - 1].text)).map((s) => {
+              const navRoute = SUGGESTION_ROUTES[s]
+              return (
               <button
                 key={s}
-                onClick={() => sendMessage(null, s)}
-                className={`px-2.5 py-1 text-xs rounded-full border transition-all duration-200 hover:scale-[1.03] ${
+                onClick={() => navRoute ? navigate(navRoute) : sendMessage(null, s)}
+                className={`px-2.5 py-1 text-xs rounded-full border transition-all duration-200 hover:scale-[1.03] inline-flex items-center gap-1 ${
                   darkMode
                     ? 'border-gray-600 text-gray-300 hover:bg-gray-700 hover:border-primary-500 hover:text-primary-300'
                     : 'border-gray-300 text-gray-600 hover:bg-primary-50 hover:border-primary-400 hover:text-primary-700'
                 }`}
               >
+                {navRoute && (
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                  </svg>
+                )}
                 {s}
               </button>
-            ))}
+              )
+            })}
           </motion.div>
         )}
         <div ref={messagesEndRef} />
