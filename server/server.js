@@ -106,8 +106,13 @@ app.post('/api/chat/welcome', async (req, res) => {
 
 // Serve static frontend in production
 const distPath = path.join(__dirname, '..', 'dist')
-app.use(express.static(distPath))
+app.use('/assets', express.static(path.join(distPath, 'assets'), {
+  maxAge: '1y',
+  immutable: true,
+}))
+app.use(express.static(distPath, { maxAge: 0 }))
 app.get('/{*path}', (req, res) => {
+  res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
   res.sendFile(path.join(distPath, 'index.html'))
 })
 
