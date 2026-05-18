@@ -13,6 +13,7 @@ import About from './pages/About'
 import Contact from './pages/Contact'
 import CaseStudy from './pages/CaseStudy'
 import RestaurantCaseStudy from './pages/RestaurantCaseStudy'
+import DesignOpsCaseStudy from './pages/DesignOpsCaseStudy'
 import Resume from './pages/Resume'
 import Skills from './pages/Skills'
 import ChatWidget from './components/ChatWidget'
@@ -61,6 +62,7 @@ function AnimatedRoutes() {
         <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
         <Route path="/projects" element={<PageWrapper><Projects /></PageWrapper>} />
         <Route path="/projects/restaurant-portal-redesign" element={<PageWrapper><RestaurantCaseStudy /></PageWrapper>} />
+        <Route path="/projects/enterprise-designops-transformation" element={<PageWrapper><DesignOpsCaseStudy /></PageWrapper>} />
         <Route path="/projects/:slug" element={<PageWrapper><CaseStudy /></PageWrapper>} />
         <Route path="/prototypes" element={<PageWrapper><Prototypes /></PageWrapper>} />
         <Route path="/prototypes/:id" element={<PageWrapper><PrototypeView /></PageWrapper>} />
