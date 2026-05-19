@@ -1235,28 +1235,6 @@ export function EmptySearchScreen() {
 
       {/* Main Content - Empty State */}
       <div className="flex-1 flex flex-col">
-        {/* Search Header - Empty Input */}
-        <div className="px-6 py-4 border-b border-slate-800">
-          <div className="flex items-center gap-4">
-            <div className="flex-1 bg-slate-800 rounded-xl p-4 flex items-center gap-3">
-              <div className="w-8 h-8 bg-slate-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <div className="flex-1">
-                <p className="text-sm text-slate-500 italic">Ask a question in plain English...</p>
-              </div>
-            </div>
-            <button className="px-4 py-3 bg-slate-700 text-slate-400 rounded-xl font-semibold text-sm flex items-center gap-2 cursor-not-allowed">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              Search
-            </button>
-          </div>
-        </div>
-
         {/* Empty State Content */}
         <div className="flex-1 flex flex-col items-center justify-center px-8">
           {/* Document Search Icon */}
@@ -1293,9 +1271,23 @@ export function EmptySearchScreen() {
           </div>
         </div>
 
-        {/* Footer with case stats */}
-        <div className="px-6 py-3 border-t border-slate-800 bg-slate-900/30">
-          <div className="flex items-center justify-between text-xs text-slate-500">
+        {/* Chat-style Input at Bottom */}
+        <div className="px-6 py-4 border-t border-slate-800 bg-slate-900/50">
+          <div className="flex items-center gap-3">
+            <div className="flex-1 bg-slate-800 rounded-xl px-4 py-3 flex items-center gap-3 border border-slate-700/50">
+              <svg className="w-5 h-5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <p className="text-sm text-slate-500 italic">Ask a question in plain English...</p>
+            </div>
+            <button className="px-4 py-3 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-xl font-semibold text-sm flex items-center gap-2 transition-colors">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              Search
+            </button>
+          </div>
+          <div className="flex items-center justify-between mt-2 text-xs text-slate-500">
             <span>42,847 documents indexed</span>
             <span>Last updated: 2 hours ago</span>
           </div>

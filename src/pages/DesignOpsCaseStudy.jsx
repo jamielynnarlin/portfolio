@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useInView, useScroll, useMotionValueEvent, useMotionValue, useTransform, animate, AnimatePresence } from 'framer-motion'
-import { Clock, AlertTriangle, XCircle, Hourglass, Link2Off, Split, Brain, Layers, FileText, Sparkles, ArrowRight, Users, Calendar, Workflow, Quote, RefreshCw } from 'lucide-react'
+import { Clock, AlertTriangle, XCircle, Hourglass, Link2Off, Split, Brain, Layers, FileText, Sparkles, ArrowRight, Users, Calendar, Workflow, Quote, RefreshCw, ExternalLink, Eye, CheckCircle2, Palette, Presentation, MessageSquare, Link2, Search, Mic, Zap, ShieldCheck, BarChart3 } from 'lucide-react'
 import { EmptySearchScreen, NLPDocumentSearchScreen, SourceInspectorScreen, InvestigateDocumentScreen } from '../components/StaticScreens'
 import { CodeReviewViewer } from '../components/CodeReviewViewer'
 import { WorkflowDiagram } from '../components/WorkflowDiagram'
@@ -185,18 +185,18 @@ function MCPInteractiveComparison() {
   const pairs = [
     {
       pain: { text: 'Designers work in isolation', detail: 'No shared context between tools' },
-      solution: { text: 'Real components in Figma', detail: 'Agency works with production-ready tokens' },
-      how: 'MCP exposes the live component library to Figma, so designers pull real, current components - not screenshots.',
+      solution: { text: 'Real components in Figma', detail: 'Production-ready tokens' },
+      how: 'MCP exposes the live component library to Figma - designers pull real, current components instead of screenshots.',
     },
     {
       pain: { text: 'Handoffs create delays', detail: '2-3 day turnaround per revision' },
-      solution: { text: 'Prototypes in hours, not days', detail: 'Figma Make generates interactive flows' },
+      solution: { text: 'Prototypes in hours, not days', detail: 'Auto-generated interactive flows' },
       how: 'Figma Make turns static frames into working prototypes that match production behavior - no engineering ticket needed.',
     },
     {
       pain: { text: 'Context lost between tools', detail: 'Specs diverge from implementation' },
-      solution: { text: 'Design tokens auto sync', detail: 'Single source of truth across all tools' },
-      how: 'Tokens flow bidirectionally through MCP. Change a value in Figma; it reaches the codebase. Change it in code; designers see it next refresh.',
+      solution: { text: 'Design tokens auto sync', detail: 'Single source of truth' },
+      how: 'Tokens flow bidirectionally through MCP. Change in Figma or code - both stay in sync.',
     },
   ]
 
@@ -207,12 +207,12 @@ function MCPInteractiveComparison() {
       {/* Column headers (desktop) */}
       <div className="hidden md:grid grid-cols-2 gap-4 mb-4 items-center">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-stone-100 dark:bg-slate-800 flex items-center justify-center">
-            <svg className="w-4 h-4 text-stone-400 dark:text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center">
+            <svg className="w-4 h-4 text-rose-900 dark:text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
             </svg>
           </div>
-          <span className="text-sm font-semibold text-stone-700 dark:text-slate-300 font-serif">Before MCP</span>
+          <span className="text-sm font-semibold text-rose-900 dark:text-rose-300 font-serif">Before MCP</span>
         </div>
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 flex items-center justify-center">
@@ -242,50 +242,29 @@ function MCPInteractiveComparison() {
               tabIndex={0}
               role="button"
               aria-label={`Pain: ${pair.pain.text}. Solution: ${pair.solution.text}`}
-              className="group grid md:grid-cols-2 gap-3 md:gap-4 items-start cursor-pointer focus:outline-none"
+              className="group grid md:grid-cols-2 gap-3 md:gap-4 items-stretch cursor-pointer focus:outline-none"
             >
               {/* PAIN */}
-              <div className={`relative bg-white dark:bg-slate-900/60 border rounded-xl p-4 transition-all ${
+              <div className={`relative border-l-4 rounded-xl p-4 transition-all flex items-center ${
                 isActive
-                  ? 'border-stone-300 dark:border-slate-600 shadow-md'
-                  : 'border-stone-200 dark:border-slate-700/50'
+                  ? 'bg-rose-50/60 dark:bg-rose-900/10 border-l-rose-700 dark:border-l-rose-500 border border-rose-200 dark:border-rose-800/40 shadow-md'
+                  : 'bg-white dark:bg-slate-900/60 border-l-stone-300 dark:border-l-slate-600 border border-stone-200 dark:border-slate-700/50'
               }`}>
-                <div className="flex items-start gap-3">
-                  <span className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 font-bold text-xs transition-colors ${
-                    isActive
-                      ? 'bg-stone-700 dark:bg-slate-600 text-white'
-                      : 'bg-stone-100 dark:bg-slate-800 text-stone-500 dark:text-slate-400'
-                  }`}>
-                    {i + 1}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-stone-800 dark:text-slate-200 font-serif">{pair.pain.text}</p>
-                    <p className="text-xs text-stone-500 dark:text-slate-500 mt-0.5">{pair.pain.detail}</p>
-                  </div>
+                <div className="min-w-0">
+                  <p className={`text-sm font-semibold font-serif transition-colors ${
+                    isActive ? 'text-rose-900 dark:text-rose-300' : 'text-stone-800 dark:text-slate-200'
+                  }`}>{pair.pain.text}</p>
+                  <p className="text-xs text-stone-500 dark:text-slate-500 mt-0.5">{pair.pain.detail}</p>
                 </div>
               </div>
 
               {/* SOLUTION */}
-              <div className={`relative bg-white dark:bg-slate-900/60 border rounded-xl p-4 transition-all ${
+              <div className={`relative border-l-4 rounded-xl p-4 transition-all ${
                 isActive
-                  ? 'border-emerald-300 dark:border-emerald-500/40 shadow-lg shadow-emerald-500/10 ring-1 ring-emerald-200 dark:ring-emerald-500/20'
-                  : 'border-stone-200 dark:border-slate-700/50 opacity-60'
+                  ? 'bg-emerald-50/60 dark:bg-emerald-900/10 border-l-emerald-600 dark:border-l-emerald-400 border border-emerald-200 dark:border-emerald-800/40 shadow-md'
+                  : 'bg-white dark:bg-slate-900/60 border-l-stone-200 dark:border-l-slate-700 border border-stone-200 dark:border-slate-700/50 opacity-60'
               }`}>
-                <div className="flex items-start gap-3">
-                  <motion.span
-                    animate={isActive ? { scale: [1, 1.2, 1] } : { scale: 1 }}
-                    transition={{ duration: 0.4 }}
-                    className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 transition-colors ${
-                      isActive
-                        ? 'bg-emerald-500 dark:bg-emerald-400 text-white'
-                        : 'bg-emerald-100 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                    }`}
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                    </svg>
-                  </motion.span>
-                  <div className="flex-1 min-w-0">
+                <div className="min-w-0">
                     <p className={`text-sm font-semibold font-serif transition-colors ${
                       isActive ? 'text-emerald-700 dark:text-emerald-300' : 'text-stone-700 dark:text-slate-300'
                     }`}>{pair.solution.text}</p>
@@ -294,27 +273,23 @@ function MCPInteractiveComparison() {
                       {isActive && (
                         <motion.div
                           initial={{ opacity: 0, height: 0, marginTop: 0 }}
-                          animate={{ opacity: 1, height: 'auto', marginTop: 10 }}
+                          animate={{ opacity: 1, height: 'auto', marginTop: 8 }}
                           exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                          transition={{ duration: 0.3, ease: 'easeOut' }}
+                          transition={{ duration: 0.25, ease: 'easeOut' }}
                           className="overflow-hidden"
                         >
-                          <p className="text-xs text-stone-600 dark:text-slate-400 leading-relaxed border-l-2 border-emerald-500 dark:border-emerald-400 pl-3 italic">
+                          <p className="text-xs text-emerald-700 dark:text-emerald-300 leading-relaxed border-l-2 border-emerald-500 dark:border-emerald-400 pl-3 italic">
                             {pair.how}
                           </p>
                         </motion.div>
                       )}
                     </AnimatePresence>
-                  </div>
                 </div>
               </div>
             </motion.div>
           )
         })}
       </div>
-
-      {/* Hint */}
-      <p className="text-xs text-stone-400 dark:text-slate-600 mt-4 italic">Hover any row to see how MCP solved it.</p>
     </div>
   )
 }
@@ -351,15 +326,15 @@ function MCPStatCard({ stat, index }) {
       whileHover={{ y: -4 }}
       transition={{ duration: 0.5, delay: index * 0.1 }}
       viewport={{ once: true }}
-      className={`group text-center bg-white dark:bg-slate-900/60 border border-stone-200 dark:border-slate-700/50 rounded-xl py-8 px-4 shadow-sm dark:shadow-none ring-1 ring-transparent ${palette.ring} transition-all`}
+      className={`group text-center bg-white dark:bg-slate-900/60 border border-stone-200 dark:border-slate-700/50 rounded-xl py-3 px-3 shadow-sm dark:shadow-none ring-1 ring-transparent ${palette.ring} transition-all`}
     >
-      <div className="flex justify-center mb-3">
-        <div className={`w-12 h-12 rounded-xl ${palette.bg} flex items-center justify-center`}>
-          <Icon className={`w-6 h-6 ${palette.icon}`} strokeWidth={2} />
+      <div className="flex justify-center mb-1.5">
+        <div className={`w-8 h-8 rounded-lg ${palette.bg} flex items-center justify-center`}>
+          <Icon className={`w-4 h-4 ${palette.icon}`} strokeWidth={2} />
         </div>
       </div>
-      <motion.p className="text-4xl font-bold text-gray-900 dark:text-white font-serif">{rounded}</motion.p>
-      <p className="text-sm text-stone-600 dark:text-slate-400 mt-1">{stat.label}</p>
+      <motion.p className="text-2xl font-bold text-gray-900 dark:text-white font-serif">{rounded}</motion.p>
+      <p className="text-xs text-stone-600 dark:text-slate-400 mt-0.5">{stat.label}</p>
     </motion.div>
   )
 }
@@ -444,34 +419,32 @@ function EvidenceCard({ icon, title, description, index }) {
 // ─── Screen Gallery with browser frame ─────────────────────────────────────────
 function ScreenFrame({ children, title, description, bullets }) {
   return (
-    <div>
-      <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl dark:shadow-2xl border border-stone-200 dark:border-slate-700/60 overflow-hidden">
-        {/* Browser chrome */}
-        <div className="bg-stone-100 dark:bg-slate-950 border-b border-stone-200 dark:border-slate-800 px-4 py-2.5 flex items-center gap-2">
-          <div className="flex gap-1.5">
-            <div className="w-3 h-3 rounded-full bg-stone-300 dark:bg-slate-700" />
-            <div className="w-3 h-3 rounded-full bg-stone-300 dark:bg-slate-700" />
-            <div className="w-3 h-3 rounded-full bg-stone-300 dark:bg-slate-700" />
-          </div>
-          <div className="flex-1 mx-4">
-            <div className="bg-white dark:bg-slate-900 rounded-md px-3 py-1 text-xs text-stone-500 dark:text-slate-500 border border-stone-200 dark:border-slate-800 max-w-md">
-              investigate.ai
-            </div>
-          </div>
+    <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl dark:shadow-2xl border border-stone-200 dark:border-slate-700/60 overflow-hidden">
+      {/* Browser chrome */}
+      <div className="bg-stone-100 dark:bg-slate-950 border-b border-stone-200 dark:border-slate-800 px-4 py-2.5 flex items-center gap-2">
+        <div className="flex gap-1.5">
+          <div className="w-3 h-3 rounded-full bg-stone-300 dark:bg-slate-700" />
+          <div className="w-3 h-3 rounded-full bg-stone-300 dark:bg-slate-700" />
+          <div className="w-3 h-3 rounded-full bg-stone-300 dark:bg-slate-700" />
         </div>
-        <div className="overflow-hidden">
-          {children}
+        <div className="flex-1 mx-4">
+          <div className="bg-white dark:bg-slate-900 rounded-md px-3 py-1 text-xs text-stone-500 dark:text-slate-500 border border-stone-200 dark:border-slate-800 max-w-md">
+            investigate.ai
+          </div>
         </div>
       </div>
+      <div className="overflow-hidden">
+        {children}
+      </div>
       {title && (
-        <div className="mt-6 px-1">
-          <h3 className="text-xl font-bold text-stone-800 dark:text-slate-200 font-serif">{title}</h3>
-          {description && <p className="text-sm text-stone-600 dark:text-slate-400 mt-2">{description}</p>}
+        <div className="border-t border-stone-200 dark:border-slate-700/60 bg-stone-50 dark:bg-slate-950/50 px-5 py-4">
+          <h3 className="text-lg font-bold text-stone-800 dark:text-slate-200 font-serif">{title}</h3>
+          {description && <p className="text-sm text-stone-600 dark:text-slate-400 mt-1">{description}</p>}
           {bullets && (
-            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="mt-3 border-l-2 border-yellow-600/30 dark:border-yellow-500/20 pl-4 space-y-1.5">
               {bullets.map((b, i) => (
-                <div key={i} className="flex items-start gap-2.5">
-                  <span className="flex-shrink-0 w-5 h-5 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold flex items-center justify-center mt-0.5">{i + 1}</span>
+                <div key={i} className="flex items-baseline gap-2">
+                  <span className="flex-shrink-0 w-1.5 h-1.5 rounded-full mt-1.5 bg-yellow-700/50 dark:bg-yellow-500/40" />
                   <p className="text-sm text-stone-600 dark:text-slate-400">{b}</p>
                 </div>
               ))}
@@ -553,6 +526,104 @@ function ExhibitCard({ wireframe, index }) {
   )
 }
 
+// ─── SDLC Pipeline (click-to-expand) ───────────────────────────────────────────
+function SDLCPipeline() {
+  const [activeStep, setActiveStep] = useState(null)
+  const steps = [
+    {
+      icon: Mic,
+      title: 'Interview',
+      subtitle: 'Raw transcripts + tagged pain points',
+      detail: 'Used Claude to generate interview guides from existing documentation, then recorded 8 investigator sessions. AI transcribed and tagged key moments in real-time.',
+      outcome: 'Citation system reduces investigation time by 40%',
+    },
+    {
+      icon: Zap,
+      title: 'AI Synthesis',
+      subtitle: 'Prioritized user stories + journey map',
+      detail: 'Fed transcripts into Claude to cluster themes, extract user stories, and identify contradictions across participants. Reduced 12 hours of audio to prioritized requirements in 2 days.',
+      outcome: 'Source Inspector increases confidence in AI-assisted findings',
+    },
+    {
+      icon: ShieldCheck,
+      title: 'Validation',
+      subtitle: 'Validated requirements + tech constraints',
+      detail: 'Shared AI-generated stories with engineering leads to flag technical constraints. Used Copilot to prototype feasibility checks on LLM response patterns and citation linking.',
+      outcome: 'Relevance scoring prioritizes high-value evidence first',
+    },
+    {
+      icon: BarChart3,
+      title: 'Translation',
+      subtitle: 'Business case + ROI projections',
+      detail: 'Converted validated requirements into business impact metrics using AI to benchmark against industry data. Produced the executive pitch deck and ROI projections.',
+      outcome: 'Platform delivered 3 weeks ahead of schedule',
+    },
+  ]
+
+  return (
+    <div className="space-y-3">
+      {steps.map((step, i) => {
+        const isActive = activeStep === i
+        return (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 16 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: i * 0.08 }}
+            viewport={{ once: true }}
+            onMouseEnter={() => setActiveStep(i)}
+            onMouseLeave={() => setActiveStep(null)}
+          >
+            <div
+              className={`w-full text-left flex items-center gap-4 px-5 py-4 rounded-lg border transition-all duration-200 cursor-default ${
+                isActive
+                  ? 'bg-white dark:bg-slate-900/80 border-yellow-400 dark:border-yellow-500/40 shadow-md'
+                  : 'bg-white dark:bg-slate-900/40 border-stone-200 dark:border-slate-700/50 shadow-sm'
+              }`}
+            >
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-colors ${
+                isActive
+                  ? 'bg-yellow-100 dark:bg-yellow-500/20 text-yellow-800 dark:text-yellow-400'
+                  : 'bg-stone-100 dark:bg-slate-800 text-stone-500 dark:text-slate-400'
+              }`}>
+                {i + 1}
+              </div>
+              <div className={`w-9 h-9 rounded-lg flex items-center justify-center border transition-colors ${
+                isActive
+                  ? 'bg-yellow-100 dark:bg-yellow-500/10 border-yellow-200 dark:border-yellow-500/20'
+                  : 'bg-stone-50 dark:bg-slate-800/60 border-stone-200 dark:border-slate-700/50'
+              }`}>
+                <step.icon className={`w-4 h-4 transition-colors ${
+                  isActive ? 'text-yellow-700 dark:text-yellow-400' : 'text-stone-500 dark:text-slate-400'
+                }`} strokeWidth={2} />
+              </div>
+              <div className="flex-1">
+                <h4 className="font-semibold text-stone-800 dark:text-slate-200 text-sm font-serif">{step.title}</h4>
+                <p className="text-xs text-stone-500 dark:text-slate-500">{step.subtitle}</p>
+              </div>
+            </div>
+            <AnimatePresence>
+              {isActive && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <div className="ml-[4.25rem] mr-5 mt-2 mb-1 rounded-lg bg-stone-50 dark:bg-slate-800/60 border border-stone-200 dark:border-slate-700/40 px-4 py-3">
+                    <p className="text-sm text-stone-600 dark:text-slate-400 leading-relaxed">{step.detail}</p>
+                    <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400 mt-2">→ {step.outcome}</p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
+        )
+      })}
+    </div>
+  )
+}
 
 // ─── Main Component ────────────────────────────────────────────────────────────
 export default function DesignOpsCaseStudy() {
@@ -571,11 +642,11 @@ export default function DesignOpsCaseStudy() {
       component: <EmptySearchScreen />,
       title: 'Starting Point: Natural Language Input',
       bullets: [
-        'Investigators begin with a blank canvas and a simple prompt',
-        'Plain English queries replace complex boolean syntax',
-        'Example queries guide users toward effective search patterns',
-        'Active case context shows document count and last update',
+        'Start from a clean canvas with a chat-style prompt at the bottom',
+        'Click example queries to jumpstart an effective search',
+        'Review active case details and indexed document count in the sidebar',
       ],
+
     },
     {
       id: 'results',
@@ -583,11 +654,12 @@ export default function DesignOpsCaseStudy() {
       component: <NLPDocumentSearchScreen />,
       title: 'Results with AI-Generated Analysis',
       bullets: [
-        'Auto-extracted search chips let users refine without retyping',
-        'Document list shows relevance percentages for quick scanning',
-        'AI analysis surfaces key findings with numbered citations',
-        'Slide-out panel shows source excerpts without leaving the results view',
+        'Add or remove auto-extracted search chips to refine results',
+        'Scan relevance scores to prioritize which documents to review',
+        'Read AI-generated key findings with numbered source citations',
+        'Click "View source" to inspect excerpts in a slide-out panel',
       ],
+
     },
     {
       id: 'investigate',
@@ -595,11 +667,12 @@ export default function DesignOpsCaseStudy() {
       component: <InvestigateDocumentScreen />,
       title: 'Verify Any AI Conclusion',
       bullets: [
-        'Full document view with highlighted passages from AI citations',
-        'Togglable context panel slides in with entities and thread history',
-        'Confirm or Flag actions feed back into AI accuracy over time',
-        'Navigate between sources without returning to the results list',
+        'Read highlighted passages that AI flagged as relevant to your query',
+        'Toggle the context panel to view entities and conversation threads',
+        'Confirm or flag AI findings to improve accuracy over time',
+        'Navigate between related sources without returning to results',
       ],
+
     },
     {
       id: 'verify',
@@ -607,11 +680,12 @@ export default function DesignOpsCaseStudy() {
       component: <SourceInspectorScreen />,
       title: 'Source Inspector',
       bullets: [
-        'Full document rendering with highlighted excerpts',
-        'AI confidence scoring for each citation',
-        'One-click navigation between related sources',
-        'Contextual entity extraction and thread timeline',
+        'Read the full source document with AI-highlighted key passages',
+        'Check AI confidence scores to assess citation reliability',
+        'Click the back arrow to navigate between related documents',
+        'Review extracted entities and metadata in the context panel',
       ],
+
     },
   ]
 
@@ -1057,7 +1131,16 @@ export default function DesignOpsCaseStudy() {
       <section className="bg-stone-100 dark:bg-slate-800 py-20">
         <div className="max-w-6xl mx-auto px-6 md:px-12">
           <FadeSection>
-            <h2 className="text-3xl md:text-4xl font-bold text-stone-900 dark:text-white mb-3 font-serif">The platform in action</h2>
+            <div className="flex flex-wrap items-end justify-between gap-4 mb-3">
+              <h2 className="text-3xl md:text-4xl font-bold text-stone-900 dark:text-white font-serif">The platform in action</h2>
+              <Link
+                to="/prototypes/investigation-platform"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-rose-900 hover:bg-rose-800 dark:bg-rose-800 dark:hover:bg-rose-700 text-white text-sm font-semibold shadow-md hover:shadow-lg transition-all group"
+              >
+                <span>View live prototype</span>
+                <ExternalLink className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" strokeWidth={2.5} />
+              </Link>
+            </div>
             <p className="text-stone-600 dark:text-slate-400 mb-12 text-pretty">
               Four interconnected screens that let investigators search naturally, trust AI conclusions, and verify any claim with one click.
             </p>
@@ -1098,17 +1181,17 @@ export default function DesignOpsCaseStudy() {
             <p className="text-xs font-mono text-yellow-700 dark:text-yellow-600/70 uppercase tracking-[0.2em] mb-2">Validating the Experience</p>
             <h2 className="text-3xl md:text-4xl font-bold text-stone-900 dark:text-white mb-3 font-serif">Testing every interface against investigator workflows</h2>
             <p className="text-stone-600 dark:text-slate-400 mb-12 text-pretty">
-              With high-fidelity designs in staging, we ran hands-on QA sessions to validate that the interfaces above worked exactly as intended - from search input to citation verification.
+              Hands-on QA sessions validated every flow from search input to citation verification.
             </p>
           </FadeSection>
 
           <FadeSection delay={0.1}>
             <div className="grid md:grid-cols-2 gap-6">
               {[
-                { icon: '👁️', title: 'Interface walkthrough testing', description: 'Tested each screen flow: natural language input, relevance filtering, document selection, and citation verification. Caught edge cases where results didn\'t match the query context.' },
-                { icon: '✅', title: 'AI response validation', description: 'Verified that AI summaries accurately reflected source documents. When citations didn\'t match highlighted excerpts, we logged issues and iterated with engineering.' },
-                { icon: '🎨', title: 'Visual consistency review', description: 'Flagged spacing issues, color inconsistencies, and component states that didn\'t match the Figma specs. Design tokens from MCP kept most styling aligned.' },
-                { icon: '👥', title: 'Stakeholder sign-off sessions', description: 'Ran live demos with legal leads to confirm the search-to-verify flow met their investigation workflow. Their feedback shaped final refinements.' },
+                { icon: Eye, title: 'Interface walkthroughs', description: 'Tested each screen flow end-to-end. Caught edge cases where results didn\'t match query context.' },
+                { icon: CheckCircle2, title: 'AI response validation', description: 'Verified AI summaries against source documents. Logged citation mismatches and iterated with engineering.' },
+                { icon: Palette, title: 'Visual consistency', description: 'Flagged spacing and color issues against Figma specs. MCP design tokens kept most styling aligned.' },
+                { icon: Presentation, title: 'Stakeholder sign-off', description: 'Live demos with legal leads confirmed the search-to-verify flow matched their workflow.' },
               ].map((item, i) => (
                 <motion.div
                   key={i}
@@ -1116,10 +1199,12 @@ export default function DesignOpsCaseStudy() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
                   viewport={{ once: true }}
-                  className="bg-white dark:bg-slate-900/60 border border-stone-200 dark:border-slate-700/50 rounded-lg p-6 hover:border-yellow-500 dark:hover:border-yellow-600/20 transition-all shadow-sm dark:shadow-none"
+                  className="bg-white dark:bg-slate-900/60 border border-stone-200 dark:border-slate-700/50 rounded-lg p-6 hover:border-yellow-500/50 dark:hover:border-yellow-600/20 transition-all shadow-sm dark:shadow-none"
                 >
-                  <div className="text-2xl mb-3">{item.icon}</div>
-                  <h4 className="font-semibold text-stone-800 dark:text-slate-200 mb-2 font-serif">{item.title}</h4>
+                  <div className="w-9 h-9 rounded-lg bg-yellow-100 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/20 flex items-center justify-center mb-4">
+                    <item.icon className="w-4.5 h-4.5 text-yellow-700 dark:text-yellow-500" strokeWidth={2} />
+                  </div>
+                  <h4 className="font-semibold text-stone-800 dark:text-slate-200 mb-1.5 font-serif">{item.title}</h4>
                   <p className="text-sm text-stone-600 dark:text-slate-400 leading-relaxed">{item.description}</p>
                 </motion.div>
               ))}
@@ -1135,7 +1220,7 @@ export default function DesignOpsCaseStudy() {
             <p className="text-xs font-mono text-yellow-700 dark:text-yellow-600/70 uppercase tracking-[0.2em] mb-2">LLM Integration Practice</p>
             <h2 className="text-3xl md:text-4xl font-bold text-stone-900 dark:text-white mb-3 font-serif">Three pillars of trustworthy AI</h2>
             <p className="text-stone-600 dark:text-slate-400 mb-12 text-pretty">
-              Natural dialogue, traceable citations, and source verification made the AI experience something investigators could rely on.
+              Natural dialogue, traceable citations, and source verification made the AI something investigators could rely on.
             </p>
           </FadeSection>
 
@@ -1143,37 +1228,34 @@ export default function DesignOpsCaseStudy() {
             <div className="grid md:grid-cols-3 gap-6 mb-12">
               {[
                 {
-                  icon: '💬',
+                  icon: MessageSquare,
                   title: 'Dialogue Flow',
-                  tagline: 'Natural conversation with AI',
-                  description: 'Users ask questions in plain English, AI returns scored results with summaries',
-                  color: 'indigo',
-                  input: '"Show communications about revenue recognition"',
-                  output: '847 documents \u2022 AI synthesis \u2022 Key findings',
+                  description: 'Plain English in, scored results out',
+                  example: '"Show communications about revenue recognition"',
+                  result: '847 documents · AI synthesis · Key findings',
+                  color: 'rose',
                 },
                 {
-                  icon: '📎',
+                  icon: Link2,
                   title: 'Citation System',
-                  tagline: 'Every AI claim is traceable',
-                  description: 'Numbered markers connect conclusions to source documents instantly',
-                  color: 'amber',
-                  input: '"AI finding: CFO requested acceleration"',
-                  output: '[1] links to email excerpt',
+                  description: 'Every AI claim links to its source',
+                  example: '"AI finding: CFO requested acceleration"',
+                  result: '[1] links to email excerpt',
+                  color: 'yellow',
                 },
                 {
-                  icon: '🔍',
+                  icon: Search,
                   title: 'Source Inspector',
-                  tagline: 'Trust but verify',
-                  description: 'One click reveals the exact text that informed each AI conclusion',
+                  description: 'One click reveals the exact text',
+                  example: '"Click citation [1]"',
+                  result: 'Highlighted excerpt + context',
                   color: 'emerald',
-                  input: '"Click citation [1]"',
-                  output: 'Highlighted excerpt + context',
                 },
               ].map((pillar, i) => {
                 const colorMap = {
-                  indigo: { bg: 'bg-indigo-500/10', border: 'border-indigo-500/20', text: 'text-indigo-400', accent: 'bg-indigo-500/15' },
-                  amber: { bg: 'bg-yellow-500/10', border: 'border-yellow-500/20', text: 'text-yellow-400', accent: 'bg-yellow-500/15' },
-                  emerald: { bg: 'bg-emerald-500/10', border: 'border-emerald-500/20', text: 'text-emerald-400', accent: 'bg-emerald-500/15' },
+                  rose: { iconBg: 'bg-rose-100 dark:bg-rose-500/10', iconBorder: 'border-rose-200 dark:border-rose-500/20', iconText: 'text-rose-700 dark:text-rose-400', accent: 'border-rose-300 dark:border-rose-500/30' },
+                  yellow: { iconBg: 'bg-yellow-100 dark:bg-yellow-500/10', iconBorder: 'border-yellow-200 dark:border-yellow-500/20', iconText: 'text-yellow-700 dark:text-yellow-400', accent: 'border-yellow-300 dark:border-yellow-500/30' },
+                  emerald: { iconBg: 'bg-emerald-100 dark:bg-emerald-500/10', iconBorder: 'border-emerald-200 dark:border-emerald-500/20', iconText: 'text-emerald-700 dark:text-emerald-400', accent: 'border-emerald-300 dark:border-emerald-500/30' },
                 }
                 const c = colorMap[pillar.color]
                 return (
@@ -1183,21 +1265,16 @@ export default function DesignOpsCaseStudy() {
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: i * 0.1 }}
                     viewport={{ once: true }}
-                    className={`${c.bg} border ${c.border} rounded-xl p-6`}
+                    className={`bg-white dark:bg-slate-900/60 border ${c.accent} rounded-xl p-6 flex flex-col`}
                   >
-                    <div className="text-2xl mb-3">{pillar.icon}</div>
-                    <h4 className="font-semibold text-stone-800 dark:text-slate-200 mb-1 font-serif">{pillar.title}</h4>
-                    <p className={`text-xs ${c.text} mb-3`}>{pillar.tagline}</p>
-                    <p className="text-sm text-stone-600 dark:text-slate-400 mb-4">{pillar.description}</p>
-                    <div className="space-y-2">
-                      <div className={`${c.accent} rounded-lg px-3 py-2`}>
-                        <p className="text-[10px] text-stone-500 dark:text-slate-500 uppercase mb-0.5">Input</p>
-                        <p className="text-xs text-stone-700 dark:text-slate-300">{pillar.input}</p>
-                      </div>
-                      <div className="bg-stone-100 dark:bg-slate-800/60 rounded-lg px-3 py-2">
-                        <p className="text-[10px] text-stone-500 dark:text-slate-500 uppercase mb-0.5">Output</p>
-                        <p className="text-xs text-stone-700 dark:text-slate-300">{pillar.output}</p>
-                      </div>
+                    <div className={`w-9 h-9 rounded-lg ${c.iconBg} border ${c.iconBorder} flex items-center justify-center mb-4`}>
+                      <pillar.icon className={`w-4.5 h-4.5 ${c.iconText}`} strokeWidth={2} />
+                    </div>
+                    <h4 className="font-semibold text-stone-800 dark:text-slate-200 font-serif">{pillar.title}</h4>
+                    <p className="text-sm text-stone-500 dark:text-slate-400 mt-1 mb-4">{pillar.description}</p>
+                    <div className="mt-auto bg-stone-50 dark:bg-slate-800/80 rounded-lg p-3 border border-stone-200 dark:border-slate-700/50">
+                      <p className="text-xs font-medium text-stone-800 dark:text-slate-200 mb-1.5">{pillar.example}</p>
+                      <p className="text-xs text-stone-500 dark:text-slate-400">→ {pillar.result}</p>
                     </div>
                   </motion.div>
                 )
@@ -1231,59 +1308,19 @@ export default function DesignOpsCaseStudy() {
           <FadeSection>
             <p className="text-xs font-mono text-yellow-700 dark:text-yellow-600/70 uppercase tracking-[0.2em] mb-2">How We Got Here</p>
             <h2 className="text-3xl md:text-4xl font-bold text-stone-900 dark:text-white mb-3 font-serif">A repeatable AI SDLC approach</h2>
+            <p className="text-stone-600 dark:text-slate-400 mb-12 text-pretty">
+              Four activities - each powered by AI - that turned raw research into a shipped platform.
+            </p>
           </FadeSection>
 
-          {/* Pipeline steps */}
+          {/* Interactive Pipeline Steps */}
           <FadeSection delay={0.1}>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-              {[
-                { step: '1', title: 'Interview', output: 'Raw transcripts', icon: '🎙️' },
-                { step: '2', title: 'AI Synthesis', output: 'User stories', icon: '✨' },
-                { step: '3', title: 'Validation', output: 'Tech constraints', icon: '✅' },
-                { step: '4', title: 'Translation', output: 'Business impact', icon: '📊' },
-              ].map((item, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: i * 0.1 }}
-                  viewport={{ once: true }}
-                  className="bg-white dark:bg-slate-900/60 border border-stone-200 dark:border-slate-700/50 rounded-lg p-5 text-center relative shadow-sm dark:shadow-none"
-                >
-                  <div className="absolute top-3 left-3 w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-bold flex items-center justify-center">{item.step}</div>
-                  <div className="text-2xl mb-2 mt-2">{item.icon}</div>
-                  <h4 className="font-semibold text-stone-800 dark:text-slate-200 text-sm font-serif">{item.title}</h4>
-                  <p className="text-xs text-stone-500 dark:text-slate-500 mt-1">{item.output}</p>
-                </motion.div>
-              ))}
-            </div>
-          </FadeSection>
-
-          {/* User Need → Business Impact examples */}
-          <FadeSection delay={0.15}>
-            <div className="space-y-4 mb-12">
-              {[
-                { need: '"As an investigator, I need to see why AI flagged this document"', impact: 'Citation system reduces investigation time by 40%' },
-                { need: '"I need to verify AI conclusions before presenting to counsel"', impact: 'Source Inspector increases confidence in AI assisted findings' },
-                { need: '"Searching returns too many irrelevant documents"', impact: 'Relevance scoring prioritizes high value evidence first' },
-              ].map((ex, i) => (
-                <div key={i} className="grid md:grid-cols-2 gap-4">
-                  <div className="bg-white dark:bg-slate-900/40 border border-stone-200 dark:border-slate-700/40 rounded-lg px-5 py-3 shadow-sm dark:shadow-none">
-                    <p className="text-[10px] text-indigo-600 dark:text-indigo-400 uppercase tracking-wider mb-1">User Need</p>
-                    <p className="text-sm text-stone-700 dark:text-slate-300 italic">{ex.need}</p>
-                  </div>
-                  <div className="bg-white dark:bg-slate-900/40 border border-emerald-200 dark:border-emerald-500/20 rounded-lg px-5 py-3 shadow-sm dark:shadow-none">
-                    <p className="text-[10px] text-emerald-600 dark:text-emerald-400 uppercase tracking-wider mb-1">Business Impact</p>
-                    <p className="text-sm text-stone-700 dark:text-slate-300">{ex.impact}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <SDLCPipeline />
           </FadeSection>
 
           {/* AI-Integrated Delivery Lifecycle (WorkflowDiagram) */}
           <FadeSection delay={0.2}>
-            <div className="mb-6">
+            <div className="mt-16 mb-6">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-8 h-8 rounded-lg bg-indigo-500/15 flex items-center justify-center border border-indigo-500/20">
                   <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1306,49 +1343,49 @@ export default function DesignOpsCaseStudy() {
         <img
           src="https://images.unsplash.com/photo-1479142506502-19b3a3b7ff33?w=1920&q=80"
           alt="Vintage leather-bound books on a shelf"
-          className="absolute inset-0 w-full h-full object-cover brightness-50"
+          className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-[#0B0F1A]/92" />
+        <div className="absolute inset-0 bg-white/85 dark:bg-[#0B0F1A]/90" />
 
         <div className="max-w-6xl mx-auto px-6 md:px-12 relative">
           <FadeSection>
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-3 font-serif">From Drowning to Discovery</h2>
-            <p className="text-lg text-slate-300 mb-12">AI transformed how investigators work with documents</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-stone-900 dark:text-white mb-3 font-serif">From Drowning to Discovery</h2>
+            <p className="text-lg text-stone-600 dark:text-slate-300 mb-12">AI transformed how investigators work with documents</p>
           </FadeSection>
 
           {/* Before/After */}
           <FadeSection delay={0.1}>
             <div className="grid md:grid-cols-2 gap-6 mb-12">
-              <div className="bg-slate-900/70 backdrop-blur-sm border border-slate-700/50 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-rose-500/20 flex items-center justify-center">
-                    <svg className="w-4 h-4 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+              <div className="bg-white/90 dark:bg-slate-900/70 backdrop-blur-sm border border-rose-200 dark:border-rose-500/20 rounded-lg p-6 relative overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-rose-700 to-rose-700/30" />
+                <Quote className="absolute -right-2 -top-2 w-12 h-12 text-rose-900/8 dark:text-rose-500/10" strokeWidth={1.5} />
+                <div className="flex items-center gap-3 mb-3 pl-2">
+                  <div className="w-8 h-8 rounded-lg bg-rose-100 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 flex items-center justify-center">
+                    <Clock className="w-4 h-4 text-rose-700 dark:text-rose-400" strokeWidth={2} />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-rose-400">Before: Manual Search</h3>
-                    <p className="text-xs text-slate-500">Hours per query</p>
+                    <h3 className="text-sm font-semibold text-rose-900 dark:text-rose-400">Before: Manual Search</h3>
+                    <p className="text-xs text-stone-500 dark:text-slate-500">Hours per query</p>
                   </div>
                 </div>
-                <p className="text-sm text-slate-400 leading-relaxed">
-                  Investigators clicking through thousands of documents, losing context, missing connections.
+                <p className="text-sm text-stone-700 dark:text-slate-300 leading-relaxed italic font-serif pl-2">
+                  "Investigators clicking through thousands of documents, losing context, missing connections."
                 </p>
               </div>
-              <div className="bg-slate-900/70 backdrop-blur-sm border border-indigo-500/30 rounded-xl p-6">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
-                    <svg className="w-4 h-4 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                    </svg>
+              <div className="bg-white/90 dark:bg-slate-900/70 backdrop-blur-sm border border-emerald-200 dark:border-emerald-500/20 rounded-lg p-6 relative overflow-hidden">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-gradient-to-b from-emerald-600 to-emerald-600/30" />
+                <Quote className="absolute -right-2 -top-2 w-12 h-12 text-emerald-900/8 dark:text-emerald-500/10" strokeWidth={1.5} />
+                <div className="flex items-center gap-3 mb-3 pl-2">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 flex items-center justify-center">
+                    <Zap className="w-4 h-4 text-emerald-700 dark:text-emerald-400" strokeWidth={2} />
                   </div>
                   <div>
-                    <h3 className="text-sm font-semibold text-indigo-400">After: AI Discovery</h3>
-                    <p className="text-xs text-slate-500">Minutes per query</p>
+                    <h3 className="text-sm font-semibold text-emerald-900 dark:text-emerald-400">After: AI Discovery</h3>
+                    <p className="text-xs text-stone-500 dark:text-slate-500">Minutes per query</p>
                   </div>
                 </div>
-                <p className="text-sm text-slate-300 leading-relaxed">
-                  Natural language search surfaces relevant documents instantly, with AI summaries and source verification.
+                <p className="text-sm text-stone-700 dark:text-slate-300 leading-relaxed italic font-serif pl-2">
+                  "Natural language search surfaces relevant documents instantly, with AI summaries and source verification."
                 </p>
               </div>
             </div>
@@ -1356,35 +1393,35 @@ export default function DesignOpsCaseStudy() {
 
           {/* How I Led AI-Augmented Delivery */}
           <FadeSection delay={0.2}>
-            <h3 className="text-2xl font-bold text-white mb-6 font-serif">How I Led AI-Augmented Delivery</h3>
+            <h3 className="text-2xl font-bold text-stone-900 dark:text-white mb-6 font-serif">How I Led AI-Augmented Delivery</h3>
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-slate-900/70 backdrop-blur-sm border border-indigo-500/20 rounded-xl p-6">
+              <div className="bg-white/90 dark:bg-slate-900/70 backdrop-blur-sm border border-stone-200 dark:border-slate-700/50 rounded-lg p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <svg className="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
-                  <span className="text-sm font-semibold text-indigo-400">AI Accelerated</span>
+                  <div className="w-8 h-8 rounded-lg bg-yellow-100 dark:bg-yellow-500/10 border border-yellow-200 dark:border-yellow-500/20 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-yellow-700 dark:text-yellow-400" strokeWidth={2} />
+                  </div>
+                  <span className="text-sm font-semibold text-stone-800 dark:text-slate-200">AI Accelerated</span>
                 </div>
                 <ul className="space-y-2">
                   {['Interview synthesis', 'User story generation', 'Design-code sync', 'Communication drafts'].map((item, i) => (
-                    <li key={i} className="text-sm text-slate-300 flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400/60" />
+                    <li key={i} className="text-sm text-stone-600 dark:text-slate-300 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-yellow-600/60 dark:bg-yellow-400/60" />
                       {item}
                     </li>
                   ))}
                 </ul>
               </div>
-              <div className="bg-slate-900/70 backdrop-blur-sm border border-yellow-600/20 rounded-xl p-6">
+              <div className="bg-white/90 dark:bg-slate-900/70 backdrop-blur-sm border border-stone-200 dark:border-slate-700/50 rounded-lg p-6">
                 <div className="flex items-center gap-2 mb-4">
-                  <svg className="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                  <span className="text-sm font-semibold text-yellow-400">I Directed</span>
+                  <div className="w-8 h-8 rounded-lg bg-rose-100 dark:bg-rose-500/10 border border-rose-200 dark:border-rose-500/20 flex items-center justify-center">
+                    <Users className="w-4 h-4 text-rose-700 dark:text-rose-400" strokeWidth={2} />
+                  </div>
+                  <span className="text-sm font-semibold text-stone-800 dark:text-slate-200">I Directed</span>
                 </div>
                 <ul className="space-y-2">
                   {['Research orchestration', 'Agency trust-building', 'LLM decision-making', 'Executive alignment'].map((item, i) => (
-                    <li key={i} className="text-sm text-slate-300 flex items-center gap-2">
-                      <span className="w-1.5 h-1.5 rounded-full bg-yellow-400/60" />
+                    <li key={i} className="text-sm text-stone-600 dark:text-slate-300 flex items-center gap-2">
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-600/60 dark:bg-rose-400/60" />
                       {item}
                     </li>
                   ))}
