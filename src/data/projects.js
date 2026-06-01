@@ -1,10 +1,10 @@
 export const projects = [
   {
     id: 1,
-    title: "AI Powered Development Workflow",
-    description: "Implemented agentic AI systems to accelerate SDLC, reducing development cycle time by 40% through intelligent code review, automated testing, and smart documentation generation.",
-    tags: ["AI/ML", "SDLC", "Automation"],
-    category: "ai",
+    title: "Mobile Task Tracker Redesign — BookedOut",
+    description: "Redesigned the task-tracking experience for gig economy event staff, turning invisible labor into documented proof of work. Research-driven across 12 in-person interviews and 47 surveys, validated through three live events. Includes a retrospective: how AI tooling would compress the same design cycle from 14 weeks to 4.",
+    tags: ["Product Design", "Mobile UX", "User Research"],
+    category: "ux",
     liveUrl: null,
     caseStudyUrl: "/projects/mobile-task-tracker",
     mvp: true,

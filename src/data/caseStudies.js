@@ -394,8 +394,8 @@ export const caseStudies = {
     subtitle: "Turning skeptical attorneys into AI advocates through explainable, human-in-the-loop document review.",
     tags: ["eDiscovery", "LLM Integration", "Human-in-the-Loop", "Legal Tech"],
     heroImage: {
-      src: "https://images.pexels.com/photos/357514/pexels-photo-357514.jpeg?auto=compress&cs=tinysrgb&w=1200",
-      alt: "Close-up of stacked binders filled with documents",
+      src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1600&q=80",
+      alt: "Laptop displaying data analytics on a glass desk",
       clientName: "Project Nexus",
       clientDescription: "Tier-1 eDiscovery provider building AI-powered document review for litigation."
     },
@@ -1184,9 +1184,9 @@ export const caseStudies = {
   },
 
   'mobile-task-tracker': {
-    title: "AI Powered Development Workflow",
-    subtitle: "Designing a task management system that transformed how event staff track their work using agentic AI.",
-    tags: ["Product Design", "Mobile UX", "User Research", "Journey Mapping", "AI/ML"],
+    title: "Mobile Task Tracker Redesign — BookedOut",
+    subtitle: "A research-driven redesign that turned invisible labor into documented proof of work for gig economy event staff.",
+    tags: ["Product Design", "Mobile UX", "User Research", "Journey Mapping"],
     roles: [
       "Design Lead",
       "UX Research",
@@ -1216,6 +1216,22 @@ export const caseStudies = {
       "Visual progress that makes work visible"
     ],
     process: [
+      {
+        platformIntro: {
+          label: "About BookedOut",
+          headline: "A SaaS platform built for the realities of the gig economy.",
+          description: "BookedOut connects event staff with the world's largest brands and agencies. Thousands of brand ambassadors, promotional workers, and experiential staff rely on it to find shifts, manage their profiles, and get paid after concerts, product launches, and corporate events.",
+          challengeLabel: "The Problem",
+          challengeHeadline: "Great workers had no way to prove it.",
+          challengeText: "The existing app gave staff no tools to document their work during a shift. Managers couldn't see who was performing well, and the workers who showed up every time and gave their best had nothing to show for it when better paying gigs came around.",
+          challengeItems: [
+            "No mid-shift task tracking",
+            "Work completed, never recorded",
+            "Managers blind to team output",
+            "Top performers passed over for premium gigs"
+          ]
+        }
+      },
       {
         problemBento: {
           callout: {
@@ -1450,9 +1466,9 @@ export const caseStudies = {
         title: "Reimagining This Project with AI",
         isAISection: true,
         aiHero: {
-          tagline: "PART 2: THE AI ADVANTAGE",
+          tagline: "RETROSPECTIVE: THE AI LENS",
           headline: "Same Project. Fraction of the Time.",
-          subheadline: "What if we rebuilt the Mobile Task Tracker using AI powered tools? The design thinking stays human. Everything else accelerates."
+          subheadline: "This project was completed before current AI design tools were in wide use. What follows is a retrospective thought experiment — not a revision of history, but an honest look at where AI tooling would have accelerated the process, and where the human work of sitting across from someone like Sam and listening would have remained irreplaceable."
         },
         aiIntroComparison: {
           headline: "What if we could do this 4x faster?",
