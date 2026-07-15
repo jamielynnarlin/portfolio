@@ -560,9 +560,6 @@ function PixelPerfectExecutionPanel() {
       <div className="mb-6">
         <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-rose-900 dark:text-rose-300">Design System Execution</p>
         <h3 className="text-2xl md:text-3xl font-bold text-stone-900 dark:text-white font-serif mt-1">Design system playbook</h3>
-        <p className="text-sm text-stone-600 dark:text-slate-400 mt-2 max-w-3xl">
-          Structured to mirror your reference style while using this case study color system.
-        </p>
       </div>
 
       <div className="rounded-xl border border-slate-800/80 bg-slate-950 text-slate-100 p-4 md:p-5 mb-6">
