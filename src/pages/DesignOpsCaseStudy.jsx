@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { motion, useInView, useScroll, useMotionValueEvent, useMotionValue, useTransform, animate, AnimatePresence } from 'framer-motion'
 import { Clock, AlertTriangle, XCircle, Hourglass, Link2Off, Split, Brain, Layers, FileText, Sparkles, ArrowRight, Users, Calendar, Workflow, Quote, RefreshCw, ExternalLink, Eye, CheckCircle2, Palette, Presentation, MessageSquare, Link2, Search, Mic, Zap, ShieldCheck, BarChart3 } from 'lucide-react'
-import { EmptySearchScreen, NLPDocumentSearchScreen, SourceInspectorScreen, InvestigateDocumentScreen } from '../components/StaticScreens'
+import { InvestigationApp } from '../components/PrototypeScreens'
 import { CodeReviewViewer } from '../components/CodeReviewViewer'
 import { WorkflowDiagram } from '../components/WorkflowDiagram'
 
@@ -339,9 +339,383 @@ function MCPStatCard({ stat, index }) {
   )
 }
 
-// ─── Setup Plan (swim lanes with sync points) ────────────────────────────────
+function PixelPerfectExecutionPanel() {
+  const typographyRows = [
+    { name: 'Display 1', size: '56', line: '64', space: '0.0', face: 'Serif', weight: 'Regular' },
+    { name: 'Display 2', size: '48', line: '56', space: '0.0', face: 'Serif', weight: 'Regular' },
+    { name: 'Display 3', size: '36', line: '42', space: '0.0', face: 'Serif', weight: 'Regular' },
+    { name: 'Headline 1', size: '32', line: '40', space: '0.0', face: 'Serif', weight: 'Regular' },
+    { name: 'Headline 2', size: '28', line: '36', space: '0.0', face: 'Serif', weight: 'Regular' },
+    { name: 'Headline 3', size: '24', line: '28', space: '0.0', face: 'Serif', weight: 'Regular' },
+    { name: 'Subhead 1', size: '24', line: '28', space: '0.0', face: 'Sans', weight: 'Semi Bold' },
+    { name: 'Subhead 2', size: '20', line: '28', space: '0.0', face: 'Sans', weight: 'Semi Bold' },
+    { name: 'Subhead 3', size: '18', line: '24', space: '0.0', face: 'Sans', weight: 'Semi Bold' },
+    { name: 'Subhead 4', size: '16', line: '24', space: '0.0', face: 'Sans', weight: 'Semi Bold' },
+    { name: 'Body 1', size: '18', line: '24', space: '0.0', face: 'Sans', weight: 'Regular' },
+    { name: 'Body 2', size: '16', line: '24', space: '0.0', face: 'Sans', weight: 'Regular' },
+    { name: 'Body 3', size: '14', line: '20', space: '0.0', face: 'Sans', weight: 'Regular' },
+    { name: 'Body 4', size: '12', line: '16', space: '0.0', face: 'Sans', weight: 'Regular' },
+    { name: 'Label 1', size: '14', line: '20', space: '0.5', face: 'Sans', weight: 'Semi Bold' },
+    { name: 'Label 2', size: '12', line: '16', space: '0.5', face: 'Sans', weight: 'Semi Bold' },
+    { name: 'Label 3', size: '11', line: '16', space: '0.5', face: 'Sans', weight: 'Bold' },
+    { name: 'Button Large', size: '18', line: '24', space: '0.5', face: 'Sans', weight: 'Medium' },
+    { name: 'Button Medium', size: '16', line: '20', space: '0.5', face: 'Sans', weight: 'Medium' },
+    { name: 'Button Small', size: '14', line: '16', space: '0.5', face: 'Sans', weight: 'Medium' },
+  ]
+
+  const surfaceTokens = {
+    corners: [
+      { label: '0 / none', sampleClass: 'rounded-none' },
+      { label: '2 / small', sampleClass: 'rounded-sm' },
+      { label: '4 / medium', sampleClass: 'rounded' },
+      { label: '8 / base', sampleClass: 'rounded-md' },
+      { label: '12 / large', sampleClass: 'rounded-lg' },
+      { label: '16 / x-large', sampleClass: 'rounded-xl' },
+      { label: '24 / xx-large', sampleClass: 'rounded-[24px]' },
+      { label: '100 / pill', sampleClass: 'rounded-full' },
+    ],
+    borders: [
+      { label: '0 / none', width: 0 },
+      { label: '1 / small', width: 1 },
+      { label: '2 / medium', width: 2 },
+      { label: '4 / large', width: 4 },
+      { label: '6 / x-large', width: 6 },
+      { label: '8 / xx-large', width: 8 },
+    ],
+    spacing: [
+      { label: '2 / xxx-small', px: 2 },
+      { label: '4 / xx-small', px: 4 },
+      { label: '8 / x-small', px: 8 },
+      { label: '12 / small', px: 12 },
+      { label: '16 / base', px: 16 },
+      { label: '24 / large', px: 24 },
+      { label: '32 / x-large', px: 32 },
+      { label: '48 / xx-large', px: 48 },
+      { label: '64 / xxx-large', px: 64 },
+      { label: '80 / xxxx-large', px: 80 },
+    ],
+  }
+
+  const surfaceLayers = [
+    { name: 'Canvas', className: 'bg-slate-950 border-slate-800' },
+    { name: 'Layer 1', className: 'bg-slate-900 border-slate-700' },
+    { name: 'Layer 2', className: 'bg-slate-800 border-slate-600' },
+    { name: 'Interactive', className: 'bg-slate-800/80 border-violet-500/40' },
+  ]
+
+  const surfaceRules = [
+    'Use larger radii for container shells and smaller radii for controls.',
+    'Reserve thicker borders for emphasis and focus, not default containers.',
+    'Apply spacing tokens in vertical rhythm: 8, 12, 16, 24, then 32.',
+  ]
+
+  const semanticColors = [
+    { label: 'Success', colors: ['#6ee7b7', '#34d399', '#10b981'] },
+    { label: 'Warning', colors: ['#fde68a', '#fbbf24', '#f59e0b'] },
+    { label: 'Danger', colors: ['#fca5a5', '#f87171', '#ef4444'] },
+    { label: 'Info', colors: ['#93c5fd', '#60a5fa', '#3b82f6'] },
+  ]
+
+  const contrastPairs = [
+    { fg: '#0f172a', bg: '#fcd34d', token: 'text.inverse.onPrimary' },
+    { fg: '#e2e8f0', bg: '#334155', token: 'text.primary.onDark' },
+    { fg: '#ffffff', bg: '#3b82f6', token: 'text.inverse.onInfo' },
+    { fg: '#ffffff', bg: '#ef4444', token: 'text.inverse.onDanger' },
+  ]
+
+  const componentCards = [
+    {
+      name: 'Buttons',
+      tokens: ['radius.control.md', 'space.inline.2', 'type.button', 'color.semantic.primary'],
+      preview: (
+        <div className="flex flex-wrap gap-1.5">
+          <button type="button" className="px-2.5 py-1 bg-amber-500 text-slate-900 rounded text-[9px] font-semibold whitespace-nowrap">Primary</button>
+          <button type="button" className="px-2.5 py-1 bg-slate-700 text-slate-200 rounded text-[9px] font-medium whitespace-nowrap">Secondary</button>
+          <button type="button" className="px-2.5 py-1 bg-emerald-500/15 text-emerald-300 rounded text-[9px] font-semibold border border-emerald-500/20 whitespace-nowrap">Success</button>
+          <button type="button" className="px-2.5 py-1 bg-rose-500/15 text-rose-300 rounded text-[9px] font-semibold border border-rose-500/20 whitespace-nowrap">Destructive</button>
+        </div>
+      ),
+    },
+    {
+      name: 'Menus',
+      tokens: ['size.nav.top', 'size.nav.item', 'type.nav', 'color.semantic.active'],
+      preview: (
+        <div className="space-y-1.5">
+          <div className="px-2 py-1.5 border border-slate-800/70 bg-slate-900/80 rounded flex items-center justify-between">
+            <span className="text-[10px] text-slate-500">SEC Investigation</span>
+            <div className="flex items-center gap-1">
+              <button type="button" className="px-2.5 py-1 rounded text-[10px] font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">Search</button>
+              <button type="button" className="px-2.5 py-1 rounded text-[10px] font-medium text-slate-400 bg-slate-800">Results</button>
+              <button type="button" className="px-2.5 py-1 rounded text-[10px] font-medium text-slate-400 bg-slate-800">Verify</button>
+            </div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      name: 'Drop Downs',
+      tokens: ['size.control.md', 'radius.control.md', 'type.label', 'color.surface.raised'],
+      preview: (
+        <div className="space-y-1.5">
+          <button type="button" className="w-full flex items-center justify-between px-3 py-2 rounded-lg bg-slate-800 text-[10px] text-slate-300 border border-slate-700">
+            <span>Sort by relevance</span>
+            <span>v</span>
+          </button>
+          <div className="rounded-lg border border-slate-700 overflow-hidden">
+            <div className="px-3 py-2 text-[10px] text-white bg-slate-800">Sort by relevance</div>
+            <div className="px-3 py-2 text-[10px] text-slate-300 bg-slate-900">Sort by date</div>
+            <div className="px-3 py-2 text-[10px] text-slate-300 bg-slate-900">Sort by confidence</div>
+          </div>
+        </div>
+      ),
+    },
+    {
+      name: 'Text Fields',
+      tokens: ['size.control.md', 'space.inline.3', 'type.body', 'color.border.focus'],
+      preview: (
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 bg-slate-800 rounded-lg p-2.5 flex items-center gap-2 border border-slate-700">
+              <svg className="w-3.5 h-3.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <span className="text-[10px] text-slate-500 italic whitespace-nowrap">Ask about suspicious revenue</span>
+            </div>
+            <button type="button" className="px-3 py-2 bg-slate-700 text-slate-500 rounded-lg text-[10px] font-medium whitespace-nowrap">Search</button>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="flex-1 bg-slate-800 rounded-lg p-2.5 flex items-center gap-2 border border-violet-500/40">
+              <svg className="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <span className="text-[10px] text-slate-200 whitespace-nowrap">Ask about suspicious revenue</span>
+            </div>
+            <button type="button" className="px-3 py-2 bg-amber-500 text-slate-900 rounded-lg text-[10px] font-semibold whitespace-nowrap">Search</button>
+          </div>
+        </div>
+      ),
+    },
+  ]
+
+  const menuCard = componentCards.find((card) => card.name === 'Menus')
+
+  return (
+    <div className="mt-10 rounded-2xl border border-stone-200 dark:border-slate-700/50 bg-white dark:bg-slate-900/60 p-6 md:p-8 shadow-sm dark:shadow-none">
+      <div className="mb-6">
+        <p className="text-[11px] font-mono uppercase tracking-[0.16em] text-rose-900 dark:text-rose-300">Design System Execution</p>
+        <h3 className="text-2xl md:text-3xl font-bold text-stone-900 dark:text-white font-serif mt-1">Design system playbook</h3>
+        <p className="text-sm text-stone-600 dark:text-slate-400 mt-2 max-w-3xl">
+          Structured to mirror your reference style while using this case study color system.
+        </p>
+      </div>
+
+      <div className="rounded-xl border border-slate-800/80 bg-slate-950 text-slate-100 p-4 md:p-5 mb-6">
+        <div className="flex items-center justify-between gap-2 mb-4">
+          <p className="text-sm font-semibold text-white font-serif">Figma design system layout</p>
+          <span className="text-[10px] px-2 py-0.5 rounded-full border border-slate-700 bg-slate-900 text-slate-300">Case Study Theme</span>
+        </div>
+
+        <div className="rounded-lg border border-slate-800/80 bg-slate-900/50 p-3 mb-4">
+          <p className="text-xs font-semibold text-white mb-2">Typography</p>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[680px] text-[10px]">
+              <thead>
+                <tr className="text-slate-400 border-b border-slate-800">
+                  <th className="text-left font-medium py-1.5 pr-2">Name</th>
+                  <th className="text-left font-medium py-1.5 pr-2">Size</th>
+                  <th className="text-left font-medium py-1.5 pr-2">Line</th>
+                  <th className="text-left font-medium py-1.5 pr-2">Space</th>
+                  <th className="text-left font-medium py-1.5 pr-2">Font Face</th>
+                  <th className="text-left font-medium py-1.5">Weight</th>
+                </tr>
+              </thead>
+              <tbody>
+                {typographyRows.map((row) => (
+                  <tr key={row.name} className="border-b border-slate-800/60">
+                    <td className="py-1.5 pr-2 text-slate-200">{row.name}</td>
+                    <td className="py-1.5 pr-2 text-slate-400">{row.size}</td>
+                    <td className="py-1.5 pr-2 text-slate-400">{row.line}</td>
+                    <td className="py-1.5 pr-2 text-slate-400">{row.space}</td>
+                    <td className="py-1.5 pr-2 text-slate-400">{row.face}</td>
+                    <td className="py-1.5 text-slate-400">{row.weight}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div className="grid lg:grid-cols-2 gap-4 mb-4">
+          <div className="rounded-lg border border-slate-800/80 bg-slate-900/50 p-3">
+            <p className="text-xs font-semibold text-white mb-3">Surfaces</p>
+            <div className="grid grid-cols-2 gap-3 text-[10px]">
+              <div>
+                <p className="text-slate-400 mb-1.5">Corners</p>
+                <div className="space-y-1.5">
+                  {surfaceTokens.corners.map((item) => (
+                    <div key={item.label} className="flex items-center gap-2">
+                      <div className={`w-12 h-4 bg-slate-500/60 ${item.sampleClass}`} />
+                      <p className="text-slate-300">{item.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-slate-400 mb-1.5">Border</p>
+                <div className="space-y-1.5 mb-3">
+                  {surfaceTokens.borders.map((item) => (
+                    <div key={item.label} className="flex items-center gap-2">
+                      <div
+                        className="w-12 border-rose-400"
+                        style={{ borderTopWidth: `${item.width}px` }}
+                      />
+                      <p className="text-slate-300">{item.label}</p>
+                    </div>
+                  ))}
+                </div>
+                <p className="text-slate-400 mb-1.5">Spacing</p>
+                <div className="space-y-1.5 mb-3">
+                  {surfaceTokens.spacing.map((item) => (
+                    <div key={item.label} className="flex items-center gap-2">
+                      <div className="h-2 bg-rose-400" style={{ width: `${item.px + 16}px` }} />
+                      <p className="text-slate-300">{item.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-2.5 pt-2.5 border-t border-slate-800/70">
+              <p className="text-[10px] text-slate-300 mb-1.5">Surface Layers</p>
+              <div className="grid grid-cols-2 gap-1.5">
+                {surfaceLayers.map((layer) => (
+                  <div key={layer.name} className="rounded border border-slate-700 p-1.5 bg-slate-950/70">
+                    <div className={`h-6 rounded border ${layer.className}`} />
+                    <p className="text-[9px] text-slate-400 mt-1">{layer.name}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-slate-800/70 mt-2">
+              <p className="text-[10px] text-slate-300 mb-1">Usage Rules</p>
+              <div className="space-y-1">
+                {surfaceRules.map((rule) => (
+                  <p key={rule} className="text-[9px] text-slate-400">{rule}</p>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-lg border border-slate-800/80 bg-slate-900/50 p-3">
+            <p className="text-xs font-semibold text-white mb-3">Color Palette</p>
+            <div className="space-y-2">
+              <div>
+                <p className="text-[10px] text-slate-300 mb-1">Primary</p>
+                <div className="grid grid-cols-6 gap-1">
+                  {['#fcd34d', '#f59e0b', '#d97706', '#a855f7', '#8b5cf6', '#6d28d9'].map((color) => (
+                    <div key={color} className="h-5 rounded-sm border border-slate-700" style={{ backgroundColor: color }} />
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-[10px] text-slate-300 mb-1">Secondary</p>
+                <div className="grid grid-cols-6 gap-1">
+                  {['#6ee7b7', '#10b981', '#047857', '#93c5fd', '#3b82f6', '#1d4ed8'].map((color) => (
+                    <div key={color} className="h-5 rounded-sm border border-slate-700" style={{ backgroundColor: color }} />
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-800/70">
+                <p className="text-[10px] text-slate-300 mb-1.5">Signifying Colors</p>
+                <div className="space-y-1.5">
+                  {semanticColors.map((row) => (
+                    <div key={row.label}>
+                      <p className="text-[9px] text-slate-500 mb-1">{row.label}</p>
+                      <div className="grid grid-cols-3 gap-1">
+                        {row.colors.map((color) => (
+                          <div key={color} className="h-4 rounded-sm border border-slate-700" style={{ backgroundColor: color }} />
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-800/70">
+                <p className="text-[10px] text-slate-300 mb-1.5">Contrast Pairing</p>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {contrastPairs.map((pair) => (
+                    <div key={pair.token} className="rounded border border-slate-700 overflow-hidden">
+                      <div className="h-6 flex items-center justify-center text-[9px] font-semibold" style={{ color: pair.fg, backgroundColor: pair.bg }}>
+                        Aa
+                      </div>
+                      <div className="px-1.5 py-1 bg-slate-950 text-[8px] text-slate-400 truncate">{pair.token}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="pt-2 border-t border-slate-800/70">
+                <p className="text-[10px] text-slate-300 mb-1">Usage Rules</p>
+                <div className="space-y-1">
+                  <p className="text-[9px] text-slate-400">Primary tones are reserved for main actions and active navigation.</p>
+                  <p className="text-[9px] text-slate-400">Secondary tones support charts, tags, and supporting highlights.</p>
+                  <p className="text-[9px] text-slate-400">Status colors are semantic only: success, warning, danger, and info.</p>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        {menuCard && (
+          <div className="rounded-lg border border-slate-800/80 bg-slate-900/50 p-3 mb-4">
+            <p className="text-xs font-semibold text-white mb-2">{menuCard.name}</p>
+            <div className="rounded-md border border-dashed border-slate-700 p-2.5 bg-slate-950/70 mb-2">
+              {menuCard.preview}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {menuCard.tokens.map((token) => (
+                <span key={token} className="text-[10px] px-2 py-0.5 rounded-full border border-violet-500/30 text-violet-200 bg-violet-500/10">
+                  {token}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <div className="grid lg:grid-cols-2 gap-4">
+          {componentCards.filter((spec) => spec.name !== 'Menus').map((spec, i) => (
+            <motion.div
+              key={spec.name}
+              initial={{ opacity: 0, y: 14 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: i * 0.08 }}
+              viewport={{ once: true }}
+              className="rounded-lg border border-slate-800/80 bg-slate-900/50 p-3"
+            >
+              <p className="text-xs font-semibold text-white mb-2">{spec.name}</p>
+              <div className="rounded-md border border-dashed border-slate-700 p-2.5 bg-slate-950/70 mb-2.5">
+                {spec.preview}
+              </div>
+              <div className="flex flex-wrap gap-1.5">
+                {spec.tokens.map((token) => (
+                  <span key={token} className="text-[10px] px-2 py-0.5 rounded-full border border-violet-500/30 text-violet-200 bg-violet-500/10">
+                    {token}
+                  </span>
+                ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function SetupPlan() {
-  // Sync points - the four recurring feedback loop touchpoints
   const syncs = [
     { title: 'Kickoff Review', detail: 'Goals + guardrails locked in' },
     { title: 'Prototype Review', detail: 'Investigators walk the flows' },
@@ -351,7 +725,6 @@ function SetupPlan() {
 
   return (
     <div>
-      {/* Header */}
       <div className="mb-8">
         <p className="text-xs font-mono text-yellow-700 dark:text-yellow-600/70 uppercase tracking-[0.2em] mb-3">Research and Setup</p>
         <h2 className="text-3xl md:text-4xl font-bold text-stone-900 dark:text-white mb-4 font-serif leading-tight">
@@ -362,9 +735,7 @@ function SetupPlan() {
         </p>
       </div>
 
-      {/* Sync points */}
       <div>
-        {/* Section label */}
         <div className="flex items-center gap-2 mb-4">
           <div className="w-2 h-2 rotate-45 bg-rose-900 dark:bg-rose-400" />
           <span className="text-[10px] font-mono uppercase tracking-[0.15em] text-rose-900 dark:text-rose-300 font-bold">Feedback Sync Points</span>
@@ -380,12 +751,10 @@ function SetupPlan() {
               className="group [perspective:1000px] h-32"
             >
               <div className="relative w-full h-full transition-transform duration-500 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
-                {/* Front */}
                 <div className="absolute inset-0 [backface-visibility:hidden] bg-stone-50 dark:bg-slate-900/60 border border-stone-200 dark:border-slate-700/60 rounded-sm p-4 flex flex-col justify-center shadow-sm">
                   <div className="text-[10px] font-mono uppercase tracking-wider mb-2 text-yellow-700/70 dark:text-yellow-600/60">Sync {i + 1}</div>
                   <div className="text-base font-bold font-serif text-stone-800 dark:text-slate-200 leading-tight">{sync.title}</div>
                 </div>
-                {/* Back */}
                 <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)] bg-rose-900 dark:bg-rose-800 border border-rose-900 dark:border-rose-700 rounded-sm p-4 flex flex-col justify-center shadow-lg">
                   <div className="text-[10px] font-mono uppercase tracking-wider mb-2 text-rose-200 whitespace-nowrap">{sync.title}</div>
                   <div className="text-sm text-rose-50 leading-snug font-serif whitespace-nowrap">{sync.detail}</div>
@@ -399,7 +768,6 @@ function SetupPlan() {
   )
 }
 
-// ─── Evidence Card (research insight) ──────────────────────────────────────────
 function EvidenceCard({ icon, title, description, index }) {
   return (
     <motion.div
@@ -416,11 +784,9 @@ function EvidenceCard({ icon, title, description, index }) {
   )
 }
 
-// ─── Screen Gallery with browser frame ─────────────────────────────────────────
 function ScreenFrame({ children, title, description, bullets }) {
   return (
     <div className="bg-white dark:bg-slate-900 rounded-xl shadow-2xl dark:shadow-2xl border border-stone-200 dark:border-slate-700/60 overflow-hidden">
-      {/* Browser chrome */}
       <div className="bg-stone-100 dark:bg-slate-950 border-b border-stone-200 dark:border-slate-800 px-4 py-2.5 flex items-center gap-2">
         <div className="flex gap-1.5">
           <div className="w-3 h-3 rounded-full bg-stone-300 dark:bg-slate-700" />
@@ -456,7 +822,6 @@ function ScreenFrame({ children, title, description, bullets }) {
   )
 }
 
-// ─── Wireframe Sketch Card ─────────────────────────────────────────────────────
 function ExhibitCard({ wireframe, index }) {
   const sketchIcons = {
     search: (
@@ -506,7 +871,6 @@ function ExhibitCard({ wireframe, index }) {
       viewport={{ once: true }}
       className="bg-white dark:bg-slate-800 rounded-2xl p-6 border border-gray-200 dark:border-slate-700 shadow-lg"
     >
-      {/* Sketch Preview */}
       <div className="bg-slate-50 dark:bg-slate-900 rounded-xl p-4 mb-4 h-32 flex items-center justify-center">
         {sketchIcons[wireframe.sketch]}
       </div>
@@ -525,8 +889,6 @@ function ExhibitCard({ wireframe, index }) {
     </motion.div>
   )
 }
-
-// ─── SDLC Pipeline (click-to-expand) ───────────────────────────────────────────
 function SDLCPipeline() {
   const [activeStep, setActiveStep] = useState(null)
   const steps = [
@@ -638,8 +1000,12 @@ export default function DesignOpsCaseStudy() {
   const screens = [
     {
       id: 'search',
-      label: 'Natural Language Search',
-      component: <EmptySearchScreen />,
+      label: 'AI Search',
+      component: (
+        <div style={{ height: '560px' }}>
+          <InvestigationApp currentScreen={0} onScreenChange={() => {}} />
+        </div>
+      ),
       title: 'Starting Point: Natural Language Input',
       bullets: [
         'Start from a clean canvas with a chat-style prompt at the bottom',
@@ -650,8 +1016,12 @@ export default function DesignOpsCaseStudy() {
     },
     {
       id: 'results',
-      label: 'AI-Scored Results',
-      component: <NLPDocumentSearchScreen />,
+      label: 'Results & Analysis',
+      component: (
+        <div style={{ height: '560px' }}>
+          <InvestigationApp currentScreen={1} onScreenChange={() => {}} />
+        </div>
+      ),
       title: 'Results with AI-Generated Analysis',
       bullets: [
         'Add or remove auto-extracted search chips to refine results',
@@ -662,22 +1032,13 @@ export default function DesignOpsCaseStudy() {
 
     },
     {
-      id: 'investigate',
-      label: 'Document Deep Dive',
-      component: <InvestigateDocumentScreen />,
-      title: 'Verify Any AI Conclusion',
-      bullets: [
-        'Read highlighted passages that AI flagged as relevant to your query',
-        'Toggle the context panel to view entities and conversation threads',
-        'Confirm or flag AI findings to improve accuracy over time',
-        'Navigate between related sources without returning to results',
-      ],
-
-    },
-    {
       id: 'verify',
       label: 'Source Verification',
-      component: <SourceInspectorScreen />,
+      component: (
+        <div style={{ height: '560px' }}>
+          <InvestigationApp currentScreen={2} onScreenChange={() => {}} />
+        </div>
+      ),
       title: 'Source Inspector',
       bullets: [
         'Read the full source document with AI-highlighted key passages',
@@ -1098,6 +1459,15 @@ export default function DesignOpsCaseStudy() {
         </div>
       </section>
 
+      {/* ─── Pixel-Perfect Playbook ─────────────────────────────────────── */}
+      <section className="bg-white dark:bg-gray-900 py-20">
+        <div className="max-w-6xl mx-auto px-6 md:px-12">
+          <FadeSection>
+            <PixelPerfectExecutionPanel />
+          </FadeSection>
+        </div>
+      </section>
+
       {/* ─── Agency Tooling (MCP + Figma Make) ───────────────────────────── */}
       <section className="bg-stone-50 dark:bg-gray-900 py-20">
         <div className="max-w-6xl mx-auto px-6 md:px-12">
@@ -1455,3 +1825,4 @@ export default function DesignOpsCaseStudy() {
     </div>
   )
 }
+
