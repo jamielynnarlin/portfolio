@@ -397,10 +397,10 @@ function PixelPerfectExecutionPanel() {
   }
 
   const surfaceLayers = [
-    { name: 'Canvas', className: 'bg-slate-950 border-slate-800' },
-    { name: 'Layer 1', className: 'bg-slate-900 border-slate-700' },
-    { name: 'Layer 2', className: 'bg-slate-800 border-slate-600' },
-    { name: 'Interactive', className: 'bg-slate-800/80 border-violet-500/40' },
+    { name: 'Canvas', className: 'bg-slate-950 border-slate-800', detail: 'Base page background layer behind all UI surfaces.' },
+    { name: 'Layer 1', className: 'bg-slate-900 border-slate-700', detail: 'Primary containers such as cards and panels.' },
+    { name: 'Layer 2', className: 'bg-slate-800 border-slate-600', detail: 'Nested blocks inside cards and drawer content.' },
+    { name: 'Interactive', className: 'bg-slate-800/80 border-violet-500/40', detail: 'Hover/focus states and selected interactive rows.' },
   ]
 
   const surfaceRules = [
@@ -423,6 +423,13 @@ function PixelPerfectExecutionPanel() {
     { fg: '#ffffff', bg: '#ef4444', token: 'text.inverse.onDanger' },
   ]
 
+  const colorAccessibilityRules = [
+    'Body text targets 4.5:1 minimum contrast. Large text targets 3:1 minimum.',
+    'Status meaning is never color only. Pair color with icon, label, or pattern.',
+    'Focus indicators remain visible on both dark and tinted backgrounds.',
+    'Interactive and selected states use contrast plus border/weight change.',
+  ]
+
   const componentCards = [
     {
       name: 'Buttons',
@@ -432,7 +439,7 @@ function PixelPerfectExecutionPanel() {
           <button type="button" className="px-2.5 py-1 bg-amber-500 text-slate-900 rounded text-[9px] font-semibold whitespace-nowrap">Primary</button>
           <button type="button" className="px-2.5 py-1 bg-slate-700 text-slate-200 rounded text-[9px] font-medium whitespace-nowrap">Secondary</button>
           <button type="button" className="px-2.5 py-1 bg-emerald-500/15 text-emerald-300 rounded text-[9px] font-semibold border border-emerald-500/20 whitespace-nowrap">Success</button>
-          <button type="button" className="px-2.5 py-1 bg-rose-500/15 text-rose-300 rounded text-[9px] font-semibold border border-rose-500/20 whitespace-nowrap">Destructive</button>
+          <button type="button" className="px-2.5 py-1 bg-slate-800 text-slate-500 rounded text-[9px] font-semibold border border-slate-700 cursor-not-allowed whitespace-nowrap">Disabled</button>
         </div>
       ),
     },
@@ -495,9 +502,58 @@ function PixelPerfectExecutionPanel() {
         </div>
       ),
     },
+    {
+      name: 'Icons',
+      tokens: ['icon.size.16', 'icon.stroke.2', 'icon.semantic.default', 'icon.semantic.active'],
+      preview: (
+        <div className="grid grid-cols-4 gap-2">
+          {[Search, FileText, Eye, Workflow].map((Icon, idx) => (
+            <div key={idx} className="rounded border border-slate-700 bg-slate-800/70 p-2 text-center">
+              <Icon className="w-4 h-4 mx-auto text-slate-200" strokeWidth={2} />
+            </div>
+          ))}
+          <div className="rounded border border-violet-500/40 bg-violet-500/15 p-2 text-center">
+            <Search className="w-4 h-4 mx-auto text-violet-200" strokeWidth={2} />
+          </div>
+          <div className="rounded border border-amber-500/40 bg-amber-500/15 p-2 text-center">
+            <Eye className="w-4 h-4 mx-auto text-amber-200" strokeWidth={2} />
+          </div>
+        </div>
+      ),
+    },
+    {
+      name: 'Component States',
+      tokens: ['state.static', 'state.hover', 'state.pressed', 'color.border.interactive'],
+      preview: (
+        <div className="space-y-2">
+          <div className="grid grid-cols-3 gap-2 text-[9px] text-slate-400">
+            <p>Static</p>
+            <p>Hover</p>
+            <p>Pressed</p>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <div className="rounded border border-slate-700 bg-slate-800/70 p-2 space-y-2">
+              <button type="button" className="w-full px-2.5 py-1 rounded text-[10px] font-medium bg-slate-700 text-slate-200">Button</button>
+              <div className="rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-[10px] text-slate-400">Filter chip</div>
+            </div>
+            <div className="rounded border border-violet-500/30 bg-slate-800/80 p-2 space-y-2">
+              <button type="button" className="w-full px-2.5 py-1 rounded text-[10px] font-medium bg-amber-500/20 text-amber-300 border border-amber-500/30">Button</button>
+              <div className="rounded-md border border-violet-500/40 bg-violet-500/10 px-2 py-1.5 text-[10px] text-violet-200">Filter chip</div>
+            </div>
+            <div className="rounded border border-slate-700 bg-slate-950 p-2 space-y-2">
+              <button type="button" className="w-full px-2.5 py-1 rounded text-[10px] font-medium bg-amber-500 text-slate-900 shadow-inner">Button</button>
+              <div className="rounded-md border border-amber-500/40 bg-amber-500/20 px-2 py-1.5 text-[10px] text-amber-200">Filter chip</div>
+            </div>
+          </div>
+        </div>
+      ),
+    },
   ]
 
   const menuCard = componentCards.find((card) => card.name === 'Menus')
+  const guideCards = menuCard
+    ? [menuCard, ...componentCards.filter((spec) => spec.name !== 'Menus')]
+    : componentCards.filter((spec) => spec.name !== 'Menus')
 
   return (
     <div className="mt-10 rounded-2xl border border-stone-200 dark:border-slate-700/50 bg-white dark:bg-slate-900/60 p-6 md:p-8 shadow-sm dark:shadow-none">
@@ -592,6 +648,7 @@ function PixelPerfectExecutionPanel() {
                   <div key={layer.name} className="rounded border border-slate-700 p-1.5 bg-slate-950/70">
                     <div className={`h-6 rounded border ${layer.className}`} />
                     <p className="text-[9px] text-slate-400 mt-1">{layer.name}</p>
+                    <p className="text-[8px] text-slate-500 mt-0.5 leading-snug">{layer.detail}</p>
                   </div>
                 ))}
               </div>
@@ -665,29 +722,22 @@ function PixelPerfectExecutionPanel() {
                   <p className="text-[9px] text-slate-400">Status colors are semantic only: success, warning, danger, and info.</p>
                 </div>
               </div>
+
+              <div className="pt-2 border-t border-slate-800/70">
+                <p className="text-[10px] text-slate-300 mb-1">Accessibility Rules</p>
+                <div className="space-y-1">
+                  {colorAccessibilityRules.map((rule) => (
+                    <p key={rule} className="text-[9px] text-slate-400">{rule}</p>
+                  ))}
+                </div>
+              </div>
             </div>
 
           </div>
         </div>
 
-        {menuCard && (
-          <div className="rounded-lg border border-slate-800/80 bg-slate-900/50 p-3 mb-4">
-            <p className="text-xs font-semibold text-white mb-2">{menuCard.name}</p>
-            <div className="rounded-md border border-dashed border-slate-700 p-2.5 bg-slate-950/70 mb-2">
-              {menuCard.preview}
-            </div>
-            <div className="flex flex-wrap gap-1.5">
-              {menuCard.tokens.map((token) => (
-                <span key={token} className="text-[10px] px-2 py-0.5 rounded-full border border-violet-500/30 text-violet-200 bg-violet-500/10">
-                  {token}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
-
         <div className="grid lg:grid-cols-2 gap-4">
-          {componentCards.filter((spec) => spec.name !== 'Menus').map((spec, i) => (
+          {guideCards.map((spec, i) => (
             <motion.div
               key={spec.name}
               initial={{ opacity: 0, y: 14 }}
