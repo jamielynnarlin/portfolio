@@ -2,7 +2,7 @@ export const projects = [
   {
     id: 1,
     title: "Mobile Task Tracker Redesign — BookedOut",
-    description: "Redesigned the task-tracking experience for gig economy event staff, turning invisible labor into documented proof of work. Research-driven across 12 in-person interviews and 47 surveys, validated through three live events. Includes a retrospective: how AI tooling would compress the same design cycle from 14 weeks to 4.",
+    description: "A mobile app that turns gig event staff's invisible labor into documented proof of work, validated across three live events.",
     tags: ["Product Design", "Mobile UX", "User Research"],
     category: "ux",
     liveUrl: null,
@@ -12,7 +12,7 @@ export const projects = [
   {
     id: 2,
     title: "DesignOps Transformation",
-    description: "Led DesignOps strategy for an AI powered document intelligence platform, managing external design consultants while aligning executive stakeholders across a complex, multimodal user experience.",
+    description: "Led DesignOps for an AI document intelligence platform, aligning executives and managing external design vendors.",
     tags: ["DesignOps", "Leadership", "AI/ML", "Vendors"],
     category: "delivery",
     liveUrl: null,
@@ -22,7 +22,7 @@ export const projects = [
   {
     id: 3,
     title: "Conversational Document Review",
-    description: "Designed an AI assistant for legal document review, helping contract reviewers analyze and tag 2,000+ documents through natural conversation. Achieved 60% faster review time and 2x documents processed per day.",
+    description: "An AI assistant for legal document review that cut review time 60% and doubled daily throughput.",
     tags: ["Conversational UI", "LLM Integration", "Legal Tech"],
     category: "ai",
     liveUrl: null,
@@ -32,7 +32,7 @@ export const projects = [
   {
     id: 4,
     title: "Restaurant Portal Redesign",
-    description: "Led UX redesign of Rewards Network's restaurant owner portal, creating an interactive dashboard with dynamic notifications, diner review management, and actionable analytics. Achieved 53% increase in user interaction and 49% increase in cash advance signups.",
+    description: "Redesigned a restaurant owner portal, driving 53% more engagement and 49% more cash advance signups.",
     tags: ["UX Research", "Dashboard Design", "FinTech"],
     category: "ux",
     liveUrl: null,
@@ -42,7 +42,7 @@ export const projects = [
   {
     id: 5,
     title: "Rewards Network Redesign",
-    description: "Redesigned the Rewards Network earn page to build user trust and streamline signups across multiple dining reward programs. Achieved 30% increase in new member signups and reduced bounce rates by 10%.",
+    description: "Rebuilt the dining rewards earn page to build trust and streamline signups, lifting new members 30%.",
     tags: ["UX Research", "Marketing", "Conversion Optimization"],
     category: "ux",
     liveUrl: null,

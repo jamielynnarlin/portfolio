@@ -1006,3 +1006,53 @@ export function RestaurantPortalAnimation() {
     </div>
   )
 }
+
+
+// =====================================================================
+// Mobile Task Tracker Redesign — BookedOut
+// Zigzag path: Research → Mobile → Tasks → Photo proof → Verified
+// Teal palette matching the brand primary
+// =====================================================================
+
+// Smartphone icon
+const PhoneIcon = ({ x, y, color }) => (
+  <g transform={`translate(${x}, ${y})`}>
+    <rect x="-5" y="-8" width="10" height="16" rx="2" fill="none" stroke={color} strokeWidth="1.5" />
+    <line x1="-1.5" y1="-5.5" x2="1.5" y2="-5.5" stroke={color} strokeWidth="1" strokeLinecap="round" />
+    <circle cx="0" cy="5" r="1" fill={color} />
+  </g>
+)
+
+// Camera icon (photo proof of work)
+const CameraIcon = ({ x, y, color }) => (
+  <g transform={`translate(${x}, ${y})`}>
+    <path d="M-8,-3 L-8,6 L8,6 L8,-3 L4,-3 L2.5,-6 L-2.5,-6 L-4,-3 Z" fill="none" stroke={color} strokeWidth="1.5" strokeLinejoin="round" />
+    <circle cx="0" cy="1.5" r="3" fill="none" stroke={color} strokeWidth="1.5" />
+  </g>
+)
+
+export function TaskTrackerAnimation() {
+  const { isDark } = useTheme()
+  const color = isDark ? '#2dd4bf' : '#0d9488'
+  const colorDim = isDark ? '#134e4a' : '#ccfbf1'
+  const bg1 = isDark ? '#0f172a' : '#f0fdfa'
+  const bg2 = isDark ? '#1e293b' : '#ccfbf1'
+  const lineDim = isDark ? '#1e293b' : '#99f6e4'
+  const iconColor = isDark ? '#ccfbf1' : '#134e4a'
+
+  const nodes = [
+    { x: 70,  y: 55, icon: <PeopleIcon    x={70}  y={55} color={iconColor} /> },
+    { x: 150, y: 95, icon: <PhoneIcon     x={150} y={95} color={iconColor} /> },
+    { x: 230, y: 55, icon: <ClipboardIcon x={230} y={55} color={iconColor} /> },
+    { x: 310, y: 95, icon: <CameraIcon    x={310} y={95} color={iconColor} /> },
+    { x: 390, y: 55, icon: <CheckIcon     x={390} y={55} color={iconColor} /> },
+  ]
+
+  return (
+    <ZigzagPathAnimation
+      color={color} colorDim={colorDim}
+      bg1={bg1} bg2={bg2} lineDim={lineDim}
+      nodes={nodes} filterId="glow-tasktracker"
+    />
+  )
+}
