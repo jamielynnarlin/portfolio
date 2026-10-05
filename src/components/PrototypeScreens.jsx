@@ -1814,7 +1814,7 @@ export function EDiscoveryDashboard({ onNavigate, onOpenAI, highlightNext = fals
             
             {/* Concept Map + Sentiment - spans 8 columns */}
             <div className="col-span-8 flex flex-col gap-3">
-              <CollapsiblePanel title="Document Concept Map" badge="AI-Generated">
+              <CollapsiblePanel title="Document Concept Map">
                 <div className="relative p-4" style={{ minHeight: '220px' }}>
                   {/* Connection lines */}
                   <svg className="absolute inset-0 w-full h-full pointer-events-none">
