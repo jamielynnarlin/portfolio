@@ -1,6 +1,6 @@
 export const caseStudies = {
   'restaurant-portal-redesign': {
-    title: "Rewards Network Restaurant Owner Portal",
+    title: "Restaurant Owner Portal",
     subtitle: "Transforming how restaurant owners interact with their business data through a modern, actionable dashboard experience.",
     tags: ["UX Research", "UI Design", "Dashboard", "FinTech", "User Testing"],
     roles: [

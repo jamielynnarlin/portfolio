@@ -1,8 +1,8 @@
 export const projects = [
   {
     id: 1,
-    title: "Mobile Task Tracker Redesign — BookedOut",
-    description: "A mobile app that turns gig event staff's invisible labor into documented proof of work, validated across three live events.",
+    title: "Event Staffing App",
+    description: "Gig staff task app validated in live events.",
     tags: ["Product Design", "Mobile UX", "User Research"],
     category: "ux",
     liveUrl: null,
@@ -11,8 +11,8 @@ export const projects = [
   },
   {
     id: 2,
-    title: "DesignOps Transformation",
-    description: "Led DesignOps for an AI document intelligence platform, aligning executives and managing external design vendors.",
+    title: "AI Investigation Platform",
+    description: "AI document intelligence platform with DesignOps support.",
     tags: ["DesignOps", "Leadership", "AI/ML", "Vendors"],
     category: "delivery",
     liveUrl: null,
@@ -22,7 +22,7 @@ export const projects = [
   {
     id: 3,
     title: "Conversational Document Review",
-    description: "An AI assistant for legal document review that cut review time 60% and doubled daily throughput.",
+    description: "AI review assistant that cut review time 60%.",
     tags: ["Conversational UI", "LLM Integration", "Legal Tech"],
     category: "ai",
     liveUrl: null,
@@ -31,8 +31,8 @@ export const projects = [
   },
   {
     id: 4,
-    title: "Restaurant Portal Redesign",
-    description: "Redesigned a restaurant owner portal, driving 53% more engagement and 49% more cash advance signups.",
+    title: "Restaurant Owner Portal",
+    description: "Restaurant portal that lifted engagement and cash advance signups.",
     tags: ["UX Research", "Dashboard Design", "FinTech"],
     category: "ux",
     liveUrl: null,
@@ -41,11 +41,11 @@ export const projects = [
   },
   {
     id: 5,
-    title: "Rewards Network Redesign",
+    title: "Rewards Network Earn Page",
     description: "Rebuilt the dining rewards earn page to build trust and streamline signups, lifting new members 30%.",
     tags: ["UX Research", "Marketing", "Conversion Optimization"],
     category: "ux",
-    liveUrl: null,
+    liveUrl: "/rewards-network",
     caseStudyUrl: "/projects/rewards-network-marketing-website",
   },
 ]

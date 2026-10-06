@@ -1,11 +1,11 @@
 export const prototypes = [
   {
     id: "mobile-task-tracker",
-    title: "Mobile Task Tracker",
+    title: "Event Staffing App",
     subtitle: "Event Staff Task Management Flow",
     description: "Click the highlighted areas to see how event staff access and complete their tasks in the BookedOut app.",
     caseStudySlug: "mobile-task-tracker",
-    caseStudyTitle: "Mobile Task Tracker",
+    caseStudyTitle: "Event Staffing App",
     thumbnail: import.meta.env.BASE_URL + "images/case-studies/Bookedout-profile.png",
     tags: ["Mobile App", "React Native", "Task Management", "UX Flow"],
     prototype: {
@@ -100,7 +100,7 @@ export const prototypes = [
     subtitle: "Multi-Location Dashboard & AI Assistant",
     description: "Explore an interactive restaurant analytics dashboard with multi-location switching, review management with AI-drafted replies, and a conversational data assistant.",
     caseStudySlug: "restaurant-portal-redesign",
-    caseStudyTitle: "Restaurant Portal Redesign",
+    caseStudyTitle: "Restaurant Owner Portal",
     thumbnail: import.meta.env.BASE_URL + "images/case-studies/restaurant-hero.jpg",
     tags: ["Desktop App", "Dashboard", "AI Assistant", "Multi-Location"],
     isDesktop: true,
@@ -124,7 +124,7 @@ export const prototypes = [
     subtitle: "NLP-Powered Document Search & Verification",
     description: "Explore how AI transforms corporate investigations with natural language search, automated source verification, and slide-out citation inspection.",
     caseStudySlug: "enterprise-designops-transformation",
-    caseStudyTitle: "DesignOps Transformation",
+    caseStudyTitle: "AI Investigation Platform",
     thumbnail: import.meta.env.BASE_URL + "images/case-studies/ediscovery-hero.jpg",
     tags: ["Desktop App", "AI/ML", "Legal Tech", "NLP Search"],
     isDesktop: true,
