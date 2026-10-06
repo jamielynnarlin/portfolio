@@ -3,10 +3,10 @@ import { WorkflowPipelineAnimation, DesignOpsTransformAnimation, DocumentReviewA
 
 function ProjectCard({ project }) {
   const navigate = useNavigate()
-  const isAIPowered = project.title === "AI Powered Development Workflow"
-  const isDesignOps = project.title === "DesignOps Transformation"
-  const isEDiscovery = project.title === "Conversational Document Review"
-  const isRestaurant = project.title === "Restaurant Portal Redesign"
+  const isAIPowered = project.caseStudyUrl === "/projects/ai-powered-development-workflow"
+  const isDesignOps = project.caseStudyUrl === "/projects/enterprise-designops-transformation"
+  const isEDiscovery = project.caseStudyUrl === "/projects/llm-integration-strategy"
+  const isRestaurant = project.caseStudyUrl === "/projects/restaurant-portal-redesign"
   const isTaskTracker = project.caseStudyUrl === "/projects/mobile-task-tracker"
   const hasCustomScreen = isAIPowered || isDesignOps || isEDiscovery || isRestaurant || isTaskTracker
 
