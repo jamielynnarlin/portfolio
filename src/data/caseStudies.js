@@ -1,6 +1,6 @@
 export const caseStudies = {
   'restaurant-portal-redesign': {
-    title: "Restaurant Portal Redesign",
+    title: "Rewards Network Restaurant Owner Portal",
     subtitle: "Transforming how restaurant owners interact with their business data through a modern, actionable dashboard experience.",
     tags: ["UX Research", "UI Design", "Dashboard", "FinTech", "User Testing"],
     roles: [
@@ -789,7 +789,7 @@ export const caseStudies = {
   },
 
   'enterprise-designops-transformation': {
-    title: "DesignOps Transformation",
+    title: "AI Investigation Platform",
     subtitle: "Aligning agency, engineering, and product teams around an AI-powered document intelligence platform.",
     tags: ["UX Direction", "Delivery Leadership", "DesignOps", "Agency Management", "AI Enablement"],
     roles: [
@@ -947,26 +947,26 @@ export const caseStudies = {
         ]
       },
       {
-        title: "Agency Tooling",
+        title: "AI SDLC",
         agencySection: true,
         backgroundImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=80",
         tagline: "Bridging Design and Development",
-        headline: "MCP servers and Figma Make",
+        headline: "AI-assisted delivery workflow",
         transformation: {
           before: {
-            label: "Before MCP",
+            label: "Before AI",
             items: [
-              "Designers work in isolation",
-              "Handoffs create delays",
-              "Context lost between tools"
+              "Research notes needed manual synthesis",
+              "Stories and acceptance criteria took longer to draft",
+              "Review comments had to be summarized by hand"
             ]
           },
           after: {
-            label: "With MCP + Figma Make",
+            label: "With AI in the workflow",
             items: [
-              "Real components in Figma",
-              "Prototypes in hours, not days",
-              "Design tokens auto sync"
+              "AI drafted stories and acceptance criteria faster",
+              "Feedback was summarized into clear next steps",
+              "The team spent more time on decisions and less on admin"
             ]
           }
         },
@@ -1162,7 +1162,7 @@ export const caseStudies = {
       }
     ],
     results: [
-      { metric: "6 mo", label: "Platform delivered on schedule" },
+      { metric: "4 mo", label: "Platform delivered 2 months ahead of schedule" },
       { metric: "60%", label: "Faster design review cycles" },
       { metric: "3 teams", label: "Aligned: agency, engineering, product" },
       { metric: "Org wide", label: "AI SDLC framework adopted" }
@@ -1184,7 +1184,7 @@ export const caseStudies = {
   },
 
   'mobile-task-tracker': {
-    title: "Mobile Task Tracker Redesign — BookedOut",
+    title: "Event Staffing App",
     subtitle: "A research-driven redesign that turned invisible labor into documented proof of work for gig economy event staff.",
     tags: ["Product Design", "Mobile UX", "User Research", "Journey Mapping"],
     roles: [
@@ -1220,33 +1220,17 @@ export const caseStudies = {
         platformIntro: {
           label: "About BookedOut",
           headline: "A SaaS platform built for the realities of the gig economy.",
-          description: "BookedOut connects event staff with the world's largest brands and agencies. Thousands of brand ambassadors, promotional workers, and experiential staff rely on it to find shifts, manage their profiles, and get paid after concerts, product launches, and corporate events.",
+          description: "BookedOut connects event staff with brands and agencies for experiential marketing. Staff rely on it to find shifts, manage their profiles, and get paid after concerts, product launches, and corporate events.",
           challengeLabel: "The Problem",
           challengeHeadline: "Great workers had no way to prove it.",
-          challengeText: "The existing app gave staff no tools to document their work during a shift. Managers couldn't see who was performing well, and the workers who showed up every time and gave their best had nothing to show for it when better paying gigs came around.",
+          challengeText: "The existing app gave staff no tools to document their work during a shift. Managers couldn't see who was performing, and workers who showed up every time had nothing to show for it when better gigs came around.",
           challengeItems: [
             "No mid-shift task tracking",
             "Work completed, never recorded",
             "Managers blind to team output",
             "Top performers passed over for premium gigs"
-          ]
-        }
-      },
-      {
-        problemBento: {
-          callout: {
-            headline: "Event staff were missing tasks during shifts.",
-            subtext: "Managers couldn't see who was doing good work. And the workers who showed up every day, did everything right, and gave their best? They had no way to prove it."
-          }
-        },
-        researchBanner: {
-          headline: "We immersed ourselves in the world of event staffing.",
-          subtext: "Before designing anything, we needed to understand the real challenges workers faced, not just what managers assumed.",
-          stats: [
-            { number: "12", label: "In depth interviews", description: "One on one conversations with event staff about their daily frustrations" },
-            { number: "3", label: "Live events observed", description: "Shadowing staff at concerts, corporate events, and festivals" },
-            { number: "47", label: "Staff surveys completed", description: "Quantitative data on pain points, feature requests, and workflows" }
-          ]
+          ],
+          aiTeaser: "PART 1 OF 2  ·  AI RETROSPECTIVE FOLLOWS"
         }
       },
       {
@@ -1274,20 +1258,6 @@ export const caseStudies = {
                 description: "Event details buried in a 47 reply email thread. Sam leaves home unsure what to expect."
               },
               {
-                time: "12:00 PM",
-                label: "Midday",
-                icon: "clock",
-                mood: "overwhelmed",
-                description: "Juggling spreadsheets, texts, and mental notes. He photographs the booth but forgets to log it."
-              },
-              {
-                time: "4:00 PM",
-                label: "Afternoon",
-                icon: "users",
-                mood: "stressed",
-                description: "Rush hits. Sam shines with customers but loses track of tasks. Great work, zero documentation."
-              },
-              {
                 time: "9:00 PM",
                 label: "Evening",
                 icon: "moon",
@@ -1300,31 +1270,20 @@ export const caseStudies = {
       },
       {
         title: "What We Discovered",
-        discoveryIntro: "Watching Sam use the existing BookedOut app revealed four critical failure points.",
+        researchMethodology: "12 in-depth interviews  ·  3 live events observed  ·  47 surveys completed",
+        discoveryIntro: "Watching Sam use the existing BookedOut app revealed three critical failure points.",
         discoveryCategories: [
           {
-            id: "where",
-            label: "Where?",
-            question: "Where am I supposed to go?",
+            id: "where-what",
+            label: "Where & What?",
+            question: "Where am I going, and what do I do when I get there?",
             color: "amber",
             screen: {
               src: import.meta.env.BASE_URL + "images/case-studies/Bookedout-OldProfileScreen.png",
               alt: "Original BookedOut profile screen"
             },
-            story: "Sam opens the app before his shift. His next event? Buried somewhere in a cluttered profile. He sighs and checks his email instead.",
-            painPoints: ["No clear hierarchy", "Events buried below fold", "Resorts to email for basics"]
-          },
-          {
-            id: "what",
-            label: "What?",
-            question: "What am I supposed to do?",
-            color: "rose",
-            screen: {
-              src: import.meta.env.BASE_URL + "images/case-studies/Bookedout-ActivationsList.png",
-              alt: "Original activations list"
-            },
-            story: "The Activations screen shows events, but no tasks. Sam arrives at venues blind, hunting for his manager just to learn what he's doing.",
-            painPoints: ["Zero task visibility", "No preparation possible", "Flying blind every shift"]
+            story: "Sam opens the app before his shift. His next event is buried in a cluttered profile — and even when he finds it, there are no tasks listed. He checks his email instead and arrives at the venue blind.",
+            painPoints: ["Events buried below fold", "Zero task visibility", "Arrives unprepared every shift"]
           },
           {
             id: "why",
@@ -1347,14 +1306,9 @@ export const caseStudies = {
               src: import.meta.env.BASE_URL + "images/case-studies/Bookedout-Settings.png",
               alt: "Outdated settings screen"
             },
-            story: "This screen holds Sam's profile info: skills, availability, experience, the data that matches him to premium events. But the dated, confusing design means he's unsure if his info is even correct or complete.",
+            story: "This screen holds Sam's profile data — skills, availability, experience — the information that matches him to premium events. But the confusing design means he's unsure if his info is even correct.",
             painPoints: ["Profile data affects matching", "Unclear what's missing", "Could be losing gigs"]
           }
-        ],
-        highlights: [
-          "No way to record task completion",
-          "Upcoming events buried in clutter",
-          "Staff couldn't prove their work"
         ]
       },
       {
@@ -1413,14 +1367,6 @@ export const caseStudies = {
               description: "Time windowed checkout ensures work is captured while fresh."
             }
           ],
-          bullets: [
-            "Profile: Next event surfaced immediately with task count",
-            "Categories: Time based milestones match the natural shift rhythm",
-            "Completion: One tap + camera = work recorded in seconds",
-            "Check Out: 30 minute window ensures accountability",
-            "Progress: Visual indicators make completed work visible",
-            "Questionnaire: Quick post event data capture"
-          ]
         }
       },
       {
@@ -1430,9 +1376,7 @@ export const caseStudies = {
             title: "Before",
             items: [
               "Arrives anxious, unsure what's expected",
-              "Juggles apps, texts, and mental notes",
               "Great work goes unrecorded",
-              "Evening: tries to remember, submits incomplete report",
               "Managers don't know his track record"
             ]
           },
@@ -1440,9 +1384,7 @@ export const caseStudies = {
             title: "After",
             items: [
               "Checks app over breakfast. Knows the plan",
-              "Taps tasks complete without breaking flow",
               "Camera captures work instantly",
-              "Checkout ensures everything is recorded",
               "Managers see he's one of the most reliable"
             ]
           }
@@ -1457,7 +1399,8 @@ export const caseStudies = {
           { metric: "3x", label: "More visibility for managers" },
           { metric: "90%", label: "Staff felt 'more prepared'" },
           { metric: "Zero", label: "Missed checkouts reported" }
-        ]
+        ],
+        part2Bridge: "Curious how AI tools would change this process? Keep reading."
       },
       // ============================================
       // PART 2: REIMAGINED WITH AI
@@ -1468,7 +1411,7 @@ export const caseStudies = {
         aiHero: {
           tagline: "RETROSPECTIVE: THE AI LENS",
           headline: "Same Project. Fraction of the Time.",
-          subheadline: "This project was completed before current AI design tools were in wide use. What follows is a retrospective thought experiment — not a revision of history, but an honest look at where AI tooling would have accelerated the process, and where the human work of sitting across from someone like Sam and listening would have remained irreplaceable."
+          subheadline: "This project was completed before current AI design tools were widely available. What follows is a retrospective — where AI would have accelerated the process, and where human judgment would have remained irreplaceable."
         },
         aiIntroComparison: {
           headline: "What if we could do this 4x faster?",
@@ -1500,7 +1443,7 @@ export const caseStudies = {
       },
       {
         title: "AI-Accelerated Product Design",
-        introText: "Here's how AI transformed each phase of the Mobile Task Tracker design process:",
+        introText: "",
         bulletPoints: [
           {
             icon: "search",
@@ -1532,14 +1475,15 @@ export const caseStudies = {
         title: "The Integrated Workflow",
         workflowIntro: {
           title: "See the AI-Integrated Process",
-          description: "Click through each phase below to see how AI accelerates the work - from research to launch. This is the workflow that could cut timeline from 4 months to 2, without sacrificing quality."
+          description: "Click through each phase to see how AI accelerates the work — from research to launch."
         },
         showWorkflowDiagram: true
       },
       {
         title: "The Impact",
         humanSection: {
-          showMetrics: true
+          showMetrics: true,
+          projectionLabel: "Projected efficiency gains — retrospective estimates"
         }
       }
     ],

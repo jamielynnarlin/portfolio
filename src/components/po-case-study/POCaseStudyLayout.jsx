@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { poSections } from '../../data/poCaseStudyTemplate'
 import { Section } from './Section'
 import { HeroPhoto } from './HeroPhoto'
+import { WorkflowDiagram } from '../WorkflowDiagram'
 import {
   SummaryCard,
   ProblemGlance,
@@ -30,7 +31,14 @@ const sectionRenderers = {
     </>
   ),
   'why-it-mattered': study => <StakesList items={study.whyItMattered.stakes} callout={study.whyItMattered.callout} />,
-  'initial-request': study => <InitialRequestCard {...study.initialRequest} />,
+  'product-management': study => (
+    <>
+      <TitledList items={study.productManagement} columns={2} />
+      <div className="mt-10 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-4 md:p-6">
+        <WorkflowDiagram variant="designops" />
+      </div>
+    </>
+  ),
   discovery: study => (
     <>
       <DiscoveryTable activities={study.discovery.activities} />
@@ -46,10 +54,8 @@ const sectionRenderers = {
       <QuotePairs title={study.outcomes.quotesTitle} pairs={study.outcomes.quotes} />
     </>
   ),
-  takeaways: study => <TitledList items={study.takeaways} columns={1} />,
+  takeaways: study => <TitledList items={study.takeaways} columns={1} variant="takeaways" />,
 }
-
-const sectionIds = poSections.map(section => section.id)
 
 // Highlights the last section whose top has scrolled past 30% of the viewport
 function useActiveSection(ids) {
@@ -149,11 +155,11 @@ function Hero({ study, visual }) {
   )
 }
 
-function TableOfContents({ active }) {
+function TableOfContents({ active, sections }) {
   return (
     <nav aria-label="Case study sections" className="hidden lg:block sticky top-28 self-start">
       <ol className="space-y-1 border-l border-gray-200 dark:border-gray-800">
-        {poSections.map(section => (
+        {sections.map(section => (
           <li key={section.id}>
             <a
               href={`#${section.id}`}
@@ -186,17 +192,18 @@ function TableOfContents({ active }) {
 // section's content, `designs` maps a decision's `design` key to the screen
 // or demo shown in its decision chain, and `heroVisual` shows beside the title.
 export function POCaseStudyLayout({ study, showGuidance = false, extras = {}, designs = {}, heroVisual }) {
-  const active = useActiveSection(sectionIds)
+  const visibleSections = poSections.filter(section => section.id !== 'product-management' || study.productManagement?.length)
+  const active = useActiveSection(visibleSections.map(section => section.id))
 
   return (
     <article className="bg-white dark:bg-gray-900">
       <Hero study={study} visual={heroVisual} />
       <div className="max-w-7xl mx-auto px-4 py-16 grid lg:grid-cols-[14rem_1fr] gap-12">
-        <TableOfContents active={active} />
+        <TableOfContents active={active} sections={visibleSections} />
         <div className="max-w-3xl min-w-0">
-          {poSections.map(section => (
+          {visibleSections.map(section => (
             <Section key={section.id} section={section} showGuidance={showGuidance}>
-              {sectionRenderers[section.id](study, designs)}
+              {sectionRenderers[section.id]?.(study, designs) ?? null}
               {extras[section.id] && <div className="mt-10">{extras[section.id]}</div>}
             </Section>
           ))}

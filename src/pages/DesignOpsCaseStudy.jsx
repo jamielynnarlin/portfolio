@@ -1192,7 +1192,7 @@ export default function DesignOpsCaseStudy() {
                   </div>
                   <div>
                     <p className="text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium">Timeline</p>
-                    <p className="text-gray-900 dark:text-white font-semibold text-sm">6 months</p>
+                    <p className="text-gray-900 dark:text-white font-semibold text-sm">4 months</p>
                   </div>
                 </div>
               </div>

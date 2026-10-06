@@ -2,7 +2,7 @@
 // Each block takes plain data from a case study object (see poCaseStudyTemplate).
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Megaphone, FlaskConical, ArrowDown, ArrowRight, ChevronDown, FileText, TrendingUp, Scale, Clock, CircleDollarSign, Eye, Workflow, Users, ChartColumn, Sparkles, Search } from 'lucide-react'
+import { Megaphone, FlaskConical, ArrowDown, ArrowRight, ChevronDown, FileText, TrendingUp, Scale, Clock, CircleDollarSign, Eye, Workflow, Users, ChartColumn, Sparkles, Search, ShieldCheck, Target, BadgeCheck } from 'lucide-react'
 
 const label = 'text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400'
 const body = 'text-gray-700 dark:text-gray-300 leading-relaxed'
@@ -443,13 +443,33 @@ export function QuotePairs({ title, pairs }) {
 }
 
 // Titled one-to-two sentence items. Used for engineering practices and takeaways.
-export function TitledList({ items, columns = 2 }) {
+export function TitledList({ items, columns = 2, variant = 'default' }) {
+  const takeawaysIcons = [ShieldCheck, Target, BadgeCheck]
+
   return (
     <div className={`grid gap-4 ${columns === 3 ? 'sm:grid-cols-3' : columns === 2 ? 'sm:grid-cols-2' : ''}`}>
       {items.map((item, i) => (
-        <div key={i} className={`${panel} p-5`}>
-          <h3 className="font-semibold text-gray-900 dark:text-white">{item.title}</h3>
-          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{item.detail}</p>
+        <div
+          key={i}
+          className={`${panel} p-5 ${variant === 'takeaways' ? 'border-primary-200 dark:border-primary-800 bg-gradient-to-br from-primary-50/70 to-white dark:from-primary-900/20 dark:to-gray-800 shadow-sm' : ''}`}
+        >
+          {variant === 'takeaways' && (
+            <div className="mb-3 flex items-center gap-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary-600 text-white shadow-sm">
+                {(() => {
+                  const Icon = takeawaysIcons[i] || ShieldCheck
+                  return <Icon className="h-4 w-4" strokeWidth={2.4} />
+                })()}
+              </span>
+              <div className="h-px flex-1 bg-primary-200 dark:bg-primary-800/70" />
+            </div>
+          )}
+          <h3 className={`font-semibold ${variant === 'takeaways' ? 'text-primary-950 dark:text-white text-lg' : 'text-gray-900 dark:text-white'}`}>
+            {item.title}
+          </h3>
+          <p className={`mt-2 text-sm leading-relaxed ${variant === 'takeaways' ? 'text-gray-700 dark:text-gray-300' : 'text-gray-600 dark:text-gray-400'}`}>
+            {item.detail}
+          </p>
         </div>
       ))}
     </div>

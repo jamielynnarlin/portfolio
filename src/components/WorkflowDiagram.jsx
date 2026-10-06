@@ -45,7 +45,7 @@ const designOpsSteps = [
     color: 'from-emerald-500 to-teal-500',
     bgColor: 'bg-emerald-50 dark:bg-emerald-900/20',
     borderColor: 'border-emerald-200 dark:border-emerald-800',
-    description: 'Copilot generates test cases BEFORE implementation',
+    description: 'Copilot generates test cases before implementation',
     output: '85% test coverage achieved',
     details: ['Unit tests generated', 'Integration tests created', 'Edge cases covered']
   },
@@ -195,12 +195,6 @@ const designOpsConfig = {
   subheader: 'End-to-end workflow automation',
   timeline: '4 months',
   timelineCompare: 'vs. 6 mo estimate',
-  stats: [
-    { value: '2x', label: 'Team Capacity' },
-    { value: '70%', label: 'Faster Planning' },
-    { value: '85%', label: 'Test Coverage' },
-    { value: '60%', label: 'Review Time ↓' }
-  ],
   result: 'Small team operating at 2x capacity with higher quality'
 }
 
@@ -209,30 +203,22 @@ const ediscoveryConfig = {
   subheader: 'How I led the eDiscovery SDLC with AI at every phase',
   timeline: '4 months',
   timelineCompare: 'vs. 6 mo estimate',
-  stats: [
-    { value: '47', label: 'Stories Delivered' },
-    { value: '2x', label: 'Dev Velocity' },
-    { value: '85%', label: 'Test Coverage' },
-    { value: '33%', label: 'Ahead of Schedule' }
-  ],
   result: 'Complex AI platform delivered 2 months early with a small cross-functional team'
 }
 
 export function WorkflowDiagram({ variant = 'designops' }) {
   const [activeStep, setActiveStep] = useState(0)
-  const [isAnimating, setIsAnimating] = useState(true)
 
   const steps = variant === 'ediscovery' ? ediscoverySteps : designOpsSteps
   const config = variant === 'ediscovery' ? ediscoveryConfig : designOpsConfig
 
   // Auto-advance animation
   useEffect(() => {
-    if (!isAnimating) return
     const timer = setInterval(() => {
       setActiveStep((prev) => (prev + 1) % steps.length)
     }, 3000)
     return () => clearInterval(timer)
-  }, [isAnimating, steps.length])
+  }, [steps.length])
 
   return (
     <div className="w-full max-w-6xl mx-auto">
@@ -253,16 +239,6 @@ export function WorkflowDiagram({ variant = 'designops' }) {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <button
-                onClick={() => setIsAnimating(!isAnimating)}
-                className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                  isAnimating 
-                    ? 'bg-teal-500/20 text-teal-400' 
-                    : 'bg-gray-700 text-gray-400 hover:text-white'
-                }`}
-              >
-                {isAnimating ? '⏸ Pause' : '▶ Play'}
-              </button>
               <div className="text-right">
                 <p className="text-teal-400 font-bold">{config.timeline}</p>
                 <p className="text-gray-500 text-xs">{config.timelineCompare}</p>
@@ -287,7 +263,6 @@ export function WorkflowDiagram({ variant = 'designops' }) {
                 key={step.id}
                 onClick={() => {
                   setActiveStep(index)
-                  setIsAnimating(false)
                 }}
                 className={`relative z-10 flex flex-col items-center gap-2 group`}
               >
@@ -300,7 +275,7 @@ export function WorkflowDiagram({ variant = 'designops' }) {
                 >
                   {step.icon}
                 </div>
-                <span className={`text-xs font-medium text-center max-w-[80px] transition-colors ${
+                <span className={`min-h-[2rem] text-[11px] leading-tight font-medium text-center max-w-[80px] transition-colors ${
                   index <= activeStep ? 'text-gray-900 dark:text-white' : 'text-gray-400'
                 }`}>
                   {step.title}
@@ -313,16 +288,16 @@ export function WorkflowDiagram({ variant = 'designops' }) {
           <div 
             className={`${steps[activeStep].bgColor} ${steps[activeStep].borderColor} border rounded-2xl p-6 transition-all duration-300`}
           >
-            <div className="flex flex-col md:flex-row md:items-start gap-6">
-              {/* Left side - Info */}
-              <div className="flex-1">
+            <div className="flex flex-col gap-6">
+              {/* Step content */}
+              <div>
                 <div className="flex items-center gap-3 mb-4">
                   <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${steps[activeStep].color} flex items-center justify-center text-white`}>
                     {steps[activeStep].icon}
                   </div>
                   <div>
                     <span className="text-xs text-gray-500 dark:text-gray-400 uppercase tracking-wider">Step {activeStep + 1}</span>
-                    <h4 className="text-xl font-bold text-gray-900 dark:text-white">{steps[activeStep].title}</h4>
+                    <h4 className="min-h-[2.5rem] text-lg font-bold leading-tight text-gray-900 dark:text-white">{steps[activeStep].title}</h4>
                   </div>
                 </div>
                 
@@ -342,30 +317,18 @@ export function WorkflowDiagram({ variant = 'designops' }) {
                 </div>
               </div>
 
-              {/* Right side - Output */}
-              <div className="md:w-72">
-                <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-100 dark:border-gray-700">
-                  <div className="flex items-center gap-2 mb-3">
-                    <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></div>
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Output</span>
-                  </div>
-                  <p className="text-sm text-gray-900 dark:text-white font-medium">
-                    {steps[activeStep].output}
-                  </p>
+              <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-lg border border-gray-100 dark:border-gray-700">
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="w-2 h-2 bg-teal-500 rounded-full animate-pulse"></div>
+                  <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Output</span>
                 </div>
+                <p className="text-sm text-gray-900 dark:text-white font-medium">
+                  {steps[activeStep].output}
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Results Summary */}
-          <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-            {config.stats.map((stat, i) => (
-              <div key={i} className="bg-gray-50 dark:bg-gray-800/50 rounded-xl p-4 text-center">
-                <p className="text-2xl font-bold text-teal-500">{stat.value}</p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">{stat.label}</p>
-              </div>
-            ))}
-          </div>
         </div>
 
         {/* Footer */}
@@ -374,12 +337,6 @@ export function WorkflowDiagram({ variant = 'designops' }) {
             <p className="text-sm text-gray-500 dark:text-gray-400">
               <span className="text-teal-500 font-medium">Result:</span> {config.result}
             </p>
-            <div className="flex items-center gap-2">
-              <span className="flex items-center gap-1.5 text-xs text-gray-400">
-                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                All systems operational
-              </span>
-            </div>
           </div>
         </div>
       </div>

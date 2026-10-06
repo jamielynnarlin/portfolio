@@ -109,6 +109,22 @@ export const poSections = [
     ],
   },
   {
+    id: 'product-management',
+    title: 'Product Management',
+    purpose: 'Show how you shaped the operating model around planning, cadence, and cross-functional alignment.',
+    length: '2–3 items, each one to two sentences',
+    include: [
+      'How AI changed planning or backlog shaping',
+      'The cadence or operating rhythm that kept the team aligned',
+      'Any measurable delivery or coordination improvement',
+    ],
+    avoid: [
+      'Screen-by-screen design details',
+      'Implementation minutiae',
+      'Generic process language without a specific outcome',
+    ],
+  },
+  {
     id: 'engineering',
     title: 'Engineering Collaboration',
     purpose: 'Show that you work with engineering as a partner: backlog ownership, clear requirements, and negotiating technical constraints.',
