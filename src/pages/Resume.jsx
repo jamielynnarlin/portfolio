@@ -138,7 +138,7 @@ function Resume() {
             Jamie Arlin
           </h1>
           <p className="text-gray-300 text-lg leading-relaxed max-w-3xl print:text-sm">
-            15+ years of leadership experience specializing in scaling design organizations and turning messy workflows into software teams can build. I start by asking why, listening to the people doing the work, and translating what I learn into outcome-oriented roadmaps through DesignOps and AI and Agentic Tooling.
+            15+ years of leadership experience specializing in scaling design organizations and creating user experiences for complex systems. Expert in orchestrating cross-functional pods, defining outcome-oriented roadmaps, and embedding new ways of working through DesignOps and AI and Agentic Tooling.
           </p>
           
           {/* Contact Row */}
