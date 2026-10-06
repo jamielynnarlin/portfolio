@@ -31,6 +31,7 @@ const sectionRenderers = {
     </>
   ),
   'why-it-mattered': study => <StakesList items={study.whyItMattered.stakes} callout={study.whyItMattered.callout} />,
+  'initial-request': study => <InitialRequestCard {...study.initialRequest} />,
   'product-management': study => (
     <>
       <TitledList items={study.productManagement} columns={2} />

@@ -399,7 +399,7 @@ export const caseStudies = {
       clientName: "Project Nexus",
       clientDescription: "Tier-1 eDiscovery provider building AI-powered document review for litigation."
     },
-    roles: ["Delivery Lead", "UX Strategy", "Product Partnership"],
+    roles: ["Product Owner, UX Manager", "UX Strategy", "Product Partnership"],
     timeline: "4 months",
     team: "PM, Engineering Lead, AI/ML Engineers, Legal SMEs",
     challenge: [

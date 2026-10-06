@@ -1,16 +1,24 @@
 import { poCaseStudyTemplate } from './poCaseStudyTemplate'
+import { designOps } from './po-case-studies/designops'
+import { mobileTaskTracker } from './po-case-studies/mobileTaskTracker'
+import { restaurantPortal } from './po-case-studies/restaurantPortal'
+import { rewardsNetwork } from './po-case-studies/rewardsNetwork'
 
 // Product Owner case studies, keyed by slug. Add each rewritten case study
 // here using the shape of poCaseStudyTemplate.
 export const poCaseStudies = {
   [poCaseStudyTemplate.slug]: poCaseStudyTemplate,
+  [designOps.slug]: designOps,
+  [mobileTaskTracker.slug]: mobileTaskTracker,
+  [restaurantPortal.slug]: restaurantPortal,
+  [rewardsNetwork.slug]: rewardsNetwork,
 
   'llm-integration-strategy': {
     slug: 'llm-integration-strategy',
     title: 'Conversational Document Review',
     subtitle: 'Reframing a request for faster AI review as a trust problem, then shipping explainable, human-in-the-loop review that cut time to production in half.',
     meta: {
-      role: 'UX/Product Manager',
+      role: 'Product Owner, UX Manager',
       timeframe: '4 months',
       team: 'PM, engineering lead, AI/ML engineers, legal SMEs',
     },
@@ -25,7 +33,7 @@ export const poCaseStudies = {
     links: [{ label: 'Try the interactive prototype', to: '/prototypes/ediscovery-ai' }],
 
     businessProblem: {
-      summary: 'As UX/Product Manager, I led discovery, backlog, and delivery for an AI document review platform. Stakeholders asked for speed, but discovery showed the real barrier was trust.',
+      summary: 'As Product Owner I led discovery, backlog, and delivery for an AI document review platform. Stakeholders asked for speed, but discovery showed the real barrier was trust.',
       statement: 'Privilege review was slow, manual, and least accurate where the risk was highest.',
       metrics: [
         { icon: 'users', value: '50+', label: 'Attorneys per review' },

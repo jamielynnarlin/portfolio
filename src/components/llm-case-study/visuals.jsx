@@ -504,7 +504,6 @@ export function ProtocolBuilderDesign() {
     <div className="space-y-8">
       <BrowserScreen><EDiscoveryReviewQueue onNavigate={() => {}} onOpenAI={() => {}} /></BrowserScreen>
       <div>
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500 dark:text-gray-400">Zoomed in</p>
         <p className="mt-1 text-sm text-gray-700 dark:text-gray-300">The editor above, after an attorney writes a protocol.</p>
         <ul className="mt-3 mb-4 grid gap-2 sm:grid-cols-3">
           {protocolLegend.map(item => (
