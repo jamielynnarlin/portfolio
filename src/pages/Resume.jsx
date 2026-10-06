@@ -14,9 +14,13 @@ function Resume() {
       date: "Apr 2026 - Present",
       description: "Lead cross-functional teams to architect and ship sophisticated digital products, specializing in agentic and conversational AI systems.",
       bullets: [
-        "Define UX for agentic AI systems with autonomous, goal-oriented conversational flows",
-        "Oversee end-to-end SDLC, integrating design standards into agile delivery",
-        "Own product roadmap and delivery timelines, translating business goals into requirements",
+        "Translate stakeholder goals into product requirements and priority decisions for agentic AI flows",
+        "Partner with engineering to scope, sequence, and ship end-to-end SDLC improvements",
+        "Architected and deployed an enterprise intake front end using LangGraph and MSFT Agent\u00A0Framework",
+        "Designed multi-turn dialogue flows with clear intent capture and state handling",
+        "Used Claude and GitHub Copilot to speed front-end prototyping and code generation",
+        "Own product roadmap and delivery timelines, balancing business goals, feasibility, and user impact",
+        "Lead cross-functional alignment to ship high-value initiatives",
         "Shape conversational AI architecture, bridging technical execution and user experience",
         "Advise clients navigating the transition from traditional interfaces to generative AI"
       ]
@@ -27,9 +31,10 @@ function Resume() {
       date: "Oct 2023 - Aug 2025",
       description: "Directed UX and application development across enterprise eDiscovery platforms (Sightline, Relativity). Built and guided global teams of UX designers, engineers, and product managers to scale applications and optimize business outcomes.",
       bullets: [
-        "Partnered with SVP, CPO, and CTO to define product roadmaps with AI and next-gen technology initiatives",
-        "Orchestrated design and delivery of hybrid human + AI systems, boosting user engagement",
+        "Partnered with SVP, CPO, and CTO to define roadmaps for AI and next-gen technology",
+        "Orchestrated design and delivery of hybrid human + AI systems, improving engagement and adoption",
         "Established cross-functional Director/Verifier patterns that streamlined AI SDLC",
+        "Aligned stakeholders and engineering around priorities, outcomes, and delivery plans for each release",
         "Demonstrated high AI Fluency by building Design-to-Code flow (Figma/VS Code/GitHub Copilot)",
         "Built standardized UX frameworks including component libraries and style guides"
       ]
@@ -94,7 +99,7 @@ function Resume() {
   ]
 
   const skills = [
-    'UX/UI Design', 'Systems Thinking', 'Executive Storytelling', 'Change Leadership',
+    'UX/UI Design', 'Product Ownership', 'Front End Development', 'Systems Thinking', 'Executive Storytelling', 'Change Leadership',
     'Design Management & Process', 'Project Management', 'User Flows/User Journeys',
     'Application Modernization', 'Human Experience Design', 'Conversational/Generative AI',
     'Data Visualization', 'User Testing', 'Prototyping', 'Scrum Methodology',
@@ -102,8 +107,9 @@ function Resume() {
   ]
 
   const tools = [
-    'Figma', 'Adobe Suite', 'Sketch w/Zeplin', 'Invision', 'Balsamiq', 'Full Story',
-    'Miro', 'Jira/Confluence', 'Asana', 'Userlytics.com', 'VS Code/Github Copilot', 'v0 by Vercel'
+    'VS Code/Github Copilot', 'Claude', 'Jira/Confluence', 'Figma', 'Adobe Suite',
+    'GitHub', 'Invision', 'Balsamiq', 'Full Story', 'Miro', 'Asana', 'Userlytics.com',
+    'v0 by Vercel'
   ]
 
   return (
@@ -165,10 +171,10 @@ function Resume() {
         </div>
 
         {/* Main Content */}
-        <div className="bg-white dark:bg-gray-800 rounded-b-2xl shadow-xl print:shadow-none print:rounded-none">
-          <div className="grid lg:grid-cols-[1fr,300px] print:grid-cols-[1fr,240px]">
+        <div className="bg-white dark:bg-gray-800 rounded-b-2xl shadow-xl print:shadow-none print:rounded-none overflow-hidden">
+          <div className="grid lg:grid-cols-[minmax(0,1fr),280px] print:grid-cols-[minmax(0,1fr),220px]">
             {/* Work Experience */}
-            <div className="p-8 print:p-6 border-r border-gray-200 dark:border-gray-700">
+            <div className="min-w-0 p-8 print:p-6 border-r border-gray-200 dark:border-gray-700">
               <h2 className="font-display text-2xl text-navy-900 dark:text-white uppercase tracking-wide mb-6 print:text-xl">
                 Work Experience
               </h2>
@@ -199,9 +205,12 @@ function Resume() {
                     )}
                     
                     {/* Bullets */}
-                    <ul className="text-sm text-gray-600 dark:text-gray-300 space-y-1 print:text-xs list-disc list-outside ml-4 marker:text-primary-500">
+                    <ul className="text-[13px] lg:text-sm text-gray-600 dark:text-gray-300 space-y-1 leading-5 print:text-xs list-disc list-outside ml-4 marker:text-primary-500">
                       {exp.bullets.map((bullet, j) => (
-                        <li key={j}>
+                        <li
+                          key={j}
+                          className={j === 2 ? 'whitespace-normal break-words' : 'whitespace-normal lg:whitespace-nowrap break-words'}
+                        >
                           {bullet}
                         </li>
                       ))}
@@ -212,7 +221,7 @@ function Resume() {
             </div>
 
             {/* Sidebar */}
-            <div className="p-8 print:p-6 bg-gray-50 dark:bg-gray-900/50">
+            <div className="min-w-0 p-8 print:p-6 bg-gray-50 dark:bg-gray-900/50">
               {/* Skills */}
               <div className="mb-8 print:mb-5">
                 <h2 className="font-display text-lg text-navy-900 dark:text-white uppercase tracking-wide mb-4 print:text-base print:mb-3">
