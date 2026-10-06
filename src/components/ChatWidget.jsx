@@ -7,11 +7,11 @@ const API_URL = import.meta.env.VITE_API_URL || ''
 
 // Context-aware welcome messages and suggestions based on which page the user opens the chat from
 const PAGE_CONTEXT = [
-  { route: '/projects/mobile-task-tracker', prefix: false, welcome: "I see you're checking out the AI Powered Development Workflow project. Want me to walk you through the details?", suggestions: ['How was AI used in the development workflow?', 'What was the impact of the AI workflow?', 'Show me other projects'] },
-  { route: '/projects/enterprise-designops-transformation', prefix: false, welcome: "I see you're looking at the DesignOps Transformation. Want me to tell you more about how Jamie scaled design operations?", suggestions: ['How did Jamie scale the design teams?', 'What tools were used for DesignOps?', 'Show me other projects'] },
+  { route: '/projects/mobile-task-tracker', prefix: false, welcome: "I see you're checking out the Event Staffing App. Want me to walk you through the details?", suggestions: ['How was the app used?', 'What was the impact of the redesign?', 'Show me other projects'] },
+  { route: '/projects/enterprise-designops-transformation', prefix: false, welcome: "I see you're looking at the AI Investigation Platform. Want me to tell you more about how Jamie scaled design operations?", suggestions: ['How did Jamie scale the design teams?', 'What tools were used for the AI platform?', 'Show me other projects'] },
   { route: '/projects/llm-integration-strategy', prefix: false, welcome: "I see you're viewing the Conversational Document Review project. Want to know how Jamie designed the AI assistant?", suggestions: ['How does the document review AI work?', 'What was the impact of the LLM integration?', 'Show me other projects'] },
-  { route: '/projects/restaurant-portal-redesign', prefix: false, welcome: "I see you're looking at the Restaurant Portal Redesign. Want to know more about how Jamie led this UX transformation?", suggestions: ['What research methods were used for the Restaurant Portal?', 'What were the results of the redesign?', 'Show me other projects'] },
-  { route: '/projects/rewards-network-marketing-website', prefix: false, welcome: "I see you're checking out the Rewards Network Redesign. Want to know how Jamie improved conversion rates?", suggestions: ['How were signups increased for Rewards Network?', 'How did Jamie redesign the Rewards Network site?', 'Show me other projects'] },
+  { route: '/projects/restaurant-portal-redesign', prefix: false, welcome: "I see you're looking at the Rewards Network Restaurant Owner Portal. Want to know more about how Jamie led this UX transformation?", suggestions: ['What research methods were used for the portal?', 'What were the results of the redesign?', 'Show me other projects'] },
+  { route: '/projects/rewards-network-marketing-website', prefix: false, welcome: "I see you're checking out the Rewards Network Earn Page. Want to know how Jamie improved conversion rates?", suggestions: ['How were signups increased for Rewards Network?', 'How did Jamie redesign the earn page?', 'Show me other projects'] },
   { route: '/projects/', prefix: true, welcome: "I see you're exploring a project. I can answer any questions about Jamie's work, process, or impact.", suggestions: ['What did Jamie do on this project?', 'What are Jamie\'s top skills?', 'Show me other projects'] },
   { route: '/projects', prefix: false, welcome: "Browsing Jamie's projects? I can help you find the most relevant ones or answer questions about any of them.", suggestions: ['Which projects use AI?', 'Tell me about the DesignOps project', 'Show me the Restaurant Portal project'] },
   { route: '/skills', prefix: false, welcome: "Looking at Jamie's skills? I can go deeper into how she applies any of these in real projects.", suggestions: ['How does Jamie use AI in delivery?', 'Tell me about her UX expertise', 'Show me her projects'] },
@@ -35,11 +35,11 @@ function getPageLabel(pathname) {
   const labels = {
     '/': 'Welcome',
     '/projects': 'Projects',
-    '/projects/mobile-task-tracker': 'AI Powered Development Workflow',
-    '/projects/enterprise-designops-transformation': 'DesignOps Transformation',
+    '/projects/mobile-task-tracker': 'Event Staffing App',
+    '/projects/enterprise-designops-transformation': 'AI Investigation Platform',
     '/projects/llm-integration-strategy': 'Conversational Document Review',
-    '/projects/restaurant-portal-redesign': 'Restaurant Portal Redesign',
-    '/projects/rewards-network-marketing-website': 'Rewards Network Redesign',
+    '/projects/restaurant-portal-redesign': 'Rewards Network Restaurant Owner Portal',
+    '/projects/rewards-network-marketing-website': 'Rewards Network Earn Page',
     '/skills': 'Skills',
     '/resume': 'Resume',
     '/contact': 'Contact',
@@ -50,11 +50,11 @@ function getPageLabel(pathname) {
 
 // Map keywords in agent responses to portfolio routes
 const PORTFOLIO_LINKS = [
-  { pattern: /AI Powered Development Workflow/gi, path: '/projects/mobile-task-tracker', label: 'AI Powered Development Workflow' },
-  { pattern: /DesignOps Transformation/gi, path: '/projects/enterprise-designops-transformation', label: 'DesignOps Transformation' },
+  { pattern: /Event Staffing App|Mobile Task Tracker Redesign — BookedOut|BookedOut Event Staff App/gi, path: '/projects/mobile-task-tracker', label: 'Event Staffing App' },
+  { pattern: /AI Investigation Platform|DesignOps Transformation/gi, path: '/projects/enterprise-designops-transformation', label: 'AI Investigation Platform' },
   { pattern: /Conversational Document Review/gi, path: '/projects/llm-integration-strategy', label: 'Conversational Document Review' },
-  { pattern: /Restaurant Portal Redesign/gi, path: '/projects/restaurant-portal-redesign', label: 'Restaurant Portal Redesign' },
-  { pattern: /Rewards Network (?:Marketing )?(?:Website )?Redesign/gi, path: '/projects/rewards-network-marketing-website', label: 'Rewards Network Redesign' },
+  { pattern: /Rewards Network Restaurant Owner Portal|Restaurant Portal Redesign/gi, path: '/projects/restaurant-portal-redesign', label: 'Rewards Network Restaurant Owner Portal' },
+  { pattern: /Rewards Network Earn Page|Rewards Network (?:Marketing )?(?:Website )?Redesign/gi, path: '/projects/rewards-network-marketing-website', label: 'Rewards Network Earn Page' },
   { pattern: /Skills(?: page)?(?= -| \u2013|\.|,|$)/gi, path: '/skills', label: 'Skills' },
   { pattern: /(?:view |see |browse |visit )?(?:all )?[Pp]rojects(?: page)?(?= -| \u2013|\.|,|$)/gi, path: '/projects', label: 'Projects' },
   { pattern: /[Cc]ontact(?: page| info(?:rmation)?)?(?= -| \u2013|\.|,|$)/gi, path: '/contact', label: 'Contact' },
@@ -65,7 +65,7 @@ const SUGGESTION_RULES = [
   { test: /welcome|hello|hi|greet|portfolio assistant/i, suggestions: ['What are Jamie\'s top skills?', 'Show me her projects', 'Tell me about Jamie'] },
   { test: /AI|automation|LLM|machine learning|agentic/i, suggestions: ['Show me her AI projects', 'What AI tools does she use?', 'How does she apply AI to delivery?'] },
   { test: /delivery|agile|scrum|program|cross-functional/i, suggestions: ['How many teams has she led?', 'Show me delivery projects', 'What about her UX background?'] },
-  { test: /designops|design system|design process/i, suggestions: ['How did she scale design teams?', 'Show me the DesignOps Transformation', 'What tools does she use?'] },
+  { test: /designops|design system|design process/i, suggestions: ['How did she scale design teams?', 'Show me the AI Investigation Platform', 'What tools does she use?'] },
   { test: /UX|user experience|research|usability|design/i, suggestions: ['Show me UX case studies', 'What research methods does she use?', 'Tell me about her AI skills'] },
   { test: /project|case study|portfolio/i, suggestions: ['Which projects use AI?', 'Tell me about the DesignOps project', 'Tell me about her background'] },
   { test: /background|career|experience|history|resume/i, suggestions: ['What are her top skills?', 'Show me her projects', 'How can I contact Jamie?'] },
@@ -81,6 +81,10 @@ const SUGGESTION_ROUTES = {
   'Show me her AI projects': '/projects',
   'Show me delivery projects': '/projects',
   'Show me UX case studies': '/projects',
+  'Show me the AI Investigation Platform': '/projects/enterprise-designops-transformation',
+  'Show me the Event Staffing App': '/projects/mobile-task-tracker',
+  'Show me the Rewards Network Restaurant Owner Portal': '/projects/restaurant-portal-redesign',
+  'Show me the Rewards Network Earn Page': '/projects/rewards-network-marketing-website',
   'Show me the DesignOps Transformation': '/projects/enterprise-designops-transformation',
   'Show me the Restaurant Portal project': '/projects/restaurant-portal-redesign',
   'Tell me about her projects': '/projects',
@@ -341,7 +345,7 @@ function ChatWidget() {
   // Floating toggle button
   if (!isOpen) {
     return (
-      <div className="fixed bottom-5 right-5 z-50">
+      <div className="fixed bottom-5 right-5 z-50 print:hidden">
         {/* Glow ring */}
         <span className="absolute inset-0 rounded-full bg-primary-500/30 animate-ping" style={{ animationDuration: '2.5s' }} />
         <motion.button
@@ -367,7 +371,7 @@ function ChatWidget() {
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-        className={`fixed bottom-5 right-5 z-50 w-[380px] max-w-[calc(100vw-2.5rem)] h-[520px] max-h-[calc(100vh-2.5rem)] flex flex-col rounded-2xl shadow-2xl border overflow-hidden backdrop-blur-sm ${
+        className={`fixed bottom-5 right-5 z-50 w-[380px] max-w-[calc(100vw-2.5rem)] h-[520px] max-h-[calc(100vh-2.5rem)] flex flex-col rounded-2xl shadow-2xl border overflow-hidden backdrop-blur-sm print:hidden ${
           darkMode
             ? 'bg-gray-800/95 border-gray-700'
             : 'bg-white/95 border-gray-200'
