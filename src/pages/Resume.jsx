@@ -14,13 +14,13 @@ function Resume() {
       date: "Apr 2026 - Present",
       description: "Lead cross-functional teams to architect and ship sophisticated digital products, specializing in agentic and conversational AI systems.",
       bullets: [
-        "Translate stakeholder goals into product requirements and priority decisions for agentic AI flows",
+        "Ask why before solutioning, then turn stakeholder goals into product requirements and priority decisions",
         "Partner with engineering to scope, sequence, and ship end-to-end SDLC improvements",
         "Architected and deployed an enterprise intake front end using LangGraph and MSFT Agent\u00A0Framework",
         "Designed multi-turn dialogue flows with clear intent capture and state handling",
         "Used Claude and GitHub Copilot to speed front-end prototyping and code generation",
-        "Own product roadmap and delivery timelines, balancing business goals, feasibility, and user impact",
-        "Lead cross-functional alignment to ship high-value initiatives",
+        "Owned product roadmap and delivery timelines, balancing business goals, feasibility, and user impact",
+        "Led UAT, unblocked open decisions, and kept engineering moving when requirements were unclear",
         "Shape conversational AI architecture, bridging technical execution and user experience",
         "Advise clients navigating the transition from traditional interfaces to generative AI"
       ]
@@ -34,7 +34,7 @@ function Resume() {
         "Partnered with SVP, CPO, and CTO to define roadmaps for AI and next-gen technology",
         "Orchestrated design and delivery of hybrid human + AI systems, improving engagement and adoption",
         "Established cross-functional Director/Verifier patterns that streamlined AI SDLC",
-        "Aligned stakeholders and engineering around priorities, outcomes, and delivery plans for each release",
+        "Aligned stakeholders and engineering around priorities, outcomes, and release decisions",
         "Demonstrated high AI Fluency by building Design-to-Code flow (Figma/VS Code/GitHub Copilot)",
         "Built standardized UX frameworks including component libraries and style guides"
       ]
@@ -138,7 +138,7 @@ function Resume() {
             Jamie Arlin
           </h1>
           <p className="text-gray-300 text-lg leading-relaxed max-w-3xl print:text-sm">
-            15+ years of leadership experience specializing in scaling design organizations and creating user experiences for complex systems. Expert in orchestrating cross-functional pods, defining outcome-oriented roadmaps, and embedding new ways of working through DesignOps and AI and Agentic Tooling.
+            15+ years of leadership experience specializing in scaling design organizations and turning messy workflows into software teams can build. I start by asking why, listening to the people doing the work, and translating what I learn into outcome-oriented roadmaps through DesignOps and AI and Agentic Tooling.
           </p>
           
           {/* Contact Row */}
