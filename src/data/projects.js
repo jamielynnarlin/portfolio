@@ -1,7 +1,7 @@
 export const projects = [
   {
     id: 1,
-    title: "Event Staffing App",
+    title: "Mobile Task Tracker",
     description: "Gig staff task app validated in live events.",
     tags: ["Product Design", "Mobile UX", "User Research"],
     category: "ux",
