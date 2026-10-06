@@ -14,7 +14,7 @@ function Resume() {
       date: "Apr 2026 - Present",
       description: "Lead cross-functional teams to architect and ship sophisticated digital products, specializing in agentic and conversational AI systems.",
       bullets: [
-        "translate stakeholder goals into product requirements and priority decisions",
+        "Translate stakeholder goals into product requirements and priority decisions",
         "Partner with engineering to scope, sequence, and ship end-to-end SDLC improvements",
         "Architected and deployed an enterprise intake front end using LangGraph and MSFT Agent\u00A0Framework",
         "Designed multi-turn dialogue flows with clear intent capture and state handling",
