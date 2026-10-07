@@ -32,7 +32,7 @@ function Skills() {
         { name: "Cross-functional Teams", description: "Aligning agency, engineering, and product teams around shared goals and delivery milestones." },
         { name: "Stakeholder Management", description: "Partnering with SVP, CPO, and CTO-level executives to define product roadmaps." },
       ],
-      relatedProjects: ["DesignOps Transformation"],
+      relatedProjects: ["AI Investigation Platform"],
       highlight: "15+ years of leadership experience scaling design organizations",
     },
     {
@@ -48,7 +48,7 @@ function Skills() {
         { name: "Team Scaling", description: "Growing and mentoring design teams - grew a visual design team from 1 to 7 at her own agency." },
         { name: "Tool Strategy", description: "Evaluating and implementing design tools including MCP servers and Figma Make for bridging design and development." },
       ],
-      relatedProjects: ["DesignOps Transformation"],
+      relatedProjects: ["AI Investigation Platform"],
       highlight: "70% less handoff friction with MCP + Figma Make workflows",
     },
     {
@@ -64,7 +64,7 @@ function Skills() {
         { name: "Visual Design", description: "15+ years of visual design experience producing 12,000+ original designs." },
         { name: "Usability Testing", description: "Guerrilla-style testing, moderated sessions, and data-driven validation with real users." },
       ],
-      relatedProjects: ["Restaurant Portal Redesign", "Rewards Network Redesign"],
+      relatedProjects: ["Rewards Network Restaurant Owner Portal"],
       highlight: "53% increase in user interaction through research-driven design",
     },
   ]
