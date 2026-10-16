@@ -1,5 +1,27 @@
+import { Component } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { WorkflowPipelineAnimation, DesignOpsTransformAnimation, DocumentReviewAnimation, RestaurantPortalAnimation, TaskTrackerAnimation } from './ProjectCardAnimations'
+
+class AnimationFallbackBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { hasError: false }
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true }
+  }
+
+  render() {
+    const { fallback, children } = this.props
+
+    if (this.state.hasError) {
+      return fallback
+    }
+
+    return children
+  }
+}
 
 function ProjectCard({ project }) {
   const navigate = useNavigate()
@@ -37,22 +59,34 @@ function ProjectCard({ project }) {
       aria-label={project.caseStudyUrl ? `${project.title} case study` : undefined}
     >
       <div className="aspect-video flex items-center justify-center overflow-hidden relative">
-        {project.image ? (
+        {hasCustomScreen ? (
+          <AnimationFallbackBoundary
+            fallback={
+              project.image ? (
+                <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+              ) : (
+                <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
+                  <span className="text-white text-4xl font-bold">{project.title.charAt(0)}</span>
+                </div>
+              )
+            }
+          >
+            <div className="absolute inset-0">
+              {isAIPowered ? (
+                <WorkflowPipelineAnimation />
+              ) : isDesignOps ? (
+                <DesignOpsTransformAnimation />
+              ) : isTaskTracker ? (
+                <TaskTrackerAnimation />
+              ) : isRestaurant ? (
+                <RestaurantPortalAnimation />
+              ) : (
+                <DocumentReviewAnimation />
+              )}
+            </div>
+          </AnimationFallbackBoundary>
+        ) : project.image ? (
           <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
-        ) : hasCustomScreen ? (
-          <div className="absolute inset-0">
-            {isAIPowered ? (
-              <WorkflowPipelineAnimation />
-            ) : isDesignOps ? (
-              <DesignOpsTransformAnimation />
-            ) : isTaskTracker ? (
-              <TaskTrackerAnimation />
-            ) : isRestaurant ? (
-              <RestaurantPortalAnimation />
-            ) : (
-              <DocumentReviewAnimation />
-            )}
-          </div>
         ) : (
           <div className="absolute inset-0 bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center">
             <span className="text-white text-4xl font-bold">{project.title.charAt(0)}</span>
