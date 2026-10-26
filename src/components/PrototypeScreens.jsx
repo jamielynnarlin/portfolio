@@ -3543,7 +3543,7 @@ function InvestigationSearchScreen({ onSearch }) {
               <svg className="w-4 h-4 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <span className="text-[11px] text-slate-500 italic">Ask a question in plain English...</span>
+              <span className="text-[11px] text-slate-500 italic">Ask about suspicious revenue</span>
             </div>
             <button className="px-3 py-2.5 bg-slate-700 text-slate-500 rounded-lg text-[10px] font-medium cursor-not-allowed">Search</button>
           </div>
@@ -3595,7 +3595,7 @@ function InvestigationResultsScreen({ documents, selectedDoc, setSelectedDoc, sh
             <svg className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <span className="text-[10px] text-slate-200">"Show communications about revenue recognition in Q4"</span>
+            <span className="text-[10px] text-slate-200 truncate">"Show communications about revenue recognition in Q4"</span>
           </div>
           <div className="flex items-center gap-1">
             <span className="px-1.5 py-0.5 bg-amber-500/15 text-amber-300 text-[9px] font-medium rounded border border-amber-500/20">revenue</span>
@@ -3605,14 +3605,14 @@ function InvestigationResultsScreen({ documents, selectedDoc, setSelectedDoc, sh
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex min-h-0">
+      <div className="flex-1 flex min-h-0 relative overflow-hidden">
         {/* Left: Results List */}
         <div className="w-[220px] border-r border-slate-800/60 flex flex-col bg-slate-900/40">
           <div className="px-2.5 py-2 border-b border-slate-800/60 flex items-center justify-between">
             <span className="text-[10px] font-semibold text-white">847 results</span>
             <span className="text-[9px] text-slate-500">by relevance</span>
           </div>
-          <div className="flex-1 p-1.5 space-y-0.5">
+          <div className="flex-1 p-1.5 space-y-0.5 overflow-y-auto">
             {documents.map((doc) => (
               <div 
                 key={doc.id}
@@ -3705,7 +3705,7 @@ function InvestigationResultsScreen({ documents, selectedDoc, setSelectedDoc, sh
         </div>
 
         {/* Slide-out Source Panel */}
-        <div className={`absolute top-[33px] right-0 bottom-0 w-[280px] bg-slate-900 border-l border-slate-700/80 flex flex-col shadow-2xl transition-transform duration-300 ${showDetail ? 'translate-x-0' : 'translate-x-full'}`}>
+        <div className={`absolute top-0 right-0 bottom-0 w-[280px] bg-slate-900 border-l border-slate-700/80 flex flex-col shadow-2xl transition-transform duration-300 ${showDetail ? 'translate-x-0' : 'translate-x-full'}`}>
           <div className="px-3 py-2 border-b border-slate-800 flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <div className="w-4 h-4 bg-violet-500 rounded flex items-center justify-center">

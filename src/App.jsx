@@ -12,8 +12,9 @@ import BlogPost from './pages/BlogPost'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import CaseStudy from './pages/CaseStudy'
-import RestaurantCaseStudy from './pages/RestaurantCaseStudy'
-import DesignOpsCaseStudy from './pages/DesignOpsCaseStudy'
+import DesignOpsPOCaseStudy from './pages/DesignOpsPOCaseStudy'
+import MobileTaskTrackerPOCaseStudy from './pages/MobileTaskTrackerPOCaseStudy'
+import RestaurantPortalPOCaseStudy from './pages/RestaurantPortalPOCaseStudy'
 import DocumentReviewCaseStudy from './pages/DocumentReviewCaseStudy'
 import POCaseStudy from './pages/POCaseStudy'
 import Resume from './pages/Resume'
@@ -63,8 +64,9 @@ function AnimatedRoutes() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageWrapper><Home /></PageWrapper>} />
         <Route path="/projects" element={<PageWrapper><Projects /></PageWrapper>} />
-        <Route path="/projects/restaurant-portal-redesign" element={<PageWrapper><RestaurantCaseStudy /></PageWrapper>} />
-        <Route path="/projects/enterprise-designops-transformation" element={<PageWrapper><DesignOpsCaseStudy /></PageWrapper>} />
+        <Route path="/projects/enterprise-designops-transformation" element={<PageWrapper><DesignOpsPOCaseStudy /></PageWrapper>} />
+        <Route path="/projects/mobile-task-tracker" element={<PageWrapper><MobileTaskTrackerPOCaseStudy /></PageWrapper>} />
+        <Route path="/projects/restaurant-portal-redesign" element={<PageWrapper><RestaurantPortalPOCaseStudy /></PageWrapper>} />
         <Route path="/projects/llm-integration-strategy" element={<PageWrapper><DocumentReviewCaseStudy /></PageWrapper>} />
         {import.meta.env.DEV && (
           <Route path="/projects/po-template" element={<PageWrapper><POCaseStudy slug="po-template" showGuidance /></PageWrapper>} />

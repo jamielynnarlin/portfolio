@@ -160,7 +160,7 @@ export const poSections = [
   },
   {
     id: 'takeaways',
-    title: 'Key Product Owner Takeaways',
+    title: 'Key Takeaways',
     purpose: 'Show reflection and transferable judgment: what you would repeat, what you would change, and how it shapes your approach now.',
     length: '2–3 takeaways, 1–2 sentences each',
     include: [

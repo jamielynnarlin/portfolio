@@ -1178,7 +1178,7 @@ export function DesktopBrowserFrame({ children, url = "investigate.ai" }) {
 // Empty Search State Screen - Starting point for investigators
 export function EmptySearchScreen() {
   return (
-    <div className="flex h-[580px] bg-slate-950 text-white">
+    <div className="flex h-full bg-slate-950 text-white">
       {/* Left Sidebar - Navigation */}
       <div className="w-56 bg-slate-900 border-r border-slate-800 flex flex-col">
         {/* Logo */}
@@ -1259,28 +1259,28 @@ export function EmptySearchScreen() {
           {/* Example Queries */}
           <div className="w-full max-w-lg space-y-2">
             <p className="text-xs text-slate-500 uppercase tracking-wide mb-3">Try asking:</p>
-            <button className="w-full text-left px-4 py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 rounded-xl text-sm text-slate-300 transition-colors">
+            <button className="w-full text-left px-4 py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-300 transition-colors">
               "Show all communications about revenue recognition in Q4"
             </button>
-            <button className="w-full text-left px-4 py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 rounded-xl text-sm text-slate-300 transition-colors">
+            <button className="w-full text-left px-4 py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-300 transition-colors">
               "Find emails between executives regarding contract timing"
             </button>
-            <button className="w-full text-left px-4 py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 rounded-xl text-sm text-slate-300 transition-colors">
+            <button className="w-full text-left px-4 py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700/50 rounded-lg text-sm text-slate-300 transition-colors">
               "Which documents mention policy changes or audit concerns?"
             </button>
           </div>
         </div>
 
         {/* Chat-style Input at Bottom */}
-        <div className="px-6 py-4 border-t border-slate-800 bg-slate-900/50">
+        <div className="px-5 py-3 border-t border-slate-800 bg-slate-900/50">
           <div className="flex items-center gap-3">
-            <div className="flex-1 bg-slate-800 rounded-xl px-4 py-3 flex items-center gap-3 border border-slate-700/50">
+            <div className="flex-1 bg-slate-800 rounded-lg px-4 py-2.5 flex items-center gap-3 border border-slate-700/50">
               <svg className="w-5 h-5 text-slate-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
               <p className="text-sm text-slate-500 italic">Ask a question in plain English...</p>
             </div>
-            <button className="px-4 py-3 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-xl font-semibold text-sm flex items-center gap-2 transition-colors">
+            <button className="px-5 py-2.5 bg-amber-500 hover:bg-amber-400 text-slate-900 rounded-lg font-semibold text-sm flex items-center gap-2 transition-colors">
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
@@ -1311,7 +1311,7 @@ export function NLPDocumentSearchScreen() {
   ]
 
   return (
-    <div className="flex flex-col h-[580px] bg-slate-950 text-white relative overflow-hidden">
+    <div className="flex flex-col h-full bg-slate-950 text-white relative overflow-hidden">
       {/* Compact Search Bar */}
       <div className="px-5 py-3 border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-sm">
         <div className="flex items-center gap-3">
@@ -1493,7 +1493,7 @@ export function SourceInspectorScreen() {
   const [showContext, setShowContext] = useState(true)
 
   return (
-    <div className="flex h-[580px] bg-slate-950 text-white relative overflow-hidden">
+    <div className="flex h-full bg-slate-950 text-white relative overflow-hidden">
       {/* Main Document View - Full Width */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Document Header */}
