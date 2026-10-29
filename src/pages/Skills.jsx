@@ -175,6 +175,48 @@ function Skills() {
           ))}
         </div>
 
+        {/* Certifications */}
+        <section className="mb-20" aria-labelledby="certifications-heading">
+          <h2 id="certifications-heading" className="section-heading">
+            Certifications &amp; Continuous Learning
+          </h2>
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 sm:p-8">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-8">
+              <a
+                href="https://www.credly.com/badges/b13ec455-35b3-4290-9169-8055e158b14e/public_url"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-60 max-w-full shrink-0 flex flex-col items-center gap-4 rounded-lg border border-gray-200 dark:border-gray-700 p-4 text-center text-navy-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary-600"
+              >
+                <img
+                  src="https://images.credly.com/images/a6387cbd-5ac1-4894-833a-da2cbc28587e/blob"
+                  alt="Claude Certified Associate Foundations badge"
+                  width="150"
+                  height="150"
+                  className="max-w-full h-auto"
+                />
+                <span className="font-medium">
+                  Claude Certified Associate - Foundations
+                </span>
+                <span className="text-sm text-primary-600 dark:text-primary-400">
+                  Verify credential on Credly
+                </span>
+              </a>
+              <div className="min-w-0">
+                <h3 className="font-display text-2xl text-navy-900 dark:text-white uppercase tracking-wide">
+                  Claude Certified Associate
+                </h3>
+                <p className="text-primary-600 dark:text-primary-400 font-medium mt-2">
+                  Anthropic · Earned October 2026
+                </p>
+                <p className="text-gray-600 dark:text-gray-300 mt-4 max-w-3xl leading-relaxed">
+                  Validates practical skill in working with Claude: writing effective prompts, building with the API, and applying AI responsibly in real projects.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* Toolbox */}
         <section className="mb-20">
           <h2 className="section-heading">Toolbox</h2>
