@@ -222,6 +222,26 @@ function Resume() {
 
             {/* Sidebar */}
             <div className="min-w-0 p-8 print:p-6 bg-gray-50 dark:bg-gray-900/50">
+              <section className="mb-8 print:mb-5 break-inside-avoid" aria-labelledby="resume-certifications-heading">
+                <h2 id="resume-certifications-heading" className="font-display text-lg text-navy-900 dark:text-white uppercase tracking-wide mb-4 print:text-base print:mb-3">
+                  Certifications
+                </h2>
+                <h3 className="text-sm font-semibold text-navy-900 dark:text-white print:text-xs">
+                  Claude Certified Associate - Foundations
+                </h3>
+                <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 print:text-[10px]">
+                  Anthropic · Earned October 2026
+                </p>
+                <a
+                  href="https://www.credly.com/badges/b13ec455-35b3-4290-9169-8055e158b14e/public_url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block text-xs text-primary-600 dark:text-primary-400 underline underline-offset-2 mt-2 hover:text-primary-700 dark:hover:text-primary-300 print:text-[10px]"
+                >
+                  Verify credential on Credly
+                </a>
+              </section>
+
               {/* Skills */}
               <div className="mb-8 print:mb-5">
                 <h2 className="font-display text-lg text-navy-900 dark:text-white uppercase tracking-wide mb-4 print:text-base print:mb-3">
