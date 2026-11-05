@@ -200,7 +200,7 @@ export function ProfileScreen({ onEventClick }) {
 }
 
 // Dashboard Screen - New home screen with quick stats
-export function DashboardScreen({ onEventClick }) {
+export function DashboardScreen({ onEventClick, highlightNext = false }) {
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Header with greeting */}
@@ -245,6 +245,7 @@ export function DashboardScreen({ onEventClick }) {
         {/* Next Event Card - Clickable */}
         <button 
           onClick={onEventClick}
+          aria-label="View tasks for Boat House Cruise"
           className="w-full bg-white rounded-2xl shadow-lg overflow-hidden mb-4 border border-gray-100 text-left hover:shadow-xl transition-shadow"
         >
           <div className="bg-gradient-to-r from-amber-400 to-orange-400 px-4 py-2 flex items-center justify-between">
@@ -261,7 +262,7 @@ export function DashboardScreen({ onEventClick }) {
                 </div>
                 <span className="text-sm text-gray-500">tasks pending</span>
               </div>
-              <span className="px-4 py-1.5 bg-teal-500 text-white text-sm font-semibold rounded-full">
+              <span className={`px-4 py-1.5 bg-teal-500 text-white text-sm font-semibold rounded-full ${highlightNext ? 'bookedout-action-halo' : ''}`}>
                 View Tasks
               </span>
             </div>

@@ -106,6 +106,8 @@ Modern UI with frosted glass effects, subtle gradients, and floating elements in
 ### 📱 Interactive Prototypes
 Case studies include step-through prototypes showcasing user flows and design decisions.
 
+The BookedOut prototype at `/#/prototypes/mobile-task-tracker` highlights the first View Tasks action with a soft pulsating teal halo, without extra hint text. Reduced-motion preferences use a static halo. The highlight is limited to the interactive prototype, not its listing preview. With `PORTFOLIO_TEST_URL` set, run `node --test tests/bookedout-prototype.test.js` to check animation, reduced motion, desktop, mobile, and keyboard navigation.
+
 ### 🌙 Theme System
 Automatic dark/light mode detection with manual toggle and localStorage persistence.
 

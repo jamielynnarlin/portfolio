@@ -210,7 +210,7 @@ export default function PrototypeView() {
                   }`}
                 >
                   {currentScreen === 0 && (
-                    <DashboardScreen onEventClick={nextScreen} />
+                    <DashboardScreen onEventClick={nextScreen} highlightNext />
                   )}
                   {currentScreen === 1 && (
                     <EventTasksScreen 

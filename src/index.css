@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+.bookedout-action-halo {
+  box-shadow: 0 0 0 4px rgb(13 148 136 / 25%);
+  animation: bookedout-halo 1.8s ease-out infinite;
+}
+
+@keyframes bookedout-halo {
+  0% { box-shadow: 0 0 0 0 rgb(13 148 136 / 55%); }
+  75%, 100% { box-shadow: 0 0 0 10px rgb(13 148 136 / 0%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bookedout-action-halo { animation: none; }
+}
+
 @layer utilities {
   .text-pretty {
     text-wrap: pretty;
