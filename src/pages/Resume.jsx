@@ -209,7 +209,7 @@ function Resume() {
                       {exp.bullets.map((bullet, j) => (
                         <li
                           key={j}
-                          className={j === 2 ? 'whitespace-normal break-words' : 'whitespace-normal lg:whitespace-nowrap break-words'}
+                          className="whitespace-normal break-words"
                         >
                           {bullet}
                         </li>
