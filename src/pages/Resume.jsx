@@ -92,7 +92,7 @@ function Resume() {
       description: null,
       bullets: [
         "Designed and developed e-commerce website on ASP.NET nopCommerce platform",
-        "Produced for corporate events (Google, Harry Carey's, Chicago Fire) and weddings",
+        "Created, produced, and packaged cake bites and cake pops for corporate events (Google, Harry Carey's, Chicago Fire) and weddings",
         "Managed operations, marketing, and team for nationwide client base"
       ]
     }
