@@ -12,7 +12,7 @@ function Resume() {
       title: "Delivery Lead",
       company: "Launch Consulting Group",
       date: "Apr 2026 - Present",
-      description: "Lead cross-functional teams to architect and ship sophisticated digital products, specializing in agentic and conversational AI systems.",
+      description: "I currently lead cross-functional teams to architect and ship sophisticated digital products, specializing in agentic and conversational AI systems.",
       bullets: [
         "Translate stakeholder goals into product requirements and priority decisions",
         "Partner with engineering to scope, sequence, and ship end-to-end SDLC improvements",
